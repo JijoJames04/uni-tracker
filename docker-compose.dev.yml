@@ -1,0 +1,71 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:17-bookworm
+    container_name: uni-tracker-db-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       unitracker_dev
+      POSTGRES_USER:     unitracker
+      POSTGRES_PASSWORD: devpassword123
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    networks:
+      - dev-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+      target: builder          # builder stage has devDeps + ts-node
+    container_name: uni-tracker-backend-dev
+    restart: unless-stopped
+    command: npm run start:dev
+    environment:
+      NODE_ENV:       development
+      PORT:           4000
+      DATABASE_URL:   postgresql://unitracker:devpassword123@postgres:5432/unitracker_dev
+      FRONTEND_URL:   http://localhost:3000
+      UPLOAD_DIR:     /app/uploads
+    volumes:
+      - ./backend/src:/app/src:delegated
+      - uploads_dev:/app/uploads
+    ports:
+      - "4000:4000"
+      - "5555:5555"            # Prisma Studio
+    depends_on:
+      - postgres
+    networks:
+      - dev-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: uni-tracker-frontend-dev
+    restart: unless-stopped
+    environment:
+      NODE_ENV:               development
+      NEXT_PUBLIC_API_URL:    http://backend:4000
+    volumes:
+      - ./frontend/src:/app/src:delegated
+      - ./frontend/public:/app/public:delegated
+      - next_cache:/app/.next
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - dev-network
+
+volumes:
+  postgres_dev_data:
+  uploads_dev:
+  next_cache:
+
+networks:
+  dev-network:
+    driver: bridge

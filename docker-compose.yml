@@ -1,0 +1,101 @@
+version: '3.9'
+
+services:
+  # ─── PostgreSQL ──────────────────────────────────────────────
+  postgres:
+    image: postgres:17-bookworm
+    container_name: uni-tracker-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       ${POSTGRES_DB:-unitracker}
+      POSTGRES_USER:     ${POSTGRES_USER:-unitracker}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-unitracker}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+    # No port exposure to host in production
+
+  # ─── Backend (NestJS) ───────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: uni-tracker-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV:         production
+      PORT:             4000
+      DATABASE_URL:     postgresql://${POSTGRES_USER:-unitracker}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-unitracker}
+      FRONTEND_URL:     ${FRONTEND_URL:-https://localhost}
+      UPLOAD_DIR:       /app/uploads
+    volumes:
+      - uploads_data:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:4000/api/v1/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ─── Frontend (Next.js) ─────────────────────────────────────
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: uni-tracker-frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV:               production
+      NEXT_PUBLIC_API_URL:    http://backend:4000
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ─── Nginx (Reverse Proxy + SSL) ───────────────────────────
+  nginx:
+    image: nginx:1.27-bookworm
+    container_name: uni-tracker-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - nginx_cache:/var/cache/nginx
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  postgres_data:
+  uploads_data:
+  nginx_cache:
+
+networks:
+  app-network:
+    driver: bridge

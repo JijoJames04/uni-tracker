@@ -1,0 +1,70 @@
+**/.git
+**/.gitignore
+**/.env
+**/.env.*
+!**/.env.example
+
+# Node modules (reinstalled in container)
+**/node_modules
+**/.npm
+**/.pnp
+**/.pnp.js
+
+# Next.js build output
+**/.next
+**/out
+**/build
+**/dist
+
+# Test files
+**/__tests__
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+**/coverage
+**/.jest*
+
+# Dev configs
+**/.eslintrc*
+**/.prettierrc*
+**/tsconfig*.json
+!**/tsconfig.json
+
+# Docker files themselves
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Editor configs
+**/.vscode
+**/.idea
+**/*.swp
+**/*.swo
+
+# OS files
+**/.DS_Store
+**/Thumbs.db
+
+# Logs
+**/logs
+**/*.log
+**/npm-debug.log*
+
+# SSL certs (should be mounted as volumes)
+nginx/ssl/*.pem
+nginx/ssl/*.crt
+nginx/ssl/*.key
+
+# Uploads (mounted as volumes)
+**/uploads
+
+# Documentation
+*.md
+docs/
+
+# Prisma migrations (copy schema only)
+**/prisma/migrations
+
+# PM2 / process manager
+**/ecosystem.config.js

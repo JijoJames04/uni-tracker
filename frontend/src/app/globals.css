@@ -1,0 +1,190 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 98%;
+    --foreground: 224 71% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71% 4%;
+    --primary: 234 89% 74%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 9% 46%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 234 89% 74%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 234 89% 74%;
+    --radius: 0.625rem;
+
+    /* Brand colors */
+    --brand-navy: #1a1f36;
+    --brand-indigo: #4f46e5;
+    --brand-indigo-light: #6366f1;
+    --brand-emerald: #10b981;
+    --brand-rose: #f43f5e;
+    --brand-amber: #f59e0b;
+    --brand-cyan: #06b6d4;
+
+    /* Sidebar */
+    --sidebar-bg: #1a1f36;
+    --sidebar-width: 260px;
+    --sidebar-collapsed: 72px;
+  }
+
+  .dark {
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+    --card: 224 71% 6%;
+    --card-foreground: 213 31% 91%;
+    --popover: 224 71% 6%;
+    --popover-foreground: 213 31% 91%;
+    --primary: 234 89% 74%;
+    --primary-foreground: 224 71% 4%;
+    --secondary: 223 47% 11%;
+    --secondary-foreground: 215 20% 65%;
+    --muted: 223 47% 11%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 234 89% 74%;
+    --accent-foreground: 224 71% 4%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 216 34% 17%;
+    --input: 216 34% 17%;
+    --ring: 234 89% 74%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/30;
+  }
+}
+
+@layer components {
+  /* Status badge colors */
+  .status-draft       { @apply bg-slate-100 text-slate-600 border-slate-200; }
+  .status-sop         { @apply bg-violet-50 text-violet-700 border-violet-200; }
+  .status-preparing   { @apply bg-amber-50 text-amber-700 border-amber-200; }
+  .status-ready       { @apply bg-cyan-50 text-cyan-700 border-cyan-200; }
+  .status-submitted   { @apply bg-blue-50 text-blue-700 border-blue-200; }
+  .status-review      { @apply bg-indigo-50 text-indigo-700 border-indigo-200; }
+  .status-approved    { @apply bg-emerald-50 text-emerald-700 border-emerald-200; }
+  .status-rejected    { @apply bg-rose-50 text-rose-700 border-rose-200; }
+  .status-waitlisted  { @apply bg-orange-50 text-orange-700 border-orange-200; }
+
+  /* Application via badges */
+  .via-direct         { @apply bg-blue-50 text-blue-700 border-blue-200; }
+  .via-uniassist      { @apply bg-purple-50 text-purple-700 border-purple-200; }
+  .via-both           { @apply bg-teal-50 text-teal-700 border-teal-200; }
+
+  /* Card hover effect */
+  .card-interactive {
+    @apply transition-all duration-200 hover:shadow-card-hover hover:-translate-y-0.5 cursor-pointer;
+  }
+
+  /* Gradient backgrounds */
+  .gradient-brand {
+    background: linear-gradient(135deg, #1a1f36 0%, #2d3561 50%, #1a1f36 100%);
+  }
+
+  .gradient-subtle {
+    background: linear-gradient(135deg, rgba(79,70,229,0.04) 0%, rgba(16,185,129,0.04) 100%);
+  }
+
+  /* Shimmer loading */
+  .shimmer {
+    @apply relative overflow-hidden bg-muted;
+  }
+  .shimmer::after {
+    content: '';
+    @apply absolute inset-0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.6) 50%, transparent 100%);
+    animation: shimmer 1.5s infinite;
+  }
+
+  /* Deadline urgency */
+  .deadline-urgent    { @apply text-rose-600 font-semibold; }
+  .deadline-soon      { @apply text-amber-600 font-medium; }
+  .deadline-ok        { @apply text-emerald-600; }
+  .deadline-passed    { @apply text-slate-400 line-through; }
+
+  /* Progress bar */
+  .progress-bar {
+    @apply h-1.5 rounded-full bg-muted overflow-hidden;
+  }
+  .progress-fill {
+    @apply h-full rounded-full transition-all duration-500 ease-out;
+  }
+
+  /* Sidebar nav item */
+  .nav-item {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
+           text-white/60 hover:text-white hover:bg-white/10 transition-all duration-150;
+  }
+  .nav-item.active {
+    @apply text-white bg-white/15;
+  }
+
+  /* Section header */
+  .section-header {
+    @apply flex items-center justify-between mb-6;
+  }
+  .section-title {
+    @apply text-xl font-bold text-foreground;
+  }
+
+  /* Empty state */
+  .empty-state {
+    @apply flex flex-col items-center justify-center py-16 text-center;
+  }
+  .empty-state-icon {
+    @apply w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4;
+  }
+}
+
+@layer utilities {
+  .text-balance   { text-wrap: balance; }
+  .text-pretty    { text-wrap: pretty; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+/* Mobile responsive sidebar */
+@media (max-width: 768px) {
+  :root {
+    --sidebar-width: 100%;
+  }
+}
+
+/* Print styles */
+@media print {
+  .sidebar, .navbar, .no-print { display: none !important; }
+  .main-content { margin: 0 !important; padding: 0 !important; }
+}

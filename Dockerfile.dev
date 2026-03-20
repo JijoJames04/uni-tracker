@@ -1,0 +1,16 @@
+# Development Dockerfile — hot reload enabled
+FROM node:22-bookworm
+WORKDIR /app
+
+# Install deps
+COPY frontend/package*.json ./
+RUN npm ci
+
+# Copy source (will be overridden by volume mount in dev)
+COPY frontend/ .
+
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
+
+EXPOSE 3000
+CMD ["npm", "run", "dev"]

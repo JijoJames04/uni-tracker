@@ -1,0 +1,42 @@
+# ─── Stage 1: deps ───────────────────────────────────────────────
+FROM node:22-bookworm AS deps
+WORKDIR /app
+COPY backend/package*.json ./
+RUN npm ci
+
+# ─── Stage 2: builder ────────────────────────────────────────────
+FROM node:22-bookworm AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY backend/ .
+COPY backend/src/prisma/schema.prisma ./prisma/schema.prisma
+
+RUN npm run build \
+ && npx prisma generate
+
+# ─── Stage 3: runner ─────────────────────────────────────────────
+FROM node:22-bookworm AS runner
+RUN apt-get update && apt-get install -y dumb-init \
+ && groupadd --system --gid 1001 nestjs \
+ && useradd --system --uid 1001 nestjs
+
+WORKDIR /app
+
+COPY --from=builder --chown=nestjs:nestjs /app/dist ./dist
+COPY --from=builder --chown=nestjs:nestjs /app/node_modules ./node_modules
+COPY --from=builder --chown=nestjs:nestjs /app/prisma ./prisma
+
+# Create uploads dir
+RUN mkdir -p /app/uploads && chown nestjs:nestjs /app/uploads
+
+USER nestjs
+EXPOSE 4000
+
+ENV NODE_ENV=production
+ENV PORT=4000
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD wget -qO- http://localhost:4000/api/v1/health || exit 1
+
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["node", "dist/main"]
