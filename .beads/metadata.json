@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "server",
+  "dolt_database": "uni_tracker",
+  "project_id": "139fc104-c6a7-436c-bfc6-092daf0a6335"
+}
