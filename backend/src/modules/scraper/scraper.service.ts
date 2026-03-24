@@ -24,7 +24,13 @@ export interface ScrapedCourseData {
   applicationVia: 'DIRECT' | 'UNI_ASSIST' | 'BOTH';
   uniAssistInfo: string;
   requirements: string;
+  linkedinUrl: string | null;
+  instagramUrl: string | null;
+  websiteUrl: string;
+  latitude: number | null;
+  longitude: number | null;
 }
+
 
 // ─── Known German university mappings by hostname ──────────────
 const KNOWN_UNIVERSITIES: Record<string, { name: string; city: string }> = {
@@ -133,8 +139,12 @@ export class ScraperService {
   // ─── Main parser ────────────────────────────────────────────────
   private parseHTML(html: string, url: string): ScrapedCourseData {
     const $ = cheerio.load(html);
+    const $full = cheerio.load(html); // Keep full HTML for social link extraction (they're in footer)
     const baseUrl = new URL(url).origin;
     const hostname = new URL(url).hostname.replace(/^www\./, '');
+
+    // Extract social links BEFORE removing nav/footer (they live there)
+    const socialLinks = this.extractSocialLinks($full, baseUrl);
 
     // Remove nav, footer, sidebar, scripts, styles to get clean content text
     $('nav, footer, header, script, style, noscript, [role="navigation"], [role="banner"], .nav, .footer, .header, .sidebar, #nav, #footer, #header, #sidebar, .cookie, .breadcrumb').remove();
@@ -147,6 +157,8 @@ export class ScraperService {
 
     // Extract key-value pairs from tables and definition lists
     const kvPairs = this.extractKeyValuePairs($);
+
+    const city = this.extractCity(cleanText, url, hostname, kvPairs);
 
     return {
       universityName: this.extractUniversityName($, cleanText, url, hostname, jsonLd),
@@ -164,15 +176,20 @@ export class ScraperService {
       startDate: this.extractStartDate(cleanText, kvPairs),
       applicationUrl: this.extractApplicationUrl($, baseUrl, url),
       sourceUrl: url,
-      logoUrl: this.extractFavicon($, baseUrl),
+      logoUrl: this.extractLogo($full, baseUrl),
       address: this.extractAddress(cleanText),
-      city: this.extractCity(cleanText, url, hostname, kvPairs),
+      city,
       ects: this.extractECTS(cleanText, kvPairs),
       applicationVia: this.detectApplicationVia(cleanText),
       uniAssistInfo: this.extractUniAssistInfo(cleanText),
       requirements: this.extractRequirements($, cleanText, kvPairs),
+      linkedinUrl: socialLinks.linkedin,
+      instagramUrl: socialLinks.instagram,
+      websiteUrl: baseUrl,
+      ...this.getCityCoordinates(city),
     };
   }
+
 
   // ─── JSON-LD structured data ──────────────────────────────────
   private extractJsonLd($: cheerio.CheerioAPI): any {
@@ -649,21 +666,129 @@ export class ScraperService {
     return baseUrl + '/' + href;
   }
 
-  // ─── Favicon ──────────────────────────────────────────────────
-  private extractFavicon($: cheerio.CheerioAPI, baseUrl: string): string | null {
-    const selectors = [
+  // ─── Logo (enhanced: prefers actual logos over favicons) ──────
+  private extractLogo($: cheerio.CheerioAPI, baseUrl: string): string | null {
+    // 1. Try to find actual university logo images
+    const logoSelectors = [
+      'img[class*="logo"]', 'img[id*="logo"]', 'img[alt*="logo"]', 'img[alt*="Logo"]',
+      '.logo img', '#logo img', '[class*="brand"] img', 'header img',
+      'a[class*="logo"] img', '.site-logo img', '.navbar-brand img',
+    ];
+    for (const sel of logoSelectors) {
+      const src = $(sel).first().attr('src');
+      if (src && !src.includes('pixel') && !src.includes('spacer')) {
+        const resolved = this.resolveUrl(src, baseUrl);
+        // Prefer larger images (not tiny tracking pixels)
+        const width = parseInt($(sel).first().attr('width') || '0');
+        if (width === 0 || width > 30) return resolved;
+      }
+    }
+
+    // 2. Fallback to favicon (prefer PNG/SVG over ICO)
+    const faviconSelectors = [
       'link[rel="icon"][type="image/png"]', 'link[rel="icon"][type="image/svg+xml"]',
       'link[rel="apple-touch-icon"]', 'link[rel="apple-touch-icon-precomposed"]', 'link[rel="icon"]',
     ];
-    for (const sel of selectors) {
+    for (const sel of faviconSelectors) {
       const icon = $(sel).first().attr('href');
       if (icon && !icon.endsWith('.ico')) return this.resolveUrl(icon, baseUrl);
     }
-    for (const sel of selectors) {
+    for (const sel of faviconSelectors) {
       const icon = $(sel).first().attr('href');
       if (icon) return this.resolveUrl(icon, baseUrl);
     }
     return baseUrl + '/favicon.ico';
+  }
+
+  // ─── Social Media Links ───────────────────────────────────────
+  private extractSocialLinks($: cheerio.CheerioAPI, baseUrl: string): { linkedin: string | null; instagram: string | null } {
+    let linkedin: string | null = null;
+    let instagram: string | null = null;
+
+    // Search all links on the page
+    $('a[href]').each((_, el) => {
+      const href = $(el).attr('href') || '';
+      if (!linkedin && /linkedin\.com\/(?:school|company|in)\//i.test(href)) {
+        linkedin = href.startsWith('http') ? href : 'https://' + href.replace(/^\/\//, '');
+      }
+      if (!instagram && /instagram\.com\/[\w.]+/i.test(href)) {
+        instagram = href.startsWith('http') ? href : 'https://' + href.replace(/^\/\//, '');
+      }
+    });
+
+    return { linkedin, instagram };
+  }
+
+  // ─── City Coordinates (for map feature) ───────────────────────
+  private getCityCoordinates(city: string): { latitude: number | null; longitude: number | null } {
+    const CITY_COORDS: Record<string, { lat: number; lng: number }> = {
+      'Berlin': { lat: 52.520, lng: 13.405 },
+      'Munich': { lat: 48.137, lng: 11.576 },
+      'München': { lat: 48.137, lng: 11.576 },
+      'Hamburg': { lat: 53.551, lng: 9.994 },
+      'Frankfurt': { lat: 50.110, lng: 8.682 },
+      'Cologne': { lat: 50.938, lng: 6.960 },
+      'Köln': { lat: 50.938, lng: 6.960 },
+      'Stuttgart': { lat: 48.776, lng: 9.183 },
+      'Düsseldorf': { lat: 51.228, lng: 6.773 },
+      'Leipzig': { lat: 51.340, lng: 12.375 },
+      'Dresden': { lat: 51.051, lng: 13.738 },
+      'Heidelberg': { lat: 49.399, lng: 8.672 },
+      'Freiburg': { lat: 47.999, lng: 7.842 },
+      'Münster': { lat: 51.962, lng: 7.626 },
+      'Hannover': { lat: 52.376, lng: 9.739 },
+      'Nuremberg': { lat: 49.452, lng: 11.077 },
+      'Nürnberg': { lat: 49.452, lng: 11.077 },
+      'Bremen': { lat: 53.075, lng: 8.807 },
+      'Bochum': { lat: 51.483, lng: 7.216 },
+      'Dortmund': { lat: 51.514, lng: 7.468 },
+      'Karlsruhe': { lat: 49.007, lng: 8.404 },
+      'Mannheim': { lat: 49.489, lng: 8.467 },
+      'Augsburg': { lat: 48.366, lng: 10.898 },
+      'Bonn': { lat: 50.735, lng: 7.100 },
+      'Aachen': { lat: 50.776, lng: 6.084 },
+      'Constance': { lat: 47.660, lng: 9.176 },
+      'Konstanz': { lat: 47.660, lng: 9.176 },
+      'Jena': { lat: 50.927, lng: 11.586 },
+      'Erfurt': { lat: 50.985, lng: 11.030 },
+      'Potsdam': { lat: 52.400, lng: 13.066 },
+      'Tübingen': { lat: 48.521, lng: 9.058 },
+      'Würzburg': { lat: 49.791, lng: 9.953 },
+      'Saarbrücken': { lat: 49.240, lng: 6.997 },
+      'Braunschweig': { lat: 52.269, lng: 10.522 },
+      'Darmstadt': { lat: 49.873, lng: 8.651 },
+      'Göttingen': { lat: 51.533, lng: 9.935 },
+      'Erlangen': { lat: 49.590, lng: 11.006 },
+      'Kaiserslautern': { lat: 49.443, lng: 7.769 },
+      'Chemnitz': { lat: 50.833, lng: 12.925 },
+      'Ilmenau': { lat: 50.684, lng: 10.914 },
+      'Bayreuth': { lat: 49.947, lng: 11.578 },
+      'Clausthal-Zellerfeld': { lat: 51.803, lng: 10.339 },
+      'Marburg': { lat: 50.812, lng: 8.771 },
+      'Rostock': { lat: 54.092, lng: 12.099 },
+      'Magdeburg': { lat: 52.121, lng: 11.628 },
+      'Kiel': { lat: 54.323, lng: 10.123 },
+      'Mainz': { lat: 49.993, lng: 8.247 },
+      'Trier': { lat: 49.750, lng: 6.637 },
+      'Passau': { lat: 48.574, lng: 13.461 },
+      'Regensburg': { lat: 49.013, lng: 12.102 },
+      'Giessen': { lat: 50.583, lng: 8.678 },
+      'Gießen': { lat: 50.583, lng: 8.678 },
+      'Siegen': { lat: 50.874, lng: 8.024 },
+      'Paderborn': { lat: 51.719, lng: 8.757 },
+      'Osnabrück': { lat: 52.279, lng: 8.043 },
+      'Oldenburg': { lat: 53.144, lng: 8.214 },
+      'Wuppertal': { lat: 51.256, lng: 7.150 },
+      'Duisburg': { lat: 51.435, lng: 6.763 },
+      'Essen': { lat: 51.455, lng: 7.012 },
+      'Weimar': { lat: 50.980, lng: 11.330 },
+      'Cottbus': { lat: 51.756, lng: 14.332 },
+    };
+
+    const coords = CITY_COORDS[city];
+    return coords
+      ? { latitude: coords.lat, longitude: coords.lng }
+      : { latitude: null, longitude: null };
   }
 
   // ─── Address ──────────────────────────────────────────────────

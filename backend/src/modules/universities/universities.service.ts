@@ -116,7 +116,11 @@ export class UniversitiesService {
           logoUrl: scraped.logoUrl,
           address: scraped.address,
           city: scraped.city,
-          website: scraped.applicationUrl,
+          website: scraped.websiteUrl || scraped.applicationUrl,
+          linkedinUrl: scraped.linkedinUrl,
+          instagramUrl: scraped.instagramUrl,
+          latitude: scraped.latitude,
+          longitude: scraped.longitude,
           country: 'Germany',
         },
       });
