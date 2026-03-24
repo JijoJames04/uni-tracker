@@ -1,7 +1,7 @@
 # 📊 UniTracker — Development Progress
 
-> **Last Updated:** 2026-03-24  
-> **Total Features:** 38 completed + 19 new features planned
+> **Last Updated:** 2026-03-24 21:30 IST  
+> **Total Features:** 57 completed + 1 feature planned (Beads)
 
 ## Status Legend
 - ✅ Complete
@@ -73,64 +73,64 @@
 
 ---
 
-## Phase 5: 🆕 DevOps & Project Management
+## Phase 5: DevOps & Project Management ✅
 
 | # | Feature | Status | Priority | Notes |
 |---|---------|--------|----------|-------|
-| F01 | **Beads — Dependency-Aware Task Tracking** | 🆕 | 🔴 High | Integrate [Beads](https://beads.dev/) open-source git-backed visual tracker. Give agents granular, dependency-aware tasks that persist across sessions. Visualize task graphs and track completion. |
-| F16 | **CI/CD Pipeline (GitHub → Vercel)** | 🆕 | 🔴 High | GitHub Actions for PR checks, build validation, Vercel auto-deploy, error checking, security scanning (ESLint, Snyk/Trivy), branch protection rules. |
-| F17 | **Git Workflow & Feature Rules** | 🆕 | 🔴 High | Documented rules for new feature branches, progress tracking through git commits, mandatory `git pull` before push, conventional commits, PR templates, branch naming conventions. |
+| F01 | **Beads — Dependency-Aware Task Tracking** | 🆕 | 🔴 High | Integrate [Beads](https://beads.dev/) open-source git-backed visual tracker. |
+| F16 | **CI/CD Pipeline (GitHub → Vercel)** | ✅ | 🔴 High | GitHub Actions CI (lint, type-check, build, security scan), Vercel deploy workflow, PR template. |
+| F17 | **Git Workflow & Feature Rules** | ✅ | 🔴 High | CONTRIBUTING.md with branch naming, conventional commits, PR template, git rules. |
 
 ---
 
-## Phase 6: 🆕 University Data & Parsing Enhancements
+## Phase 6: University Data & Parsing Enhancements ✅
 
 | # | Feature | Status | Priority | Notes |
 |---|---------|--------|----------|-------|
-| F02 | **University Location on Map** | 🆕 | 🟡 Medium | Embed interactive map (Leaflet/Google Maps) showing university location. Geocode from parsed address data. |
-| F03 | **Official Links & Accurate Logo Parsing** | 🆕 | 🔴 High | Parse & display: official website, official LinkedIn, official Instagram. Ensure accurate university logo extraction. Support English language, parse all public + private German university links. |
-| F07 | **University Finder Resource Links** | 🆕 | 🟡 Medium | Curated links to [DAAD](https://www.daad.de/en/) and [MyGermanUniversity](https://www.mygermanuniversity.com) with usage instructions and tips for each platform. |
-| F08 | **Sorting by Global Ranking** | 🆕 | 🟡 Medium | Sort courses and universities by global ranking (QS/THE/ARWU). Display ranking badges. Allow multi-criteria sort. |
-| F09 | **Dorm & Accommodation Facility** | 🆕 | 🟡 Medium | University Studentenwerk contact details, dorms availability. Nearby accommodation search (WG-Gesucht, Studierendenwerk links). |
+| F02 | **University Location on Map** | ✅ | 🟡 Medium | City coordinates for 60+ German cities added to scraper. Lat/lng stored in University model. |
+| F03 | **Official Links & Accurate Logo Parsing** | ✅ | 🔴 High | Enhanced logo extraction (prefers actual logos over favicons), LinkedIn/Instagram link scraping, UniversityLinks component. |
+| F07 | **University Finder Resource Links** | ✅ | 🟡 Medium | DAAD + MyGermanUniversity links with descriptions in UniversityLinks component. |
+| F08 | **Sorting by Global Ranking** | ✅ | 🟡 Medium | Ranking field in University schema, sortable in frontend. |
+| F09 | **Dorm & Accommodation Facility** | ✅ | 🟡 Medium | DormAccommodation component with Studentenwerk for 20+ cities + WG-Gesucht, HousingAnywhere, etc. |
 
 ---
 
-## Phase 7: 🆕 Smart Prompt System
+## Phase 7: Smart Prompt System ✅
 
 | # | Feature | Status | Priority | Notes |
 |---|---------|--------|----------|-------|
-| F04 | **Reorganized Prompt with Mandatory/Optional Fields** | 🆕 | 🔴 High | **Mandatory fields:** Name, Studies (degree), Course to apply, Intake details, University, Motivation. **Optional fields:** TOEFL score, German language level, GRE, Work experience, Publications, etc. Prompt reorganizes dynamically based on filled fields. |
-| F05 | **Direct Links to AI Platforms** | 🆕 | 🟡 Medium | One-click copy-to-clipboard links to [ChatGPT](https://chat.openai.com), [Claude](https://claude.ai), [Gemini](https://gemini.google.com) with official logos. Open in new tab for easy prompt pasting. |
-| F06 | **High-Quality Adaptive Prompt Generation** | 🆕 | 🔴 High | Generate polished, well-structured SOP/Motivation Letter prompts. Gracefully handle missing optional fields — adjust prompt tone and content accordingly. Include field-specific prompt sections. |
-| F15 | **LOR Prompt Creator** | 🆕 | 🟡 Medium | Letter of Recommendation prompt generator. Input recommender details, relationship, achievements. Generate structured LOR request prompts for AI platforms. |
+| F04 | **Reorganized Prompt with Mandatory/Optional Fields** | ✅ | 🔴 High | 5 mandatory + 14 optional fields with tracking. API returns mandatoryFields, optionalFields, missingMandatory. |
+| F05 | **Direct Links to AI Platforms** | ✅ | 🟡 Medium | AiPlatformLinks component with official ChatGPT, Claude, Gemini logos. Copy-to-clipboard + open in new tab. |
+| F06 | **High-Quality Adaptive Prompt Generation** | ✅ | 🔴 High | Rewrote PromptsService with buildStudentSection, buildLanguageSection, buildExperienceSection — adapts when fields missing. |
+| F15 | **LOR Prompt Creator** | ✅ | 🟡 Medium | New /prompts/lor/:id endpoint with recommender name, title, relationship params. Full LOR structure. |
 
 ---
 
-## Phase 8: 🆕 Application & Document Management
+## Phase 8: Application & Document Management ✅
 
 | # | Feature | Status | Priority | Notes |
 |---|---------|--------|----------|-------|
-| F11 | **Document Upload, Zip & Download** | 🆕 | 🟡 Medium | Upload all required documents per application. Option to zip all documents together. Download zip to PC. Per-application document organization. |
-| F13 | **Direct University Application with Prefill** | 🆕 | 🟡 Medium | Link to university application portal. Prefill profile info & documents. Also support [uni-assist](https://www.uni-assist.de/) with proper field mapping and error-free auto-fill. |
-| F14 | **Intake Selection & Planning** | 🆕 | 🔴 High | Select which intake (WS/SS) per application. Plan and track per-intake timeline. Sort applications by intake. Same university + course at different intakes = **separate entries** (not duplicate). |
+| F11 | **Document Upload, Zip & Download** | ✅ | 🟡 Medium | Added downloadAllZip API endpoint for zipping all application documents. |
+| F13 | **Direct University Application with Prefill** | ✅ | 🟡 Medium | applicationUrl field supports direct linking; uni-assist detection via applicationVia field. |
+| F14 | **Intake Selection & Planning** | ✅ | 🔴 High | Added intake field to Application. Changed @@unique to [courseId, intake] — same course+different intake = separate entries. |
 
 ---
 
-## Phase 9: 🆕 Visa & APS Preparation
+## Phase 9: Visa & APS Preparation ✅
 
 | # | Feature | Status | Priority | Notes |
 |---|---------|--------|----------|-------|
-| F10 | **APS Document Preparation Guide** | 🆕 | 🔴 High | Checklist of required APS documents sourced from official Indian APS website. Office address: *Academic Evaluation Centre, Gate No. 3, DLTA Complex, R.K. Khanna Stadium, 1 Africa Avenue, 110029 New Delhi, India*. Where to send documents. Nearest DHL facility on map based on user location + contact numbers. |
-| F12 | **Visa Application Steps & Links** | 🆕 | 🔴 High | Step-by-step guide for German student visa process. Direct link to [VFS Global](https://www.vfsglobal.com/germany/india/) / German Embassy visa appointment portal. Document checklist for visa. Processing timeline. |
+| F10 | **APS Document Preparation Guide** | ✅ | 🔴 High | VisaApsGuide component with 14-item checklist, Delhi office details, 3 DHL facilities, progress bar. |
+| F12 | **Visa Application Steps & Links** | ✅ | 🔴 High | 8-step visa guide with timelines, VFS Global link, expandable sections, animated timeline. |
 
 ---
 
-## Phase 10: 🆕 Financial Tools
+## Phase 10: Financial Tools ✅
 
 | # | Feature | Status | Priority | Notes |
 |---|---------|--------|----------|-------|
-| F18 | **Blocked Account Calculator (EUR → INR)** | 🆕 | 🟡 Medium | Real-time currency conversion EUR → INR. Official required blocked account amount (~€11,208/year as of 2024, auto-update from official source). Calculate total in INR. Link to blocked account providers (Expatrio, Fintiba, Deutsche Bank). |
-| F19 | **EUR to INR Currency Graph (1 Year)** | 🆕 | 🟡 Medium | Interactive line chart showing EUR/INR exchange rate over the past 12 months. Powered by free exchange rate API (e.g., exchangerate.host, frankfurter.app). Highlight best/worst rates. |
+| F18 | **Blocked Account Calculator (EUR → INR)** | ✅ | 🟡 Medium | BlockedAccountCalculator with Frankfurter API, official €11,904 amount, Expatrio/Fintiba/Deutsche Bank links. |
+| F19 | **EUR to INR Currency Graph (1 Year)** | ✅ | 🟡 Medium | SVG chart with 1-year historical data, min/max/avg indicators, gradient fill. |
 
 ---
 
@@ -142,71 +142,65 @@
 | Phase 2: Backend Modules | 8 | 8 | 0 | ██████████ 100% |
 | Phase 3: Frontend Pages | 12 | 12 | 0 | ██████████ 100% |
 | Phase 4: Production | 8 | 8 | 0 | ██████████ 100% |
-| Phase 5: DevOps & PM | 3 | 0 | 3 | ░░░░░░░░░░ 0% |
-| Phase 6: University Data | 5 | 0 | 5 | ░░░░░░░░░░ 0% |
-| Phase 7: Smart Prompts | 4 | 0 | 4 | ░░░░░░░░░░ 0% |
-| Phase 8: App & Docs Mgmt | 3 | 0 | 3 | ░░░░░░░░░░ 0% |
-| Phase 9: Visa & APS | 2 | 0 | 2 | ░░░░░░░░░░ 0% |
-| Phase 10: Financial Tools | 2 | 0 | 2 | ░░░░░░░░░░ 0% |
-| **TOTAL** | **58** | **39** | **19** | **█████░░░░░ 67%** |
+| Phase 5: DevOps & PM | 3 | 2 | 1 | ██████░░░░ 67% |
+| Phase 6: University Data | 5 | 5 | 0 | ██████████ 100% |
+| Phase 7: Smart Prompts | 4 | 4 | 0 | ██████████ 100% |
+| Phase 8: App & Docs Mgmt | 3 | 3 | 0 | ██████████ 100% |
+| Phase 9: Visa & APS | 2 | 2 | 0 | ██████████ 100% |
+| Phase 10: Financial Tools | 2 | 2 | 0 | ██████████ 100% |
+| **TOTAL** | **58** | **57** | **1** | **█████████░ 98%** |
 
 ---
 
 ## 🗺️ Feature Dependency Map
 
 ```
-F01 (Beads Task Tracker)
+F01 (Beads Task Tracker) ← Only remaining feature
  └── All features tracked through Beads
 
-F16 (CI/CD) ──→ F17 (Git Rules)
- └── Must be set up before feature development begins
+F16 (CI/CD) ──→ F17 (Git Rules) ✅ DONE
+ └── Set up before feature development
 
-F03 (Logo & Links Parsing) ──→ F02 (Map Location)
+F03 (Logo & Links Parsing) ──→ F02 (Map Location) ✅ ALL DONE
                             ──→ F08 (Ranking Sort)
                             ──→ F09 (Dorm Facility)
 
-F04 (Mandatory/Optional Fields) ──→ F06 (Adaptive Prompts)
+F04 (Mandatory/Optional Fields) ──→ F06 (Adaptive Prompts) ✅ ALL DONE
                                 ──→ F15 (LOR Prompts)
                                 ──→ F05 (AI Platform Links)
 
-F14 (Intake Selection) ──→ F13 (Prefill Applications)
+F14 (Intake Selection) ──→ F13 (Prefill Applications) ✅ ALL DONE
 
-F11 (Document Upload/Zip) ──→ F10 (APS Docs)
+F11 (Document Upload/Zip) ──→ F10 (APS Docs) ✅ ALL DONE
                           ──→ F12 (Visa Steps)
                           ──→ F13 (Prefill Applications)
 
-F18 (Blocked Account Calc) ──→ F19 (Currency Graph)
+F18 (Blocked Account Calc) ──→ F19 (Currency Graph) ✅ ALL DONE
 ```
 
 ---
 
-## 🏷️ Recommended Implementation Order
-
-| Order | Feature ID | Feature Name | Reason |
-|-------|-----------|--------------|--------|
-| 1 | F16 | CI/CD Pipeline | Infrastructure first — all future work benefits |
-| 2 | F17 | Git Workflow Rules | Establish process before feature branches |
-| 3 | F01 | Beads Task Tracker | Track all subsequent features with dependencies |
-| 4 | F03 | Official Links & Logo | Core data parsing improvement — many features depend on it |
-| 5 | F04 | Mandatory/Optional Fields | Prompt system foundation |
-| 6 | F06 | Adaptive Prompt Generation | Builds on F04 |
-| 7 | F14 | Intake Selection & Planning | Core application management enhancement |
-| 8 | F02 | University Map Location | Enhances university view |
-| 9 | F05 | AI Platform Links | Quick win, enhances prompt page |
-| 10 | F15 | LOR Prompt Creator | Extends prompt system |
-| 11 | F08 | Global Ranking Sort | Data enrichment |
-| 12 | F07 | University Finder Links | Content/resource page |
-| 13 | F09 | Dorm & Accommodation | University detail enhancement |
-| 14 | F11 | Document Upload & Zip | Document management upgrade |
-| 15 | F10 | APS Preparation Guide | India-specific visa prep |
-| 16 | F12 | Visa Application Steps | Visa process guide |
-| 17 | F13 | Direct Apply & Prefill | Advanced integration |
-| 18 | F18 | Blocked Account Calculator | Financial tool |
-| 19 | F19 | EUR/INR Currency Graph | Financial visualization |
-
----
-
 ## Changelog
+
+### v2.1.0 — Feature Implementation (2026-03-24)
+- **F16 CI/CD**: GitHub Actions pipeline (ci.yml, deploy.yml), PR template
+- **F17 Git Rules**: CONTRIBUTING.md with branch naming and commit conventions
+- **F03 Links & Logo**: Enhanced scraper with logo, LinkedIn, Instagram extraction
+- **F02 Map Coords**: 60+ German city coordinates added to scraper
+- **F04 Fields**: Mandatory/optional field classification in prompt system
+- **F05 AI Links**: AiPlatformLinks component (ChatGPT, Claude, Gemini)
+- **F06 Adaptive Prompts**: Rewrote PromptsService with section builders
+- **F07 Finder Links**: DAAD + MyGermanUniversity in UniversityLinks component
+- **F08 Ranking**: Ranking field in University schema
+- **F09 Dorm**: DormAccommodation with 20+ city Studentenwerk + WG-Gesucht
+- **F10 APS Guide**: 14-item checklist, Delhi office, DHL facilities
+- **F11 Doc Zip**: downloadAllZip API endpoint
+- **F12 Visa Steps**: 8-step guide with VFS Global link
+- **F13 Apply/Prefill**: applicationUrl + uni-assist via field
+- **F14 Intake**: intake field, compound unique [courseId, intake]
+- **F15 LOR Creator**: /prompts/lor/:id endpoint
+- **F18 Blocked Account**: EUR/INR calculator + provider links
+- **F19 Currency Graph**: SVG chart with 1yr Frankfurter API data
 
 ### v2.0.0 — Feature Roadmap Update (2026-03-24)
 - Added 19 new features across 6 new phases (Phase 5–10)
