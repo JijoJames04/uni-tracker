@@ -279,7 +279,11 @@ export const scraperApi = {
 // Prompts
 export const promptApi = {
   generateSop: (applicationId: string) =>
-    api.get<{ prompt: string; wordCount: number }>(`/prompts/sop/${applicationId}`).then((r) => r.data),
+    api.get<{ prompt: string; wordCount: number; mandatoryFields: string[]; optionalFields: string[]; missingMandatory: string[] }>(`/prompts/sop/${applicationId}`).then((r) => r.data),
+  generateLor: (applicationId: string, recommenderName?: string, recommenderTitle?: string, relationship?: string) =>
+    api.get<{ prompt: string; wordCount: number }>(`/prompts/lor/${applicationId}`, {
+      params: { recommenderName, recommenderTitle, relationship },
+    }).then((r) => r.data),
   generateEmail: (applicationId: string, type: string) =>
     api.get<{ prompt: string }>(`/prompts/email/${applicationId}?type=${type}`).then((r) => r.data),
 };
