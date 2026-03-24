@@ -77,6 +77,7 @@ export interface Course {
 export interface Application {
   id: string;
   courseId: string;
+  intake?: string;
   status: ApplicationStatus;
   priority: 'HIGH' | 'MEDIUM' | 'LOW';
   notes?: string;
@@ -267,6 +268,7 @@ export const documentApi = {
     }).then((r) => r.data);
   },
   download: (id: string) => `/api/v1/documents/${id}/download`,
+  downloadAllZip: (applicationId: string) => `/api/v1/documents/application/${applicationId}/zip`,
   delete: (id: string) => api.delete(`/documents/${id}`),
 };
 

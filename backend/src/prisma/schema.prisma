@@ -81,7 +81,8 @@ enum ApplicationVia {
 
 model Application {
   id          String            @id @default(cuid())
-  courseId    String            @unique
+  courseId    String
+  intake      String?           // e.g., "WS 2026", "SS 2027" — allows same course at different intakes
   status      ApplicationStatus @default(DRAFT)
   priority    Priority          @default(MEDIUM)
   notes       String?
@@ -96,6 +97,7 @@ model Application {
   timeline   TimelineEntry[]
   checklist  ChecklistItem[]
 
+  @@unique([courseId, intake])  // Same course + different intake = separate entries (NOT duplicate)
   @@map("applications")
 }
 
