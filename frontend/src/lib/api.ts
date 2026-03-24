@@ -38,7 +38,12 @@ export interface University {
   city?: string;
   country: string;
   website?: string;
+  linkedinUrl?: string;
+  instagramUrl?: string;
   description?: string;
+  ranking?: number;
+  latitude?: number;
+  longitude?: number;
   courses: Course[];
   createdAt: string;
 }
@@ -205,6 +210,11 @@ export interface ScrapedData {
   applicationVia: ApplicationVia;
   uniAssistInfo: string;
   requirements: string;
+  linkedinUrl: string | null;
+  instagramUrl: string | null;
+  websiteUrl: string;
+  latitude: number | null;
+  longitude: number | null;
 }
 
 // ─── API Functions ─────────────────────────────────────────────
