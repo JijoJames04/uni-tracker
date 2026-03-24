@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   postgres:
     image: postgres:17-bookworm
@@ -20,7 +18,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.backend
-      target: builder          # builder stage has devDeps + ts-node
+      target: development
     container_name: uni-tracker-backend-dev
     restart: unless-stopped
     command: npm run start:dev
@@ -31,7 +29,7 @@ services:
       FRONTEND_URL:   http://localhost:3000
       UPLOAD_DIR:     /app/uploads
     volumes:
-      - ./backend/src:/app/src:delegated
+      - ./backend:/app:delegated
       - uploads_dev:/app/uploads
     ports:
       - "4000:4000"

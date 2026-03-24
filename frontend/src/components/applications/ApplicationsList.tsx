@@ -32,7 +32,7 @@ export function ApplicationsList() {
   const [view, setView]       = useState<'list' | 'kanban'>('list');
   const [filter, setFilter]   = useState('all');
   const [search, setSearch]   = useState('');
-  const [sortBy, setSortBy]   = useState<'updated' | 'deadline' | 'name'>('updated');
+  const [sortBy, setSortBy]   = useState<'updated' | 'deadline' | 'name' | 'priority'>('updated');
 
   const { data: applications = [], isLoading } = useQuery({
     queryKey: ['applications'],
@@ -75,6 +75,10 @@ export function ApplicationsList() {
         return da - db;
       }
       if (sortBy === 'name') return a.course.name.localeCompare(b.course.name);
+      if (sortBy === 'priority') {
+        const order = { HIGH: 0, MEDIUM: 1, LOW: 2 };
+        return (order[a.priority] ?? 1) - (order[b.priority] ?? 1);
+      }
       return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
     });
 
@@ -124,6 +128,7 @@ export function ApplicationsList() {
             <option value="updated">Sort: Recent</option>
             <option value="deadline">Sort: Deadline</option>
             <option value="name">Sort: Name</option>
+            <option value="priority">Sort: Priority</option>
           </select>
 
           {/* View toggle */}
@@ -220,6 +225,15 @@ function AppCard({ app, index }: { app: Application; index: number }) {
                   </p>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
+                  {app.priority !== 'MEDIUM' && (
+                    <span className={cn(
+                      'inline-flex items-center text-[10px] px-2 py-0.5 rounded-full border font-semibold',
+                      app.priority === 'HIGH' && 'bg-rose-50 text-rose-700 border-rose-200',
+                      app.priority === 'LOW' && 'bg-slate-50 text-slate-500 border-slate-200',
+                    )}>
+                      {app.priority === 'HIGH' ? '🔥 High' : '↓ Low'}
+                    </span>
+                  )}
                   <ViaBadge via={app.course.applicationVia} />
                   <StatusBadge status={app.status} />
                 </div>

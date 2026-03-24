@@ -59,6 +59,9 @@ model Course {
   university  University   @relation(fields: [universityId], references: [id], onDelete: Cascade)
   application Application?
 
+  @@index([universityId])
+  @@index([deadline])
+  @@unique([universityId, name])
   @@map("courses")
 }
 
@@ -129,6 +132,8 @@ model Document {
 
   application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
+  @@index([applicationId])
+  @@index([type])
   @@map("documents")
 }
 
@@ -163,6 +168,8 @@ model TimelineEntry {
 
   application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
+  @@index([applicationId])
+  @@index([createdAt])
   @@map("timeline_entries")
 }
 
@@ -189,6 +196,7 @@ model ChecklistItem {
 
   application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
+  @@index([applicationId])
   @@map("checklist_items")
 }
 

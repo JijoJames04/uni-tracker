@@ -1,12 +1,15 @@
 'use client';
 
+import { useMemo, useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { universityApi, applicationApi } from '@/lib/api';
+import type { Application } from '@/lib/api';
 import { formatFees, formatDeadline, STATUS_CONFIG, cn } from '@/lib/utils';
 import {
   TrendingUp, CheckCircle2, XCircle, Clock, AlertCircle,
-  Euro, GraduationCap, ArrowRight, Calendar,
+  Euro, GraduationCap, ArrowRight, Calendar, Download,
+  Timer, Zap,
 } from 'lucide-react';
 import Link from 'next/link';
 import { StatusBadge } from '@/components/shared/StatusBadge';
@@ -18,7 +21,47 @@ const FADE_UP = {
   visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.06, duration: 0.4, ease: 'easeOut' as const } }),
 };
 
+function getGreeting(hour: number): string {
+  if (hour < 12) return 'Good morning ☀️';
+  if (hour < 17) return 'Good afternoon 👋';
+  if (hour < 21) return 'Good evening 🌆';
+  return 'Good night 🌙';
+}
+
+function exportToCSV(applications: Application[]) {
+  const headers = ['University', 'Course', 'Degree', 'Status', 'Priority', 'Deadline', 'Fees', 'Language', 'Applied At', 'Notes'];
+  const rows = applications.map((app) => [
+    app.course.university.name,
+    app.course.name,
+    app.course.degree ?? '',
+    app.status,
+    app.priority,
+    app.course.deadline ? new Date(app.course.deadline).toLocaleDateString() : '',
+    app.course.fees?.toString() ?? '',
+    app.course.language ?? '',
+    app.appliedAt ? new Date(app.appliedAt).toLocaleDateString() : '',
+    (app.notes ?? '').replace(/[\n,]/g, ' '),
+  ]);
+
+  const csv = [headers, ...rows].map((r) => r.map((c) => `"${c}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `uni-tracker-applications-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export function DashboardContent() {
+  const [mounted, setMounted] = useState(false);
+  const [greeting, setGreeting] = useState<string>('');
+
+  useEffect(() => {
+    setMounted(true);
+    setGreeting(getGreeting(new Date().getHours()));
+  }, []);
+
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ['stats'],
     queryFn: universityApi.getStats,
@@ -30,6 +73,14 @@ export function DashboardContent() {
   });
 
   const isLoading = statsLoading || appsLoading;
+
+  // Nearest urgent deadline
+  const nearestDeadline = useMemo(() => {
+    if (!stats?.upcomingDeadlines?.length) return null;
+    const first = stats.upcomingDeadlines[0];
+    const dl = formatDeadline(first.deadline);
+    return { course: first, ...dl };
+  }, [stats]);
 
   const STAT_CARDS = [
     {
@@ -67,15 +118,88 @@ export function DashboardContent() {
 
   const recent = applications?.slice(0, 6) ?? [];
 
+  // Status chart data for donut
+  const chartSegments = useMemo(() => {
+    if (!stats || !stats.total) return [];
+    const segments = [
+      { status: 'DRAFT' as const, count: stats.draft ?? 0 },
+      { status: 'SOP_WRITING' as const, count: stats.sopWriting ?? 0 },
+      { status: 'DOCUMENTS_PREPARING' as const, count: stats.preparing ?? 0 },
+      { status: 'DOCUMENTS_READY' as const, count: stats.documentsReady ?? 0 },
+      { status: 'SUBMITTED' as const, count: stats.submitted ?? 0 },
+      { status: 'UNDER_REVIEW' as const, count: stats.underReview ?? 0 },
+      { status: 'APPROVED' as const, count: stats.approved ?? 0 },
+      { status: 'REJECTED' as const, count: stats.rejected ?? 0 },
+      { status: 'WAITLISTED' as const, count: stats.waitlisted ?? 0 },
+    ].filter((s) => s.count > 0);
+
+    let cum = 0;
+    return segments.map((s) => {
+      const pct = (s.count / stats.total) * 100;
+      const start = cum;
+      cum += pct;
+      return { ...s, pct, start };
+    });
+  }, [stats]);
+
   return (
     <div className="space-y-6">
-      {/* Welcome */}
-      <motion.div initial="hidden" animate="visible" variants={FADE_UP} custom={0}>
-        <h2 className="text-2xl font-bold text-foreground">Good morning 👋</h2>
-        <p className="text-muted-foreground mt-0.5 text-sm">
-          Here's an overview of your German university applications.
-        </p>
+      {/* Welcome + Export */}
+      <motion.div initial="hidden" animate="visible" variants={FADE_UP} custom={0}
+        className="flex items-start justify-between flex-wrap gap-3">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">{greeting || getGreeting(new Date().getHours())}</h2>
+          <p className="text-muted-foreground mt-0.5 text-sm">
+            Here's an overview of your German university applications.
+          </p>
+        </div>
+        {applications && applications.length > 0 && (
+          <button
+            onClick={() => exportToCSV(applications)}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+          >
+            <Download className="w-3.5 h-3.5" />
+            Export CSV
+          </button>
+        )}
       </motion.div>
+
+      {/* Urgency banner */}
+      {nearestDeadline && nearestDeadline.daysLeft !== null && nearestDeadline.daysLeft <= 30 && (
+        <motion.div
+          initial="hidden" animate="visible" variants={FADE_UP} custom={0.5}
+          className={cn(
+            'rounded-xl p-4 border flex items-center gap-4',
+            nearestDeadline.urgency === 'urgent'
+              ? 'bg-gradient-to-r from-rose-50 to-orange-50 border-rose-200'
+              : 'bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-200',
+          )}
+        >
+          <div className={cn(
+            'w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0',
+            nearestDeadline.urgency === 'urgent' ? 'bg-rose-100' : 'bg-amber-100',
+          )}>
+            <Timer className={cn('w-6 h-6', nearestDeadline.urgency === 'urgent' ? 'text-rose-600' : 'text-amber-600')} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className={cn(
+              'text-sm font-bold',
+              nearestDeadline.urgency === 'urgent' ? 'text-rose-800' : 'text-amber-800',
+            )}>
+              {nearestDeadline.daysLeft === 0 ? '⚠️ Deadline is TODAY!' : `${nearestDeadline.daysLeft} day${nearestDeadline.daysLeft === 1 ? '' : 's'} until next deadline`}
+            </p>
+            <p className={cn('text-xs mt-0.5', nearestDeadline.urgency === 'urgent' ? 'text-rose-700' : 'text-amber-700')}>
+              {nearestDeadline.course.name} — {nearestDeadline.text}
+            </p>
+          </div>
+          <Link href="/applications" className={cn(
+            'text-xs font-medium flex items-center gap-1 flex-shrink-0',
+            nearestDeadline.urgency === 'urgent' ? 'text-rose-600 hover:text-rose-800' : 'text-amber-600 hover:text-amber-800',
+          )}>
+            View <ArrowRight className="w-3 h-3" />
+          </Link>
+        </motion.div>
+      )}
 
       {/* Stats grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
@@ -198,7 +322,71 @@ export function DashboardContent() {
           variants={FADE_UP} initial="hidden" animate="visible" custom={7}
           className="space-y-4"
         >
-          {/* Status breakdown */}
+          {/* Visual donut chart */}
+          {stats && stats.total > 0 && chartSegments.length > 0 && (
+            <div className="bg-card border rounded-xl p-4">
+              <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                <Zap className="w-4 h-4 text-violet-500" />
+                Application Distribution
+              </h3>
+              <div className="flex items-center gap-4">
+                <div className="relative w-24 h-24 flex-shrink-0">
+                  <svg viewBox="0 0 36 36" className="w-24 h-24 -rotate-90">
+                    {chartSegments.map((seg) => {
+                      const cfg = STATUS_CONFIG[seg.status];
+                      const colorMap: Record<string, string> = {
+                        'bg-slate-400': '#94a3b8',
+                        'bg-violet-500': '#8b5cf6',
+                        'bg-amber-500': '#f59e0b',
+                        'bg-cyan-500': '#06b6d4',
+                        'bg-blue-500': '#3b82f6',
+                        'bg-indigo-500': '#6366f1',
+                        'bg-emerald-500': '#10b981',
+                        'bg-rose-500': '#f43f5e',
+                        'bg-orange-500': '#f97316',
+                      };
+                      const stroke = colorMap[cfg.dot] || '#6366f1';
+                      const dashArray = `${seg.pct} ${100 - seg.pct}`;
+                      return (
+                        <motion.circle
+                          key={seg.status}
+                          cx="18" cy="18" r="15.9155"
+                          fill="none"
+                          stroke={stroke}
+                          strokeWidth="3"
+                          strokeDasharray={dashArray}
+                          strokeDashoffset={`${-seg.start}`}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.6 + seg.start * 0.01, duration: 0.5 }}
+                        />
+                      );
+                    })}
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center">
+                      <p className="text-lg font-bold text-foreground leading-none">{stats.total}</p>
+                      <p className="text-[9px] text-muted-foreground">total</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex-1 space-y-1.5">
+                  {chartSegments.map((seg) => {
+                    const cfg = STATUS_CONFIG[seg.status];
+                    return (
+                      <div key={seg.status} className="flex items-center gap-2">
+                        <div className={cn('w-2 h-2 rounded-full flex-shrink-0', cfg.dot)} />
+                        <span className="text-[11px] text-muted-foreground flex-1 truncate">{cfg.label}</span>
+                        <span className="text-[11px] font-semibold text-foreground">{seg.count}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Status breakdown bars */}
           <div className="bg-card border rounded-xl p-4">
             <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-indigo-500" />
@@ -307,7 +495,23 @@ export function DashboardContent() {
                         <p className="text-xs text-muted-foreground truncate mb-2">
                           {app.course.university.name} · {app.course.degree ?? 'Masters'}
                         </p>
-                        <StatusBadge status={app.status} />
+                        <div className="flex items-center gap-2">
+                          <StatusBadge status={app.status} />
+                          {app.course.deadline && (() => {
+                            const dl = formatDeadline(app.course.deadline);
+                            if (dl.daysLeft !== null && dl.daysLeft >= 0 && dl.daysLeft <= 30) {
+                              return (
+                                <span className={cn(
+                                  'text-[10px] font-medium',
+                                  dl.urgency === 'urgent' ? 'text-rose-600' : 'text-amber-600',
+                                )}>
+                                  {dl.daysLeft}d left
+                                </span>
+                              );
+                            }
+                            return null;
+                          })()}
+                        </div>
                       </div>
                     </div>
                   </div>

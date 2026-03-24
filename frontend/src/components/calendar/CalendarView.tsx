@@ -54,6 +54,15 @@ export function CalendarView() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => calendarApi.deleteEvent(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['calendar'] });
+      toast.success('Event deleted');
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   // Calendar grid
   const monthStart = startOfMonth(currentDate);
   const monthEnd   = endOfMonth(currentDate);
@@ -223,9 +232,9 @@ export function CalendarView() {
                 ) : (
                   <div className="space-y-2">
                     {selectedEvents.map((ev) => (
-                      <div key={ev.id} className="flex items-start gap-2.5 p-2.5 rounded-lg bg-muted/50">
+                      <div key={ev.id} className="flex items-start gap-2.5 p-2.5 rounded-lg bg-muted/50 group/event">
                         <div className={cn('w-2 h-2 rounded-full mt-1.5 flex-shrink-0', EVENT_COLORS[ev.type] || 'bg-blue-500')} />
-                        <div>
+                        <div className="flex-1 min-w-0">
                           <p className="text-xs font-semibold text-foreground">{ev.title}</p>
                           {ev.description && <p className="text-[11px] text-muted-foreground">{ev.description}</p>}
                           {ev.daysLeft !== undefined && ev.daysLeft !== null && (
@@ -235,6 +244,17 @@ export function CalendarView() {
                           )}
                           {ev.university && <p className="text-[10px] text-muted-foreground">{ev.university}</p>}
                         </div>
+                        {!ev.isDeadline && (
+                          <button
+                            onClick={() => {
+                              if (confirm('Delete this event?')) deleteMutation.mutate(ev.id);
+                            }}
+                            className="opacity-0 group-hover/event:opacity-100 p-1 rounded-md hover:bg-muted text-muted-foreground hover:text-rose-500 transition-all flex-shrink-0"
+                            title="Delete event"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        )}
                       </div>
                     ))}
                   </div>

@@ -161,6 +161,7 @@ export interface Stats {
   draft: number;
   sopWriting: number;
   preparing: number;
+  documentsReady: number;
   submitted: number;
   underReview: number;
   approved: number;
@@ -294,7 +295,7 @@ export const calendarApi = {
     api.post<CalendarEvent>('/calendar', data).then((r) => r.data),
   updateEvent: (id: string, data: Partial<CalendarEvent>) =>
     api.patch<CalendarEvent>(`/calendar/${id}`, data).then((r) => r.data),
-  deleteEvent: (id: string) => api.post(`/calendar/${id}/delete`),
+  deleteEvent: (id: string) => api.delete(`/calendar/${id}`),
 };
 
 export default api;

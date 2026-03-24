@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -166,10 +166,67 @@ export function ProfileView() {
     },
   ] as const;
 
+  // Compute profile completeness
+  const completeness = useMemo(() => {
+    if (!profile) return 0;
+    const fields = [
+      profile.firstName, profile.lastName, profile.email, profile.phone,
+      profile.nationality, profile.currentAddress, profile.bachelorDegree,
+      profile.bachelorUniversity, profile.bachelorGrade, profile.bachelorYear,
+      profile.ieltsScore || profile.toeflScore || profile.testDafScore,
+      profile.workExperience, profile.targetDegree, profile.targetField,
+      profile.skills?.length ? 'yes' : '',
+    ];
+    const filled = fields.filter(Boolean).length;
+    return Math.round((filled / fields.length) * 100);
+  }, [profile]);
+
   return (
     <form onSubmit={handleSubmit((v) => saveMutation.mutate(v))} className="space-y-5 max-w-3xl">
-      {/* Banner */}
+      {/* Profile completeness */}
       <motion.div initial="hidden" animate="visible" variants={FADE} custom={0}
+        className="bg-card border rounded-xl p-4">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <div className={cn(
+              'w-8 h-8 rounded-lg flex items-center justify-center',
+              completeness >= 80 ? 'bg-emerald-50' : completeness >= 50 ? 'bg-amber-50' : 'bg-rose-50',
+            )}>
+              <span className="text-sm">{completeness >= 80 ? '🎉' : completeness >= 50 ? '📝' : '🚀'}</span>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-foreground">Profile Completeness</p>
+              <p className="text-[11px] text-muted-foreground">
+                {completeness >= 80
+                  ? 'Great! Your profile is well-filled for SOP generation.'
+                  : completeness >= 50
+                    ? 'Getting there — fill more for better SOP prompts.'
+                    : 'Complete your profile for personalized SOP prompts.'}
+              </p>
+            </div>
+          </div>
+          <span className={cn(
+            'text-lg font-bold',
+            completeness >= 80 ? 'text-emerald-600' : completeness >= 50 ? 'text-amber-600' : 'text-rose-600',
+          )}>
+            {completeness}%
+          </span>
+        </div>
+        <div className="h-2 rounded-full bg-muted overflow-hidden">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${completeness}%` }}
+            transition={{ delay: 0.3, duration: 0.8, ease: 'easeOut' }}
+            className={cn(
+              'h-full rounded-full',
+              completeness >= 80 ? 'bg-emerald-500' : completeness >= 50 ? 'bg-amber-500' : 'bg-rose-500',
+            )}
+          />
+        </div>
+      </motion.div>
+
+      {/* Banner */}
+      <motion.div initial="hidden" animate="visible" variants={FADE} custom={0.5}
         className="flex items-start gap-3 p-4 rounded-xl bg-indigo-50 border border-indigo-200">
         <Info className="w-4 h-4 text-indigo-600 mt-0.5 flex-shrink-0" />
         <div>

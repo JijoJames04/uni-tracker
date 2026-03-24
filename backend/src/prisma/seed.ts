@@ -5,6 +5,10 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱  Seeding database...');
 
+  // Dynamic deadline: 3 months from now (always in the future)
+  const futureDeadline = new Date();
+  futureDeadline.setMonth(futureDeadline.getMonth() + 3);
+
   // Create default profile
   const existingProfile = await prisma.profile.findFirst();
   if (!existingProfile) {
@@ -46,7 +50,7 @@ async function main() {
         applicationVia: 'DIRECT',
         applicationUrl: 'https://www.tum.de/en/studies/degree-programs/detail/informatics-master-of-science-msc',
         sourceUrl: 'https://www.tum.de/en/studies/degree-programs/detail/informatics-master-of-science-msc',
-        deadline: new Date('2025-05-31'),
+        deadline:        futureDeadline,
       },
     });
 

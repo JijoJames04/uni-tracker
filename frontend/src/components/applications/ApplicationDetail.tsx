@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { applicationApi, documentApi, timelineApi, promptApi, universityApi } from '@/lib/api';
@@ -34,6 +34,12 @@ export function ApplicationDetail({ id }: { id: string }) {
   const [newNote, setNewNote] = useState('');
   const [uploadOpen, setUploadOpen] = useState(false);
   const [editingDeadline, setEditingDeadline] = useState(false);
+  const [localNotes, setLocalNotes] = useState('');
+  const [newChecklistItem, setNewChecklistItem] = useState('');
+  const [emailType, setEmailType] = useState<string>('inquiry');
+  const [emailPrompt, setEmailPrompt] = useState<string | null>(null);
+  const [emailCopied, setEmailCopied] = useState(false);
+  const notesTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const { data: app, isLoading } = useQuery({
     queryKey: ['application', id],
@@ -93,6 +99,31 @@ export function ApplicationDetail({ id }: { id: string }) {
       setNewNote('');
       toast.success('Note added');
     },
+  });
+
+  const addChecklistMutation = useMutation({
+    mutationFn: (label: string) => applicationApi.addChecklist(id, label),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['application', id] });
+      setNewChecklistItem('');
+      toast.success('Checklist item added');
+    },
+  });
+
+  const removeChecklistMutation = useMutation({
+    mutationFn: (itemId: string) => applicationApi.removeChecklist(itemId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['application', id] });
+      toast.success('Item removed');
+    },
+  });
+
+  const emailMutation = useMutation({
+    mutationFn: (type: string) => promptApi.generateEmail(id, type),
+    onSuccess: (data) => {
+      setEmailPrompt(data.prompt);
+    },
+    onError: (e: Error) => toast.error(e.message),
   });
 
   async function copyPrompt() {
@@ -244,12 +275,29 @@ export function ApplicationDetail({ id }: { id: string }) {
             </div>
           </div>
 
-          {/* Status actions */}
-          <div className="mt-4 flex flex-wrap gap-2">
-            <span className="text-xs text-muted-foreground self-center">Change status:</span>
+          {/* Status & Priority actions */}
+          <div className="mt-4 flex flex-wrap gap-2 items-center">
+            <span className="text-xs text-muted-foreground">Priority:</span>
+            {(['HIGH', 'MEDIUM', 'LOW'] as const).map((p) => (
+              <button
+                key={p}
+                onClick={() => app.priority !== p && updateMutation.mutate({ priority: p })}
+                disabled={updateMutation.isPending}
+                className={cn(
+                  'text-xs px-2.5 py-1 rounded-full border font-medium transition-all',
+                  app.priority === p
+                    ? p === 'HIGH'   ? 'bg-rose-50 text-rose-700 border-rose-300 ring-1 ring-rose-200'
+                    : p === 'MEDIUM' ? 'bg-amber-50 text-amber-700 border-amber-300 ring-1 ring-amber-200'
+                    :                  'bg-slate-50 text-slate-600 border-slate-300 ring-1 ring-slate-200'
+                    : 'bg-muted text-muted-foreground border-border hover:opacity-80',
+                )}
+              >
+                {p === 'HIGH' ? '🔥 High' : p === 'MEDIUM' ? '⚡ Medium' : '↓ Low'}
+              </button>
+            ))}
+            <span className="text-xs text-muted-foreground ml-4">Status:</span>
             {(Object.keys(STATUS_CONFIG) as ApplicationStatus[])
               .filter((s) => s !== app.status)
-              .slice(0, 4)
               .map((s) => {
                 const cfg = STATUS_CONFIG[s];
                 return (
@@ -353,22 +401,48 @@ export function ApplicationDetail({ id }: { id: string }) {
                       <span className={cn('text-sm flex-1', item.completed && 'line-through text-muted-foreground')}>
                         {item.label}
                       </span>
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (confirm('Remove this checklist item?')) removeChecklistMutation.mutate(item.id);
+                        }}
+                        className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-muted text-muted-foreground hover:text-rose-500 transition-all"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
                     </label>
                   ))}
+                  {/* Add new checklist item */}
+                  <div className="flex items-center gap-2 pt-2">
+                    <input
+                      value={newChecklistItem}
+                      onChange={(e) => setNewChecklistItem(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && newChecklistItem.trim()) {
+                          e.preventDefault();
+                          addChecklistMutation.mutate(newChecklistItem.trim());
+                        }
+                      }}
+                      placeholder="Add a checklist item..."
+                      className="flex-1 px-3 py-2 rounded-lg border bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all"
+                    />
+                    <button
+                      onClick={() => newChecklistItem.trim() && addChecklistMutation.mutate(newChecklistItem.trim())}
+                      disabled={!newChecklistItem.trim() || addChecklistMutation.isPending}
+                      className="px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition-colors disabled:opacity-50"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
               </div>
 
               {/* Notes */}
-              <div className="bg-card border rounded-xl p-5">
-                <h3 className="font-semibold text-foreground mb-3">Notes</h3>
-                <textarea
-                  value={app.notes ?? ''}
-                  onChange={(e) => updateMutation.mutate({ notes: e.target.value })}
-                  placeholder="Add notes about this application..."
-                  rows={4}
-                  className="w-full px-3 py-2 rounded-lg border bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all resize-none"
-                />
-              </div>
+              <NotesEditor
+                initialNotes={app.notes ?? ''}
+                onSave={(notes) => updateMutation.mutate({ notes })}
+                isSaving={updateMutation.isPending}
+              />
             </div>
 
             {/* Course info card */}
@@ -510,6 +584,7 @@ export function ApplicationDetail({ id }: { id: string }) {
 
         {activeTab === 'prompt' && (
           <div className="space-y-4">
+            {/* SOP Prompt */}
             <div className="bg-card border rounded-xl p-5">
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -547,6 +622,66 @@ export function ApplicationDetail({ id }: { id: string }) {
                 </button>
               )}
             </div>
+
+            {/* Email Template Generator */}
+            <div className="bg-card border rounded-xl p-5">
+              <h3 className="font-semibold text-foreground flex items-center gap-2 mb-3">
+                ✉️ Email Template Generator
+              </h3>
+              <p className="text-xs text-muted-foreground mb-4">
+                Generate professional email templates for different stages of your application.
+              </p>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {[
+                  { key: 'inquiry', label: '📩 Inquiry', desc: 'Ask about the program' },
+                  { key: 'status', label: '📋 Follow-up', desc: 'Check application status' },
+                  { key: 'acceptance', label: '🎉 Acceptance', desc: 'Confirm your acceptance' },
+                ].map((tmpl) => (
+                  <button
+                    key={tmpl.key}
+                    onClick={() => {
+                      setEmailType(tmpl.key);
+                      emailMutation.mutate(tmpl.key);
+                    }}
+                    disabled={emailMutation.isPending}
+                    className={cn(
+                      'flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-medium transition-all',
+                      emailType === tmpl.key && emailPrompt
+                        ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
+                        : 'border-border hover:border-indigo-300 hover:bg-muted',
+                    )}
+                  >
+                    {tmpl.label}
+                  </button>
+                ))}
+              </div>
+              {emailMutation.isPending && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">
+                  <Loader2 className="w-4 h-4 animate-spin" /> Generating...
+                </div>
+              )}
+              {emailPrompt && !emailMutation.isPending && (
+                <div className="space-y-3">
+                  <div className="bg-muted/50 rounded-xl p-4 border">
+                    <pre className="text-xs text-foreground whitespace-pre-wrap leading-relaxed font-mono overflow-x-auto max-h-[300px] overflow-y-auto">
+                      {emailPrompt}
+                    </pre>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      await navigator.clipboard.writeText(emailPrompt);
+                      setEmailCopied(true);
+                      toast.success('Email prompt copied!');
+                      setTimeout(() => setEmailCopied(false), 2000);
+                    }}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium hover:bg-muted transition-all"
+                  >
+                    {emailCopied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                    {emailCopied ? 'Copied!' : 'Copy email prompt'}
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </motion.div>
@@ -563,6 +698,52 @@ function Pill({ children, className, onClick }: { children: React.ReactNode; cla
     >
       {children}
     </Element>
+  );
+}
+
+function NotesEditor({ initialNotes, onSave, isSaving }: { initialNotes: string; onSave: (notes: string) => void; isSaving: boolean }) {
+  const [value, setValue] = useState(initialNotes);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const lastSavedRef = useRef(initialNotes);
+
+  // Sync if server value changes externally
+  useEffect(() => {
+    if (initialNotes !== lastSavedRef.current) {
+      setValue(initialNotes);
+      lastSavedRef.current = initialNotes;
+    }
+  }, [initialNotes]);
+
+  const handleChange = useCallback((newValue: string) => {
+    setValue(newValue);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
+      if (newValue !== lastSavedRef.current) {
+        lastSavedRef.current = newValue;
+        onSave(newValue);
+      }
+    }, 1000);
+  }, [onSave]);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  }, []);
+
+  return (
+    <div className="bg-card border rounded-xl p-5">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="font-semibold text-foreground">Notes</h3>
+        {isSaving && <span className="text-[10px] text-muted-foreground animate-pulse">Saving...</span>}
+      </div>
+      <textarea
+        value={value}
+        onChange={(e) => handleChange(e.target.value)}
+        placeholder="Add notes about this application..."
+        rows={4}
+        className="w-full px-3 py-2 rounded-lg border bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all resize-none"
+      />
+    </div>
   );
 }
 
