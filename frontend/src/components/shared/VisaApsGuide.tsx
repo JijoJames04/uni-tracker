@@ -185,13 +185,13 @@ export default function VisaApsGuide({ className = '' }: { className?: string })
                 </div>
               </div>
               
-              {/* Notarization Note */}
+              {/* Document Requirement Note */}
               <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 rounded-xl p-4 flex gap-3 shadow-sm my-2">
                 <FileText className="w-5 h-5 text-blue-600 dark:text-blue-500 flex-shrink-0 mt-0.5" />
                 <div>
                   <h4 className="text-sm font-bold text-blue-800 dark:text-blue-400">Document Requirements</h4>
                   <p className="text-xs text-blue-700/90 dark:text-blue-500/90 mt-1 leading-relaxed">
-                    It is recommended that every document sending for APS be notarized, but it is not critical and stamping is not strictly required.
+                    Stamping is not required. A copy for all documents only needs to be shared.
                   </p>
                 </div>
               </div>
