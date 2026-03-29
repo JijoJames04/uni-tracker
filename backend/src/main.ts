@@ -42,6 +42,7 @@ async function bootstrap() {
     .addTag('timeline', 'Activity timeline')
     .addTag('profile', 'User profile')
     .addTag('calendar', 'Calendar events')
+    .addTag('auth', 'Authentication & user count')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

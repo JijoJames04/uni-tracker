@@ -12,6 +12,7 @@ import { PromptsModule } from './modules/prompts/prompts.module';
 import { TimelineModule } from './modules/timeline/timeline.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { CalendarModule } from './modules/calendar/calendar.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   controllers: [HealthController],
@@ -30,6 +31,7 @@ import { CalendarModule } from './modules/calendar/calendar.module';
     TimelineModule,
     ProfileModule,
     CalendarModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

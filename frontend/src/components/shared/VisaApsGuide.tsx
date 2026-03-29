@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, MapPin, Phone, CheckCircle2, Circle, ChevronDown, ChevronUp, ExternalLink, Package } from 'lucide-react';
+import { FileText, MapPin, Phone, CheckCircle2, Circle, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
+import DhlFacilityFinder from './DhlFacilityFinder';
 
 // ─── APS Office Details ────────────────────────────────────────
 const APS_OFFICE = {
@@ -16,11 +17,7 @@ const APS_OFFICE = {
   mapUrl: 'https://www.google.com/maps/search/Academic+Evaluation+Centre+DLTA+Complex+RK+Khanna+Stadium+Africa+Avenue+New+Delhi',
 };
 
-const DHL_FACILITIES = [
-  { name: 'DHL Express — Saket', address: 'A-2, Saket Shopping Arcade, New Delhi', phone: '011-26852000', distance: '~3 km from APS' },
-  { name: 'DHL Express — Nehru Place', address: 'C-56, Nehru Place, New Delhi', phone: '011-26451234', distance: '~4 km from APS' },
-  { name: 'DHL Express — Connaught Place', address: 'N-Block, Connaught Place, New Delhi', phone: '011-23415678', distance: '~8 km from APS' },
-];
+
 
 // ─── APS Required Documents ───────────────────────────────────
 const APS_DOCUMENTS = [
@@ -208,24 +205,8 @@ export default function VisaApsGuide({ className = '' }: { className?: string })
                 </div>
               ))}
 
-              {/* DHL Facilities */}
-              <div>
-                <h4 className="text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2 flex items-center gap-2">
-                  <Package className="w-3 h-3" /> Nearby DHL Facilities
-                </h4>
-                <div className="space-y-2">
-                  {DHL_FACILITIES.map(dhl => (
-                    <div key={dhl.name} className="bg-zinc-800/30 rounded-lg px-3 py-2 text-xs">
-                      <div className="flex justify-between">
-                        <span className="text-zinc-200 font-medium">{dhl.name}</span>
-                        <span className="text-zinc-500">{dhl.distance}</span>
-                      </div>
-                      <p className="text-zinc-400">{dhl.address}</p>
-                      <a href={`tel:${dhl.phone}`} className="text-violet-400 hover:text-violet-300">{dhl.phone}</a>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              {/* DHL Facilities — location-aware */}
+              <DhlFacilityFinder />
             </motion.div>
           )}
         </AnimatePresence>

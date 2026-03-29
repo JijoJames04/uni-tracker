@@ -10,10 +10,10 @@ interface PromptFields {
   university: string;       // Target university
   intakeDetails: string;    // WS/SS + year
   motivation: string;       // Why this program
+  ieltsScore: number;
 
   // Optional fields
   toeflScore?: number;
-  ieltsScore?: number;
   germanLevel?: string;
   testDafScore?: number;
   greVerbal?: number;

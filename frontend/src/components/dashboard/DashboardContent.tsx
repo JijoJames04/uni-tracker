@@ -148,7 +148,7 @@ export function DashboardContent() {
       <motion.div initial="hidden" animate="visible" variants={FADE_UP} custom={0}
         className="flex items-start justify-between flex-wrap gap-3">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">{greeting || getGreeting(new Date().getHours())}</h2>
+          <h2 className="text-2xl font-bold text-foreground">{mounted ? greeting : 'Welcome'}</h2>
           <p className="text-muted-foreground mt-0.5 text-sm">
             Here's an overview of your German university applications.
           </p>

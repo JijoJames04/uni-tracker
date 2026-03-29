@@ -81,7 +81,6 @@ enum ApplicationVia {
 
 model Application {
   id          String            @id @default(cuid())
-  courseId    String
   intake      String?           // e.g., "WS 2026", "SS 2027" — allows same course at different intakes
   status      ApplicationStatus @default(DRAFT)
   priority    Priority          @default(MEDIUM)
@@ -92,6 +91,7 @@ model Application {
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
 
+  courseId    String  @unique
   course     Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
   documents  Document[]
   timeline   TimelineEntry[]
@@ -260,6 +260,22 @@ model Profile {
   updatedAt DateTime @updatedAt
 
   @@map("profiles")
+}
+
+// ─────────────────────────────────────────────
+// User (for auth & user count)
+// ─────────────────────────────────────────────
+
+model User {
+  id            String   @id @default(cuid())
+  firebaseUid   String   @unique
+  email         String
+  displayName   String?
+  photoUrl      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("users")
 }
 
 // ─────────────────────────────────────────────
