@@ -146,20 +146,21 @@ export function DashboardContent() {
     <div className="space-y-6">
       {/* Welcome + Export */}
       <motion.div initial="hidden" animate="visible" variants={FADE_UP} custom={0}
-        className="flex items-start justify-between flex-wrap gap-3">
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">{mounted ? greeting : 'Welcome'}</h2>
-          <p className="text-muted-foreground mt-0.5 text-sm">
+          <h2 className="text-3xl font-black tracking-tight text-foreground">{mounted ? greeting : 'Welcome'}</h2>
+          <p className="text-muted-foreground mt-1 text-[15px] font-medium">
             Here&apos;s an overview of your German university applications.
           </p>
         </div>
         {applications && applications.length > 0 && (
           <button
             onClick={() => exportToCSV(applications)}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-border/50 bg-background/50 backdrop-blur-sm text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted shadow-sm hover:shadow-md transition-all duration-300 w-full sm:w-auto"
           >
-            <Download className="w-3.5 h-3.5" />
-            Export CSV
+            <Download className="w-4 h-4" />
+            <span className="sm:hidden md:inline">Export CSV</span>
+            <span className="hidden sm:inline md:hidden">Export</span>
           </button>
         )}
       </motion.div>
@@ -169,63 +170,65 @@ export function DashboardContent() {
         <motion.div
           initial="hidden" animate="visible" variants={FADE_UP} custom={0.5}
           className={cn(
-            'rounded-xl p-4 border flex items-center gap-4',
+            'rounded-2xl p-5 border border-border/50 shadow-sm flex flex-col sm:flex-row sm:items-center gap-4 relative overflow-hidden group transition-all duration-300 hover:shadow-md',
             nearestDeadline.urgency === 'urgent'
-              ? 'bg-gradient-to-r from-rose-50 to-orange-50 border-rose-200'
-              : 'bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-200',
+              ? 'bg-gradient-to-r from-rose-500/10 to-orange-500/5 hover:from-rose-500/15 border-rose-500/20'
+              : 'bg-gradient-to-r from-amber-500/10 to-yellow-500/5 hover:from-amber-500/15 border-amber-500/20',
           )}
         >
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
           <div className={cn(
-            'w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0',
-            nearestDeadline.urgency === 'urgent' ? 'bg-rose-100' : 'bg-amber-100',
+            'w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-inner',
+            nearestDeadline.urgency === 'urgent' ? 'bg-rose-500/20 text-rose-600 dark:text-rose-400' : 'bg-amber-500/20 text-amber-600 dark:text-amber-400',
           )}>
-            <Timer className={cn('w-6 h-6', nearestDeadline.urgency === 'urgent' ? 'text-rose-600' : 'text-amber-600')} />
+            <Timer className="w-6 h-6" />
           </div>
           <div className="flex-1 min-w-0">
             <p className={cn(
-              'text-sm font-bold',
-              nearestDeadline.urgency === 'urgent' ? 'text-rose-800' : 'text-amber-800',
+              'text-[15px] font-bold tracking-tight',
+              nearestDeadline.urgency === 'urgent' ? 'text-rose-800 dark:text-rose-300' : 'text-amber-800 dark:text-amber-300',
             )}>
               {nearestDeadline.daysLeft === 0 ? '⚠️ Deadline is TODAY!' : `${nearestDeadline.daysLeft} day${nearestDeadline.daysLeft === 1 ? '' : 's'} until next deadline`}
             </p>
-            <p className={cn('text-xs mt-0.5', nearestDeadline.urgency === 'urgent' ? 'text-rose-700' : 'text-amber-700')}>
+            <p className={cn('text-[13px] font-medium mt-0.5 truncate', nearestDeadline.urgency === 'urgent' ? 'text-rose-700/80 dark:text-rose-400/80' : 'text-amber-700/80 dark:text-amber-400/80')}>
               {nearestDeadline.course.name} — {nearestDeadline.text}
             </p>
           </div>
           <Link href="/applications" className={cn(
-            'text-xs font-medium flex items-center gap-1 flex-shrink-0',
-            nearestDeadline.urgency === 'urgent' ? 'text-rose-600 hover:text-rose-800' : 'text-amber-600 hover:text-amber-800',
+            'text-[13px] font-bold flex items-center gap-1.5 flex-shrink-0 py-2 sm:py-0 transition-all',
+            nearestDeadline.urgency === 'urgent' ? 'text-rose-600 hover:text-rose-700 dark:text-rose-400' : 'text-amber-600 hover:text-amber-700 dark:text-amber-400',
           )}>
-            View <ArrowRight className="w-3 h-3" />
+            Review Now <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
           </Link>
         </motion.div>
       )}
 
       {/* Stats grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-5">
         {STAT_CARDS.map((card, i) => (
           <motion.div
             key={card.label}
             variants={FADE_UP} initial="hidden" animate="visible" custom={i + 1}
+            whileHover={{ y: -2 }}
             className={cn(
-              'bg-card rounded-xl p-4 border shadow-card',
-              card.urgent && card.value > 0 && 'border-rose-200 bg-rose-50/50',
+              'bg-card/60 backdrop-blur-xl rounded-2xl p-5 border border-border/50 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group',
+              card.urgent && card.value > 0 && 'border-rose-500/30 bg-rose-500/5',
             )}
           >
             {isLoading ? (
               <Skeleton className="w-full h-16" />
             ) : (
               <>
-                <div className={cn('w-9 h-9 rounded-lg flex items-center justify-center mb-3', card.bg)}>
-                  <card.icon className={cn('w-4.5 h-4.5', card.color)} />
+                <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110 duration-300', card.bg)}>
+                  <card.icon className={cn('w-5 h-5', card.color)} />
                 </div>
-                <p className="text-2xl font-bold text-foreground leading-none">
+                <p className="text-3xl font-black text-foreground tracking-tight leading-none">
                   {card.isText ? (
-                    <span className="text-lg">{card.value}</span>
+                    <span className="text-[22px]">{card.value}</span>
                   ) : card.value}
                 </p>
-                <p className="text-xs font-medium text-foreground mt-1">{card.label}</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5 leading-tight">{card.sub}</p>
+                <p className="text-[13px] font-bold text-foreground mt-2">{card.label}</p>
+                <p className="text-[11px] font-medium text-muted-foreground mt-0.5 leading-tight truncate">{card.sub}</p>
               </>
             )}
           </motion.div>
@@ -254,14 +257,14 @@ export function DashboardContent() {
           </div>
 
           {isLoading ? (
-            Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-xl" />)
+            Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-2xl" />)
           ) : actionNeeded.length === 0 ? (
-            <div className="empty-state bg-card border rounded-xl">
-              <div className="empty-state-icon">
+            <div className="empty-state bg-background/50 backdrop-blur-sm border border-border/50 rounded-2xl py-8">
+              <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center mb-3 mx-auto">
                 <CheckCircle2 className="w-6 h-6 text-emerald-500" />
               </div>
-              <p className="text-sm font-medium text-foreground">All caught up!</p>
-              <p className="text-xs text-muted-foreground mt-1">No applications need immediate attention.</p>
+              <p className="text-[15px] font-bold text-foreground">All caught up!</p>
+              <p className="text-[13px] font-medium text-muted-foreground mt-1">No applications need immediate attention.</p>
             </div>
           ) : (
             actionNeeded.slice(0, 5).map((app, i) => {
@@ -270,39 +273,46 @@ export function DashboardContent() {
                 <motion.div
                   key={app.id}
                   variants={FADE_UP} initial="hidden" animate="visible" custom={i}
-                  whileHover={{ y: -1 }}
+                  whileHover={{ y: -2 }}
                 >
                   <Link href={`/applications/${app.id}`}>
-                    <div className="bg-card border rounded-xl p-4 hover:shadow-card-hover transition-all group cursor-pointer">
-                      <div className="flex items-start gap-3">
-                        <UniversityLogo
-                          url={app.course.university.logoUrl}
-                          name={app.course.university.name}
-                          size="sm"
-                        />
+                    <div className="bg-background border border-border/50 rounded-2xl p-4 sm:p-5 hover:shadow-md hover:border-indigo-500/30 transition-all duration-300 group cursor-pointer block">
+                      <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+                        <div className="hidden sm:block shadow-sm rounded-xl overflow-hidden flex-shrink-0">
+                          <UniversityLogo
+                            url={app.course.university.logoUrl}
+                            name={app.course.university.name}
+                            size="md"
+                          />
+                        </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="min-w-0">
-                              <p className="text-sm font-semibold text-foreground truncate group-hover:text-indigo-600 transition-colors">
-                                {app.course.name}
-                              </p>
-                              <p className="text-xs text-muted-foreground truncate">
-                                {app.course.university.name}
-                              </p>
+                          <div className="flex items-start justify-between gap-3 mb-1">
+                            <div className="min-w-0 flex items-center gap-3">
+                              <div className="sm:hidden w-8 h-8 flex-shrink-0 shadow-sm rounded-lg overflow-hidden">
+                                <UniversityLogo url={app.course.university.logoUrl} name={app.course.university.name} size="xs" />
+                              </div>
+                              <div className="min-w-0">
+                                <p className="text-[15px] font-bold text-foreground truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                                  {app.course.name}
+                                </p>
+                                <p className="text-[13px] font-medium text-muted-foreground truncate">
+                                  {app.course.university.name}
+                                </p>
+                              </div>
                             </div>
                             <StatusBadge status={app.status} size="sm" />
                           </div>
 
                           {app.course.deadline && (
-                            <div className="mt-2 flex items-center gap-1.5">
-                              <Calendar className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                            <div className="mt-3 flex items-center gap-2">
                               <span className={cn(
-                                'text-xs',
-                                deadline.urgency === 'urgent' && 'text-rose-600 font-semibold',
-                                deadline.urgency === 'soon'   && 'text-amber-600 font-medium',
-                                deadline.urgency === 'ok'     && 'text-emerald-600',
-                                deadline.urgency === 'passed' && 'text-slate-400',
+                                'text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1.5 shadow-sm border',
+                                deadline.urgency === 'urgent' && 'text-rose-700 dark:text-rose-400 bg-rose-500/10 border-rose-500/20',
+                                deadline.urgency === 'soon'   && 'text-amber-700 dark:text-amber-400 bg-amber-500/10 border-amber-500/20',
+                                deadline.urgency === 'ok'     && 'text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
+                                deadline.urgency === 'passed' && 'text-slate-500 bg-slate-500/10 border-slate-500/20',
                               )}>
+                                <Calendar className="w-3 h-3 flex-shrink-0" />
                                 {deadline.text}
                               </span>
                             </div>
@@ -324,14 +334,16 @@ export function DashboardContent() {
         >
           {/* Visual donut chart */}
           {stats && stats.total > 0 && chartSegments.length > 0 && (
-            <div className="bg-card border rounded-xl p-4">
-              <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-                <Zap className="w-4 h-4 text-violet-500" />
+            <div className="bg-card/60 backdrop-blur-xl border border-border/50 rounded-2xl p-5 shadow-sm">
+              <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
+                <div className="p-1.5 bg-violet-500/10 rounded-lg">
+                  <Zap className="w-4 h-4 text-violet-500" />
+                </div>
                 Application Distribution
               </h3>
-              <div className="flex items-center gap-4">
-                <div className="relative w-24 h-24 flex-shrink-0">
-                  <svg viewBox="0 0 36 36" className="w-24 h-24 -rotate-90">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+                <div className="relative w-28 h-28 flex-shrink-0">
+                  <svg viewBox="0 0 36 36" className="w-28 h-28 -rotate-90 drop-shadow-md">
                     {chartSegments.map((seg) => {
                       const cfg = STATUS_CONFIG[seg.status];
                       const colorMap: Record<string, string> = {
@@ -353,7 +365,7 @@ export function DashboardContent() {
                           cx="18" cy="18" r="15.9155"
                           fill="none"
                           stroke={stroke}
-                          strokeWidth="3"
+                          strokeWidth="3.5"
                           strokeDasharray={dashArray}
                           strokeDashoffset={`${-seg.start}`}
                           initial={{ opacity: 0 }}
@@ -364,20 +376,20 @@ export function DashboardContent() {
                     })}
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <p className="text-lg font-bold text-foreground leading-none">{stats.total}</p>
-                      <p className="text-[9px] text-muted-foreground">total</p>
+                    <div className="text-center mt-1">
+                      <p className="text-[26px] font-black tracking-tight text-foreground leading-none">{stats.total}</p>
+                      <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground mt-0.5">total</p>
                     </div>
                   </div>
                 </div>
-                <div className="flex-1 space-y-1.5">
+                <div className="flex-1 space-y-2.5 w-full">
                   {chartSegments.map((seg) => {
                     const cfg = STATUS_CONFIG[seg.status];
                     return (
-                      <div key={seg.status} className="flex items-center gap-2">
-                        <div className={cn('w-2 h-2 rounded-full flex-shrink-0', cfg.dot)} />
-                        <span className="text-[11px] text-muted-foreground flex-1 truncate">{cfg.label}</span>
-                        <span className="text-[11px] font-semibold text-foreground">{seg.count}</span>
+                      <div key={seg.status} className="flex items-center gap-3">
+                        <div className={cn('w-2.5 h-2.5 rounded-full flex-shrink-0 shadow-sm', cfg.dot)} />
+                        <span className="text-[12px] font-bold text-muted-foreground flex-1 truncate">{cfg.label}</span>
+                        <span className="text-[13px] font-black text-foreground">{seg.count}</span>
                       </div>
                     );
                   })}
@@ -387,15 +399,17 @@ export function DashboardContent() {
           )}
 
           {/* Status breakdown bars */}
-          <div className="bg-card border rounded-xl p-4">
-            <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-indigo-500" />
+          <div className="bg-card/60 backdrop-blur-xl border border-border/50 rounded-2xl p-5 shadow-sm">
+            <h3 className="font-bold text-foreground mb-5 flex items-center gap-2">
+              <div className="p-1.5 bg-indigo-500/10 rounded-lg">
+                <TrendingUp className="w-4 h-4 text-indigo-500" />
+              </div>
               Status Breakdown
             </h3>
             {isLoading ? (
-              <Skeleton className="h-32" />
+              <Skeleton className="h-40 rounded-xl" />
             ) : (
-              <div className="space-y-2.5">
+              <div className="space-y-4">
                 {[
                   { status: 'SUBMITTED' as const,     count: stats?.submitted ?? 0 },
                   { status: 'UNDER_REVIEW' as const,  count: stats?.underReview ?? 0 },
@@ -407,10 +421,10 @@ export function DashboardContent() {
                   const pct = stats?.total ? Math.round((count / stats.total) * 100) : 0;
                   return (
                     <div key={status} className="flex items-center gap-3">
-                      <div className={cn('w-2 h-2 rounded-full flex-shrink-0', cfg.dot)} />
-                      <span className="text-xs text-muted-foreground flex-1 truncate">{cfg.label}</span>
-                      <div className="flex items-center gap-2">
-                        <div className="w-20 h-1.5 rounded-full bg-muted overflow-hidden">
+                      <div className={cn('w-2.5 h-2.5 rounded-full flex-shrink-0', cfg.dot)} />
+                      <span className="text-[12px] font-bold text-muted-foreground flex-1 truncate">{cfg.label}</span>
+                      <div className="flex items-center gap-3">
+                        <div className="w-16 sm:w-24 h-2 rounded-full bg-border/50 overflow-hidden shadow-inner flex-shrink-0">
                           <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${pct}%` }}
@@ -418,7 +432,7 @@ export function DashboardContent() {
                             className={cn('h-full rounded-full', cfg.dot)}
                           />
                         </div>
-                        <span className="text-xs font-medium text-foreground w-5 text-right">{count}</span>
+                        <span className="text-[13px] font-black text-foreground w-6 text-right">{count}</span>
                       </div>
                     </div>
                   );
@@ -428,32 +442,37 @@ export function DashboardContent() {
           </div>
 
           {/* Upcoming deadlines */}
-          <div className="bg-card border rounded-xl p-4">
-            <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-amber-500" />
+          <div className="bg-card/60 backdrop-blur-xl border border-border/50 rounded-2xl p-5 shadow-sm">
+            <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
+              <div className="p-1.5 bg-amber-500/10 rounded-lg">
+                <Calendar className="w-4 h-4 text-amber-500" />
+              </div>
               Upcoming Deadlines
             </h3>
             {isLoading ? (
-              <Skeleton className="h-24" />
+              <Skeleton className="h-28 rounded-xl" />
             ) : !stats?.upcomingDeadlines?.length ? (
-              <p className="text-xs text-muted-foreground text-center py-4">No upcoming deadlines</p>
+              <div className="flex flex-col items-center justify-center py-6">
+                <Calendar className="w-8 h-8 text-muted-foreground/30 mb-2" />
+                <p className="text-[13px] font-bold text-muted-foreground">No upcoming deadlines</p>
+              </div>
             ) : (
-              <div className="space-y-2.5">
+              <div className="space-y-3">
                 {stats.upcomingDeadlines.slice(0, 4).map((course) => {
                   const dl = formatDeadline(course.deadline);
                   return (
-                    <div key={course.id} className="flex items-center gap-2.5">
+                    <div key={course.id} className="flex items-center gap-3 bg-background border border-border/50 p-2.5 rounded-xl shadow-sm">
                       <div className={cn(
-                        'w-1.5 h-8 rounded-full flex-shrink-0',
+                        'w-1.5 h-10 rounded-full flex-shrink-0 shadow-sm',
                         dl.urgency === 'urgent' ? 'bg-rose-500' :
                         dl.urgency === 'soon'   ? 'bg-amber-500' : 'bg-emerald-500',
                       )} />
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs font-medium text-foreground truncate">{course.name}</p>
+                        <p className="text-[13px] font-bold text-foreground truncate">{course.name}</p>
                         <p className={cn(
-                          'text-[11px]',
-                          dl.urgency === 'urgent' ? 'text-rose-600 font-semibold' :
-                          dl.urgency === 'soon'   ? 'text-amber-600' : 'text-muted-foreground',
+                          'text-[11px] font-semibold mt-0.5',
+                          dl.urgency === 'urgent' ? 'text-rose-600 dark:text-rose-400' :
+                          dl.urgency === 'soon'   ? 'text-amber-600 dark:text-amber-400' : 'text-muted-foreground',
                         )}>
                           {dl.text}
                         </p>
@@ -469,41 +488,43 @@ export function DashboardContent() {
 
       {/* Recent applications */}
       <motion.div variants={FADE_UP} initial="hidden" animate="visible" custom={8}>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-foreground">Recent Applications</h3>
-          <Link href="/applications" className="text-xs text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
-            View all <ArrowRight className="w-3 h-3" />
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-bold text-foreground text-lg tracking-tight">Recent Applications</h3>
+          <Link href="/applications" className="text-sm font-bold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-colors">
+            View all <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {isLoading
-            ? Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)
+            ? Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-32 rounded-2xl" />)
             : recent.map((app, i) => (
-              <motion.div key={app.id} variants={FADE_UP} initial="hidden" animate="visible" custom={i} whileHover={{ y: -2 }}>
+              <motion.div key={app.id} variants={FADE_UP} initial="hidden" animate="visible" custom={i} whileHover={{ y: -3 }}>
                 <Link href={`/applications/${app.id}`}>
-                  <div className="bg-card border rounded-xl p-4 hover:shadow-card-hover transition-all cursor-pointer group">
-                    <div className="flex items-start gap-3">
-                      <UniversityLogo
-                        url={app.course.university.logoUrl}
-                        name={app.course.university.name}
-                        size="sm"
-                      />
+                  <div className="bg-background border border-border/50 rounded-2xl p-5 hover:border-indigo-500/40 hover:shadow-lg hover:shadow-indigo-500/5 transition-all cursor-pointer group h-full flex flex-col justify-between">
+                    <div className="flex items-start gap-4">
+                      <div className="shadow-sm rounded-xl overflow-hidden flex-shrink-0">
+                        <UniversityLogo
+                          url={app.course.university.logoUrl}
+                          name={app.course.university.name}
+                          size="md"
+                        />
+                      </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-foreground truncate group-hover:text-indigo-600 transition-colors">
+                        <p className="text-[15px] font-bold text-foreground truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                           {app.course.name}
                         </p>
-                        <p className="text-xs text-muted-foreground truncate mb-2">
-                          {app.course.university.name} · {app.course.degree ?? 'Masters'}
+                        <p className="text-[13px] font-medium text-muted-foreground truncate mb-3">
+                          {app.course.university.name} <span className="text-border mx-1">|</span> {app.course.degree ?? 'Masters'}
                         </p>
-                        <div className="flex items-center gap-2">
-                          <StatusBadge status={app.status} />
+                        <div className="flex items-center gap-2.5 flex-wrap">
+                          <StatusBadge status={app.status} size="sm" />
                           {app.course.deadline && (() => {
                             const dl = formatDeadline(app.course.deadline);
                             if (dl.daysLeft !== null && dl.daysLeft >= 0 && dl.daysLeft <= 30) {
                               return (
                                 <span className={cn(
-                                  'text-[10px] font-medium',
-                                  dl.urgency === 'urgent' ? 'text-rose-600' : 'text-amber-600',
+                                  'text-[10px] font-bold px-2 py-0.5 rounded-full border shadow-sm',
+                                  dl.urgency === 'urgent' ? 'bg-rose-500/10 text-rose-700 border-rose-500/20 dark:text-rose-400' : 'bg-amber-500/10 text-amber-700 border-amber-500/20 dark:text-amber-400',
                                 )}>
                                   {dl.daysLeft}d left
                                 </span>

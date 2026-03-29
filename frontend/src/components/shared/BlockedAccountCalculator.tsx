@@ -108,57 +108,57 @@ export default function BlockedAccountCalculator({ className = '' }: { className
   };
 
   return (
-    <div className={`space-y-6 ${className}`} id="blocked-account-calculator">
+    <div className={`space-y-6 ${className} pb-6`} id="blocked-account-calculator">
       {/* Calculator Card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-br from-zinc-900/80 to-zinc-800/50 rounded-2xl border border-zinc-700/50 p-6"
+        className="bg-card/60 backdrop-blur-md rounded-3xl border border-border/50 p-6 shadow-sm hover:shadow-md transition-all duration-300"
       >
-        <div className="flex items-center gap-3 mb-4">
-          <div className="p-2 bg-amber-500/10 rounded-lg">
-            <Calculator className="w-5 h-5 text-amber-400" />
+        <div className="flex items-center gap-4 mb-6">
+          <div className="p-3 bg-gradient-to-br from-amber-500/20 to-amber-500/5 rounded-2xl border border-amber-500/20 shadow-inner">
+            <Calculator className="w-6 h-6 text-amber-500" />
           </div>
           <div>
-            <h3 className="font-semibold text-zinc-100">Blocked Account Calculator</h3>
-            <p className="text-xs text-zinc-400">
+            <h3 className="font-bold text-foreground tracking-tight text-lg">Blocked Account Calculator</h3>
+            <p className="text-sm font-medium text-muted-foreground mt-0.5">
               Official requirement: €{OFFICIAL_BLOCKED_AMOUNT_EUR.toLocaleString()}/year
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
           {/* EUR Input */}
-          <div className="space-y-1">
-            <label className="text-xs text-zinc-400">Amount (EUR)</label>
+          <div className="space-y-1.5">
+            <label className="text-[13px] font-bold text-muted-foreground uppercase tracking-wider">Amount (EUR)</label>
             <div className="relative">
-              <span className="absolute left-3 top-2.5 text-zinc-400 text-sm">€</span>
+              <span className="absolute left-3.5 top-3.5 text-muted-foreground font-semibold">€</span>
               <input
                 type="number"
                 value={customAmount}
                 onChange={(e) => setCustomAmount(Number(e.target.value))}
-                className="w-full bg-zinc-800 border border-zinc-600 rounded-lg pl-7 pr-3 py-2 text-zinc-100 text-sm focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/25 outline-none"
+                className="w-full bg-background border border-border/50 rounded-xl pl-8 pr-4 py-3 text-foreground font-medium shadow-sm focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 outline-none transition-all"
                 id="blocked-account-eur-input"
               />
             </div>
           </div>
 
           {/* Exchange Rate */}
-          <div className="space-y-1">
-            <label className="text-xs text-zinc-400 flex items-center gap-1">
+          <div className="space-y-1.5">
+            <label className="text-[13px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
               Rate (EUR → INR)
-              {exchangeRate.loading && <RefreshCw className="w-3 h-3 animate-spin" />}
+              {exchangeRate.loading && <RefreshCw className="w-3.5 h-3.5 animate-spin text-amber-500" />}
             </label>
-            <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-lg px-3 py-2 text-sm text-zinc-300">
-              1 EUR = ₹{exchangeRate.rate.toFixed(2)}
-              <span className="text-xs text-zinc-500 ml-1">({exchangeRate.date})</span>
+            <div className="bg-muted/50 border border-border/50 rounded-xl px-4 py-3 text-[15px] font-medium text-foreground shadow-sm flex items-center justify-between">
+              <span>1 EUR = <span className="text-amber-600 dark:text-amber-500 font-bold">₹{exchangeRate.rate.toFixed(2)}</span></span>
+              <span className="text-xs text-muted-foreground">{exchangeRate.date}</span>
             </div>
           </div>
 
           {/* INR Result */}
-          <div className="space-y-1">
-            <label className="text-xs text-zinc-400">Total (INR)</label>
-            <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 rounded-lg px-3 py-2 text-sm font-semibold text-amber-300">
+          <div className="space-y-1.5">
+            <label className="text-[13px] font-bold text-muted-foreground uppercase tracking-wider">Total (INR)</label>
+            <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 rounded-xl px-4 py-3 text-lg font-black text-amber-600 dark:text-amber-400 shadow-sm">
               ₹{inrAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
             </div>
           </div>
@@ -169,26 +169,28 @@ export default function BlockedAccountCalculator({ className = '' }: { className
         )}
 
         {/* Blocked Account Providers */}
-        <div className="mt-4">
-          <p className="text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">
-            Blocked Account Providers
+        <div className="mt-6 pt-6 border-t border-border/40">
+          <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">
+            Recommended Providers
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {BLOCKED_ACCOUNT_PROVIDERS.map((provider) => (
               <a
                 key={provider.name}
                 href={provider.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 p-2.5 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 border border-zinc-700/50 transition-all text-sm group"
+                className="flex items-center gap-3 p-3.5 rounded-xl bg-background border border-border/50 hover:border-amber-500/40 hover:shadow-md transition-all group shadow-sm"
               >
-                <div className="flex-1">
-                  <span className="text-zinc-200 group-hover:text-amber-300 transition-colors font-medium text-xs">
+                <div className="flex-1 min-w-0">
+                  <span className="text-foreground group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors font-bold text-sm tracking-tight">
                     {provider.name}
                   </span>
-                  <p className="text-[10px] text-zinc-500 mt-0.5">{provider.description}</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{provider.description}</p>
                 </div>
-                <ExternalLink className="w-3 h-3 text-zinc-500 group-hover:text-amber-400" />
+                <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center group-hover:bg-amber-500/10 group-hover:scale-110 transition-all">
+                  <ExternalLink className="w-3.5 h-3.5 text-muted-foreground group-hover:text-amber-500" />
+                </div>
               </a>
             ))}
           </div>
@@ -201,31 +203,31 @@ export default function BlockedAccountCalculator({ className = '' }: { className
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-gradient-to-br from-zinc-900/80 to-zinc-800/50 rounded-2xl border border-zinc-700/50 p-6"
+          className="bg-card/60 backdrop-blur-md rounded-3xl border border-border/50 p-6 shadow-sm hover:shadow-md transition-all duration-300"
           id="currency-graph"
         >
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-500/10 rounded-lg">
-                <TrendingUp className="w-5 h-5 text-blue-400" />
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-blue-500/20 to-blue-500/5 rounded-2xl border border-blue-500/20 shadow-inner">
+                <TrendingUp className="w-6 h-6 text-blue-500" />
               </div>
               <div>
-                <h3 className="font-semibold text-zinc-100">EUR/INR — 1 Year</h3>
-                <p className="text-xs text-zinc-400">Exchange rate history</p>
+                <h3 className="font-bold text-foreground tracking-tight text-lg">EUR/INR — 1 Year</h3>
+                <p className="text-sm font-medium text-muted-foreground mt-0.5">Exchange rate history</p>
               </div>
             </div>
-            <div className="flex gap-4 text-xs">
-              <div>
-                <span className="text-zinc-500">Low: </span>
-                <span className="text-green-400 font-medium">₹{minRate.toFixed(2)}</span>
+            <div className="flex gap-5 text-[12px]">
+              <div className="flex items-center gap-1.5 bg-background/50 backdrop-blur-sm px-2.5 py-1 rounded-lg border border-border/50 shadow-sm">
+                <span className="text-muted-foreground font-bold tracking-tight">Low:</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-black">₹{minRate.toFixed(2)}</span>
               </div>
-              <div>
-                <span className="text-zinc-500">Avg: </span>
-                <span className="text-zinc-300 font-medium">₹{avgRate.toFixed(2)}</span>
+              <div className="flex items-center gap-1.5 bg-background/50 backdrop-blur-sm px-2.5 py-1 rounded-lg border border-border/50 shadow-sm">
+                <span className="text-muted-foreground font-bold tracking-tight">Avg:</span>
+                <span className="text-foreground font-black">₹{avgRate.toFixed(2)}</span>
               </div>
-              <div>
-                <span className="text-zinc-500">High: </span>
-                <span className="text-red-400 font-medium">₹{maxRate.toFixed(2)}</span>
+              <div className="flex items-center gap-1.5 bg-background/50 backdrop-blur-sm px-2.5 py-1 rounded-lg border border-border/50 shadow-sm">
+                <span className="text-muted-foreground font-bold tracking-tight">High:</span>
+                <span className="text-rose-600 dark:text-rose-400 font-black">₹{maxRate.toFixed(2)}</span>
               </div>
             </div>
           </div>
@@ -237,8 +239,8 @@ export default function BlockedAccountCalculator({ className = '' }: { className
               const val = minRate + (maxRate - minRate) * ratio;
               return (
                 <g key={ratio}>
-                  <line x1={padding.left} y1={y} x2={chartW - padding.right} y2={y} stroke="#27272a" strokeWidth="0.5" />
-                  <text x={padding.left - 5} y={y + 4} textAnchor="end" fill="#71717a" fontSize="9">
+                  <line x1={padding.left} y1={y} x2={chartW - padding.right} y2={y} stroke="currentColor" className="text-border" strokeWidth="1" />
+                  <text x={padding.left - 8} y={y + 4} textAnchor="end" className="fill-muted-foreground text-[10px] font-bold">
                     {val.toFixed(0)}
                   </text>
                 </g>
@@ -265,7 +267,7 @@ export default function BlockedAccountCalculator({ className = '' }: { className
               const x = padding.left + (idx / (historicalRates.length - 1)) * (chartW - padding.left - padding.right);
               const label = new Date(r.date).toLocaleDateString('en', { month: 'short', year: '2-digit' });
               return (
-                <text key={r.date} x={x} y={chartH - 5} textAnchor="middle" fill="#71717a" fontSize="9">
+                <text key={r.date} x={x} y={chartH - 5} textAnchor="middle" className="fill-muted-foreground text-[10px] font-bold tracking-wide">
                   {label}
                 </text>
               );

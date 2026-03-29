@@ -46,12 +46,16 @@ export function DocumentsVault() {
           { label: 'Applications',    value: applications.length,          icon: Filter,    color: 'text-emerald-600',bg: 'bg-emerald-50'},
         ].map((s, i) => (
           <motion.div key={s.label} variants={FADE} initial="hidden" animate="visible" custom={i}
-            className="bg-card border rounded-xl p-4">
-            <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center mb-2', s.bg)}>
-              <s.icon className={cn('w-4 h-4', s.color)} />
+            className="bg-card/60 backdrop-blur-md border border-border/50 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-300">
+            <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center mb-3 shadow-inner bg-gradient-to-br', 
+              i === 0 ? 'from-indigo-50 to-indigo-100/50 dark:from-indigo-500/20 dark:to-indigo-500/10' : 
+              i === 1 ? 'from-amber-50 to-amber-100/50 dark:from-amber-500/20 dark:to-amber-500/10' : 
+              'from-emerald-50 to-emerald-100/50 dark:from-emerald-500/20 dark:to-emerald-500/10'
+            )}>
+              <s.icon className={cn('w-5 h-5', s.color)} />
             </div>
-            <p className="text-xl font-bold text-foreground leading-none">{s.value}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">{s.label}</p>
+            <p className="text-2xl font-black text-foreground tracking-tight">{s.value}</p>
+            <p className="text-xs font-medium text-muted-foreground mt-1">{s.label}</p>
           </motion.div>
         ))}
       </div>
@@ -65,13 +69,15 @@ export function DocumentsVault() {
           <button
             onClick={() => setSelectedApp(null)}
             className={cn(
-              'w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left',
-              !selectedApp ? 'bg-indigo-600 text-white shadow-sm' : 'bg-card border hover:bg-muted text-muted-foreground hover:text-foreground',
+              'w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-all text-left group',
+              !selectedApp 
+                ? 'bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-md shadow-indigo-500/20 border-transparent' 
+                : 'bg-card/50 backdrop-blur-sm border border-border/50 hover:bg-card hover:shadow-sm hover:border-border text-muted-foreground hover:text-foreground',
             )}
           >
-            <FolderOpen className="w-4 h-4 flex-shrink-0" />
-            <span className="flex-1 truncate">All Documents</span>
-            <span className={cn('text-[11px] rounded-full px-1.5 py-0.5', !selectedApp ? 'bg-white/20 text-white' : 'bg-muted text-muted-foreground')}>
+            <FolderOpen className={cn("w-4 h-4 flex-shrink-0 transition-transform group-hover:scale-110", !selectedApp ? "text-indigo-100" : "")} />
+            <span className="flex-1 truncate tracking-wide">All Documents</span>
+            <span className={cn('text-xs font-bold rounded-full px-2 py-0.5 shadow-sm', !selectedApp ? 'bg-white/20 text-white' : 'bg-background border border-border/50 text-foreground')}>
               {totalDocs}
             </span>
           </button>
@@ -83,13 +89,17 @@ export function DocumentsVault() {
                 key={app.id}
                 onClick={() => setSelectedApp(app.id === selectedApp ? null : app.id)}
                 className={cn(
-                  'w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left',
-                  selectedApp === app.id ? 'bg-indigo-600 text-white shadow-sm' : 'bg-card border hover:bg-muted text-muted-foreground hover:text-foreground',
+                  'w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-all text-left group',
+                  selectedApp === app.id
+                    ? 'bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-md shadow-indigo-500/20 border-transparent'
+                    : 'bg-card/50 backdrop-blur-sm border border-border/50 hover:bg-card hover:shadow-sm hover:border-border text-muted-foreground hover:text-foreground',
                 )}
               >
-                <UniversityLogo url={app.course.university.logoUrl} name={app.course.university.name} size="xs" className="flex-shrink-0" />
-                <span className="flex-1 truncate text-xs">{app.course.university.name}</span>
-                <span className={cn('text-[11px] rounded-full px-1.5 py-0.5 flex-shrink-0', selectedApp === app.id ? 'bg-white/20 text-white' : 'bg-muted')}>
+                <div className={cn("p-1 rounded-lg bg-background/50 shadow-sm", selectedApp === app.id ? "bg-white border-none" : "border border-border/50")}>
+                  <UniversityLogo url={app.course.university.logoUrl} name={app.course.university.name} size="xs" className="flex-shrink-0" />
+                </div>
+                <span className="flex-1 truncate text-sm tracking-tight">{app.course.university.name}</span>
+                <span className={cn('text-xs font-bold rounded-full px-2 py-0.5 shadow-sm flex-shrink-0', selectedApp === app.id ? 'bg-white/20 text-white' : 'bg-background border border-border/50 text-foreground')}>
                   {app.documents.length}
                 </span>
               </button>
@@ -137,11 +147,11 @@ export function DocumentsVault() {
                 <motion.div
                   key={doc.id}
                   variants={FADE} initial="hidden" animate="visible" custom={i}
-                  className="bg-card border rounded-xl p-4 hover:shadow-card-hover transition-all group"
+                  className="bg-card/60 backdrop-blur-md border border-border/50 rounded-2xl p-4 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-300 group"
                 >
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center flex-shrink-0">
-                      <FileText className="w-5 h-5 text-indigo-600" />
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-50 to-indigo-100/50 dark:from-indigo-500/20 dark:to-indigo-500/10 border border-indigo-200/50 dark:border-indigo-500/20 flex items-center justify-center flex-shrink-0 shadow-inner group-hover:scale-105 transition-transform">
+                      <FileText className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-bold text-foreground">

@@ -34,11 +34,11 @@ export function Navbar() {
 
   return (
     <>
-      <header className="h-16 border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-30 flex items-center px-4 gap-4">
+      <header className="h-16 border-b border-border/40 bg-background/80 backdrop-blur-md sticky top-0 z-30 flex items-center px-4 md:px-6 gap-4 shadow-sm shadow-black/5">
         {/* Mobile menu */}
         <button
           onClick={toggleSidebar}
-          className="lg:hidden p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+          className="lg:hidden p-2 rounded-xl hover:bg-muted/80 transition-colors text-muted-foreground hover:text-foreground active:scale-95"
         >
           <Menu className="w-5 h-5" />
         </button>
@@ -89,14 +89,15 @@ export function Navbar() {
 
         {/* Add button */}
         <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
           onClick={() => setAddOpen(true)}
           className={cn(
-            'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium',
-            'bg-indigo-600 hover:bg-indigo-700 text-white transition-colors shadow-sm',
+            'flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold relative group overflow-hidden',
+            'bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-md shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all border border-indigo-400/30',
           )}
         >
+          <div className="absolute inset-0 bg-white/20 group-hover:translate-x-full transition-transform duration-500 -skew-x-12 -ml-4 w-1/2" />
           <Plus className="w-4 h-4" />
           <span className="hidden sm:inline">Add Application</span>
         </motion.button>

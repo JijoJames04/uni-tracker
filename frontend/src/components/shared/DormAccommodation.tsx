@@ -53,58 +53,65 @@ export default function DormAccommodation({ universityName, city, className = ''
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-br from-zinc-900/80 to-zinc-800/50 rounded-xl border border-zinc-700/50 p-4"
+          className="relative group rounded-2xl p-[1px] bg-gradient-to-br from-zinc-700/50 to-zinc-900 overflow-hidden shadow-lg shadow-black/20"
         >
-          <div className="flex items-center gap-3 mb-3">
-            <div className="p-2 bg-teal-500/10 rounded-lg">
-              <Building2 className="w-4 h-4 text-teal-400" />
+          {/* Animated gradient border effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-teal-500/20 to-emerald-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          
+          <div className="relative bg-zinc-900/90 backdrop-blur-xl rounded-[15px] p-5 h-full">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2.5 bg-gradient-to-br from-teal-500/20 to-teal-500/5 rounded-xl border border-teal-500/20 shadow-inner">
+                <Building2 className="w-5 h-5 text-teal-400 group-hover:scale-110 transition-transform duration-300" />
+              </div>
+              <div>
+                <h4 className="text-sm font-semibold text-zinc-100 tracking-tight">University Dorm (Studentenwerk)</h4>
+                <p className="text-xs text-zinc-400 font-medium">{studentenwerk.name}</p>
+              </div>
             </div>
-            <div>
-              <h4 className="text-sm font-medium text-zinc-200">University Dorm (Studentenwerk)</h4>
-              <p className="text-xs text-zinc-400">{studentenwerk.name}</p>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <a
-              href={studentenwerk.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs text-teal-400 hover:text-teal-300 bg-teal-500/10 px-3 py-1.5 rounded-lg border border-teal-500/20"
-            >
-              <Home className="w-3 h-3" /> Apply for Dorm
-              <ExternalLink className="w-2.5 h-2.5" />
-            </a>
-            {studentenwerk.phone && (
+            <div className="flex flex-wrap gap-2.5 mt-2">
               <a
-                href={`tel:${studentenwerk.phone}`}
-                className="inline-flex items-center gap-1.5 text-xs text-zinc-300 hover:text-zinc-100 bg-zinc-800/50 px-3 py-1.5 rounded-lg border border-zinc-700/50"
+                href={studentenwerk.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-xs font-semibold text-teal-400 hover:text-white bg-teal-500/10 hover:bg-teal-500 px-4 py-2 rounded-xl border border-teal-500/20 shadow-sm transition-all duration-300 hover:shadow-teal-500/25"
               >
-                <Phone className="w-3 h-3" /> {studentenwerk.phone}
+                <Home className="w-3.5 h-3.5" /> Apply for Dorm
+                <ExternalLink className="w-3 h-3 ml-0.5" />
               </a>
-            )}
+              {studentenwerk.phone && (
+                <a
+                  href={`tel:${studentenwerk.phone}`}
+                  className="inline-flex items-center gap-2 text-xs font-medium text-zinc-300 hover:text-white bg-zinc-800/80 hover:bg-zinc-700 px-4 py-2 rounded-xl border border-zinc-700/50 hover:border-zinc-600 shadow-sm transition-all duration-300"
+                >
+                  <Phone className="w-3.5 h-3.5" /> {studentenwerk.phone}
+                </a>
+              )}
+            </div>
           </div>
         </motion.div>
       )}
 
       {/* Private Accommodation Search */}
-      <div>
-        <p className="text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">
-          🏠 Find Accommodation{city ? ` in ${city}` : ''}
+      <div className="pt-2">
+        <p className="text-xs font-bold text-zinc-500/80 uppercase tracking-widest mb-3 ml-1 flex items-center gap-2">
+          <span>🏠</span> Find Accommodation{city ? ` in ${city}` : ''}
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {ACCOMMODATION_LINKS.map((link) => (
             <a
               key={link.name}
               href={city ? `${link.url}/?city=${encodeURIComponent(city)}` : link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 p-2.5 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 border border-zinc-700/50 transition-all group text-xs"
+              className="flex items-center gap-3 p-3 rounded-xl bg-zinc-800/30 hover:bg-zinc-800/80 backdrop-blur-sm border border-zinc-800 hover:border-zinc-700 shadow-sm transition-all duration-300 group"
             >
-              <div className="flex-1">
-                <span className="text-zinc-200 group-hover:text-teal-300 font-medium">{link.name}</span>
-                <p className="text-[10px] text-zinc-500 mt-0.5">{link.description}</p>
+              <div className="flex-1 min-w-0">
+                <span className="text-zinc-300 group-hover:text-teal-400 font-semibold text-sm transition-colors duration-300">{link.name}</span>
+                <p className="text-[11px] text-zinc-500 mt-0.5 truncate pr-2 group-hover:text-zinc-400 transition-colors duration-300">{link.description}</p>
               </div>
-              <ExternalLink className="w-3 h-3 text-zinc-500 group-hover:text-teal-400 flex-shrink-0" />
+              <div className="w-8 h-8 rounded-lg bg-zinc-800/50 flex items-center justify-center group-hover:bg-teal-500/10 group-hover:scale-110 transition-all duration-300">
+                <ExternalLink className="w-3.5 h-3.5 text-zinc-500 group-hover:text-teal-400" />
+              </div>
             </a>
           ))}
         </div>
