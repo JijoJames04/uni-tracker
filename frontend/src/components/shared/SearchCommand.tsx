@@ -6,7 +6,7 @@ import { Command } from 'cmdk';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search, LayoutDashboard, BookOpen, GraduationCap,
-  FolderOpen, Calendar, User, FileText, X,
+  FolderOpen, Calendar, User, FileText, X, Compass, Shield, Calculator,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -16,12 +16,15 @@ const NAV_ITEMS = [
   { label: 'Documents', href: '/documents', icon: FolderOpen, group: 'Pages' },
   { label: 'Calendar', href: '/calendar', icon: Calendar, group: 'Pages' },
   { label: 'My Profile', href: '/profile', icon: User, group: 'Pages' },
+  { label: 'Resources & Tools', href: '/resources', icon: Compass, group: 'Pages' },
 ];
 
 const QUICK_ACTIONS = [
   { label: 'Add Application', href: '/applications?action=add', icon: BookOpen, group: 'Actions' },
   { label: 'Upload Document', href: '/documents?action=upload', icon: FileText, group: 'Actions' },
   { label: 'Create Event', href: '/calendar?action=create', icon: Calendar, group: 'Actions' },
+  { label: 'Visa & APS Guide', href: '/resources', icon: Shield, group: 'Actions' },
+  { label: 'Blocked Account Calculator', href: '/resources?tab=blocked-account', icon: Calculator, group: 'Actions' },
 ];
 
 export default function SearchCommand() {

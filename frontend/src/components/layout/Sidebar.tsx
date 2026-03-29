@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, GraduationCap, FileText, Calendar,
   FolderOpen, User, ChevronLeft, ChevronRight, X,
-  BookOpen, Sparkles, BarChart3,
+  BookOpen, Sparkles, BarChart3, Compass,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAppStore } from '@/store/app.store';
@@ -21,6 +21,7 @@ const NAV_ITEMS = [
   { href: '/documents',     icon: FolderOpen,      label: 'Documents',     badge: null },
   { href: '/calendar',      icon: Calendar,        label: 'Calendar',      badge: null },
   { href: '/profile',       icon: User,            label: 'My Profile',    badge: null },
+  { href: '/resources',     icon: Compass,         label: 'Resources',     badge: null },
 ];
 
 export function Sidebar() {

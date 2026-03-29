@@ -19,6 +19,7 @@ const BREADCRUMBS: Record<string, string> = {
   '/documents':    'Documents',
   '/calendar':     'Calendar',
   '/profile':      'Profile',
+  '/resources':    'Resources & Tools',
 };
 
 export function Navbar() {
