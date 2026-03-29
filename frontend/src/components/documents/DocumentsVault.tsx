@@ -46,7 +46,7 @@ export function DocumentsVault() {
           { label: 'Applications',    value: applications.length,          icon: Filter,    color: 'text-emerald-600',bg: 'bg-emerald-50'},
         ].map((s, i) => (
           <motion.div key={s.label} variants={FADE} initial="hidden" animate="visible" custom={i}
-            className="bg-card/60 backdrop-blur-md border border-border/50 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-300">
+            className="bg-card border border-border/50 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-300">
             <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center mb-3 shadow-inner bg-gradient-to-br', 
               i === 0 ? 'from-indigo-50 to-indigo-100/50 dark:from-indigo-500/20 dark:to-indigo-500/10' : 
               i === 1 ? 'from-amber-50 to-amber-100/50 dark:from-amber-500/20 dark:to-amber-500/10' : 
@@ -72,7 +72,7 @@ export function DocumentsVault() {
               'w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-all text-left group',
               !selectedApp 
                 ? 'bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-md shadow-indigo-500/20 border-transparent' 
-                : 'bg-card/50 backdrop-blur-sm border border-border/50 hover:bg-card hover:shadow-sm hover:border-border text-muted-foreground hover:text-foreground',
+                : 'bg-card border border-border/50 hover:bg-card hover:shadow-sm hover:border-border text-muted-foreground hover:text-foreground',
             )}
           >
             <FolderOpen className={cn("w-4 h-4 flex-shrink-0 transition-transform group-hover:scale-110", !selectedApp ? "text-indigo-100" : "")} />
@@ -92,10 +92,10 @@ export function DocumentsVault() {
                   'w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-all text-left group',
                   selectedApp === app.id
                     ? 'bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-md shadow-indigo-500/20 border-transparent'
-                    : 'bg-card/50 backdrop-blur-sm border border-border/50 hover:bg-card hover:shadow-sm hover:border-border text-muted-foreground hover:text-foreground',
+                    : 'bg-card border border-border/50 hover:bg-card hover:shadow-sm hover:border-border text-muted-foreground hover:text-foreground',
                 )}
               >
-                <div className={cn("p-1 rounded-lg bg-background/50 shadow-sm", selectedApp === app.id ? "bg-white border-none" : "border border-border/50")}>
+                <div className={cn("p-1 rounded-lg bg-background shadow-sm", selectedApp === app.id ? "bg-white border-none" : "border border-border/50")}>
                   <UniversityLogo url={app.course.university.logoUrl} name={app.course.university.name} size="xs" className="flex-shrink-0" />
                 </div>
                 <span className="flex-1 truncate text-sm tracking-tight">{app.course.university.name}</span>
@@ -147,7 +147,7 @@ export function DocumentsVault() {
                 <motion.div
                   key={doc.id}
                   variants={FADE} initial="hidden" animate="visible" custom={i}
-                  className="bg-card/60 backdrop-blur-md border border-border/50 rounded-2xl p-4 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-300 group"
+                  className="bg-card border border-border/50 rounded-2xl p-4 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-300 group"
                 >
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-50 to-indigo-100/50 dark:from-indigo-500/20 dark:to-indigo-500/10 border border-indigo-200/50 dark:border-indigo-500/20 flex items-center justify-center flex-shrink-0 shadow-inner group-hover:scale-105 transition-transform">

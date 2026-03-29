@@ -58,7 +58,7 @@ export default function DormAccommodation({ universityName, city, className = ''
           {/* Animated gradient border effect */}
           <div className="absolute inset-0 bg-gradient-to-r from-teal-500/20 to-emerald-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           
-          <div className="relative bg-zinc-900/90 backdrop-blur-xl rounded-[15px] p-5 h-full">
+          <div className="relative bg-zinc-900/90 rounded-[15px] p-5 h-full">
             <div className="flex items-center gap-3 mb-4">
               <div className="p-2.5 bg-gradient-to-br from-teal-500/20 to-teal-500/5 rounded-xl border border-teal-500/20 shadow-inner">
                 <Building2 className="w-5 h-5 text-teal-400 group-hover:scale-110 transition-transform duration-300" />
@@ -103,7 +103,7 @@ export default function DormAccommodation({ universityName, city, className = ''
               href={city ? `${link.url}/?city=${encodeURIComponent(city)}` : link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 p-3 rounded-xl bg-zinc-800/30 hover:bg-zinc-800/80 backdrop-blur-sm border border-zinc-800 hover:border-zinc-700 shadow-sm transition-all duration-300 group"
+              className="flex items-center gap-3 p-3 rounded-xl bg-zinc-800/30 hover:bg-zinc-800/80 border border-zinc-800 hover:border-zinc-700 shadow-sm transition-all duration-300 group"
             >
               <div className="flex-1 min-w-0">
                 <span className="text-zinc-300 group-hover:text-teal-400 font-semibold text-sm transition-colors duration-300">{link.name}</span>

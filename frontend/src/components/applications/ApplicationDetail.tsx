@@ -159,11 +159,11 @@ export function ApplicationDetail({ id }: { id: string }) {
       </Link>
 
       {/* Hero card */}
-      <motion.div initial="hidden" animate="visible" variants={FADE} className="bg-card/60 backdrop-blur-xl border border-border/50 rounded-3xl overflow-hidden shadow-sm relative group">
+      <motion.div initial="hidden" animate="visible" variants={FADE} className="bg-card border border-border/50 rounded-3xl overflow-hidden shadow-sm relative group">
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
         <div className="p-6 sm:p-8 relative z-10">
           <div className="flex flex-col sm:flex-row sm:items-start gap-5 sm:gap-6">
-            <div className="shadow-md rounded-2xl overflow-hidden flex-shrink-0 bg-background/50 backdrop-blur-sm self-start">
+            <div className="shadow-md rounded-2xl overflow-hidden flex-shrink-0 bg-background self-start">
               <UniversityLogo url={university.logoUrl} name={university.name} size="lg" />
             </div>
             <div className="flex-1 min-w-0">
@@ -214,7 +214,7 @@ export function ApplicationDetail({ id }: { id: string }) {
                 )}
                 {(course.deadline || course.deadlineInternational) && (
                   editingDeadline ? (
-                    <div className="flex items-center gap-2 bg-background/50 backdrop-blur-sm p-1 rounded-xl border border-border/50 shadow-sm">
+                    <div className="flex items-center gap-2 bg-background p-1 rounded-xl border border-border/50 shadow-sm">
                       <select
                         className="text-[12px] font-bold px-3 py-1.5 rounded-lg border border-border bg-background focus:ring-2 focus:ring-indigo-500/30"
                         value={course.deadline || ''}
@@ -248,7 +248,7 @@ export function ApplicationDetail({ id }: { id: string }) {
           </div>
 
           {/* Application progress */}
-          <div className="mt-8 bg-background/50 backdrop-blur-sm border border-border/50 rounded-2xl p-5 shadow-inner">
+          <div className="mt-8 bg-background border border-border/50 rounded-2xl p-5 shadow-inner">
             <div className="flex items-center justify-between mb-3">
               <span className="text-[13px] font-bold text-muted-foreground tracking-wide uppercase">Application Progress</span>
               <span className="text-[13px] font-black text-foreground">{progress}%</span>
@@ -354,7 +354,7 @@ export function ApplicationDetail({ id }: { id: string }) {
       </motion.div>
 
       {/* Tabs */}
-      <div className="flex gap-1.5 bg-card/60 backdrop-blur-md rounded-2xl p-1.5 border border-border/50 shadow-sm overflow-x-auto no-scrollbar">
+      <div className="flex gap-1.5 bg-card rounded-2xl p-1.5 border border-border/50 shadow-sm overflow-x-auto no-scrollbar">
         {TABS.map(({ key, label, icon: Icon, badge }) => (
           <button
             key={key}
@@ -383,7 +383,7 @@ export function ApplicationDetail({ id }: { id: string }) {
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
             {/* Checklist */}
             <div className="xl:col-span-2 space-y-4">
-              <div className="bg-card/60 backdrop-blur-xl border border-border/50 rounded-3xl p-6 sm:p-8 shadow-sm">
+              <div className="bg-card border border-border/50 rounded-3xl p-6 sm:p-8 shadow-sm">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="font-black text-foreground text-xl flex items-center gap-3">
                     <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center">
@@ -434,7 +434,7 @@ export function ApplicationDetail({ id }: { id: string }) {
                         }
                       }}
                       placeholder="Add a checklist item (e.g. Schedule Visa Interview)..."
-                      className="flex-1 w-full px-4 py-3 rounded-2xl border border-border/60 bg-background/50 text-[14px] font-bold placeholder:font-medium placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all shadow-inner"
+                      className="flex-1 w-full px-4 py-3 rounded-2xl border border-border/60 bg-background text-[14px] font-bold placeholder:font-medium placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all shadow-inner"
                     />
                     <button
                       onClick={() => newChecklistItem.trim() && addChecklistMutation.mutate(newChecklistItem.trim())}
@@ -457,7 +457,7 @@ export function ApplicationDetail({ id }: { id: string }) {
 
             {/* Course info card */}
             <div className="space-y-4">
-              <div className="bg-card/60 backdrop-blur-xl border border-border/50 rounded-3xl p-6 sm:p-8 shadow-sm">
+              <div className="bg-card border border-border/50 rounded-3xl p-6 sm:p-8 shadow-sm">
                 <h3 className="font-black text-foreground text-[18px] mb-5">Course Details</h3>
                 <div className="space-y-3.5">
                   {[
@@ -470,7 +470,7 @@ export function ApplicationDetail({ id }: { id: string }) {
                     { label: 'Deadline',    value: course.deadline ? formatDate(course.deadline) : null },
                     { label: 'Start Date',  value: course.startDate ? formatDate(course.startDate) : null },
                   ].filter((r) => r.value).map((row) => (
-                    <div key={row.label} className="flex justify-between gap-4 items-center bg-background/50 border border-border/30 rounded-xl p-3 shadow-sm">
+                    <div key={row.label} className="flex justify-between gap-4 items-center bg-background border border-border/30 rounded-xl p-3 shadow-sm">
                       <span className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider">{row.label}</span>
                       <span className="text-[14px] font-black text-foreground text-right">{row.value}</span>
                     </div>
@@ -479,14 +479,14 @@ export function ApplicationDetail({ id }: { id: string }) {
               </div>
 
               {course.description && (
-                <div className="bg-card/60 backdrop-blur-xl border border-border/50 rounded-3xl p-6 sm:p-8 shadow-sm">
+                <div className="bg-card border border-border/50 rounded-3xl p-6 sm:p-8 shadow-sm">
                   <h3 className="font-black text-foreground text-[18px] mb-4">About This Program</h3>
                   <p className="text-[14px] font-medium text-muted-foreground leading-relaxed">{course.description}</p>
                 </div>
               )}
 
               {course.requirements && (
-                <div className="bg-card/60 backdrop-blur-xl border border-border/50 rounded-3xl p-6 sm:p-8 shadow-sm">
+                <div className="bg-card border border-border/50 rounded-3xl p-6 sm:p-8 shadow-sm">
                   <h3 className="font-black text-foreground text-[18px] mb-4">Requirements</h3>
                   <p className="text-[14px] font-medium text-muted-foreground leading-relaxed whitespace-pre-wrap">{course.requirements}</p>
                 </div>
@@ -497,7 +497,7 @@ export function ApplicationDetail({ id }: { id: string }) {
 
         {activeTab === 'documents' && (
           <div className="space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card/60 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-border/50 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card rounded-2xl p-4 sm:p-5 border border-border/50 shadow-sm">
               <h3 className="font-black text-foreground text-[18px]">
                 {app.documents.length} Document{app.documents.length !== 1 ? 's' : ''}
               </h3>
@@ -511,7 +511,7 @@ export function ApplicationDetail({ id }: { id: string }) {
             </div>
 
             {app.documents.length === 0 ? (
-              <div className="empty-state bg-card/60 backdrop-blur-xl border border-border/50 rounded-3xl p-10 flex flex-col items-center justify-center text-center shadow-sm">
+              <div className="empty-state bg-card border border-border/50 rounded-3xl p-10 flex flex-col items-center justify-center text-center shadow-sm">
                 <div className="w-16 h-16 bg-muted/50 rounded-2xl flex items-center justify-center mb-4 border border-border/50">
                   <FileText className="w-8 h-8 text-muted-foreground/50" />
                 </div>
@@ -521,7 +521,7 @@ export function ApplicationDetail({ id }: { id: string }) {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {app.documents.map((doc) => (
-                  <div key={doc.id} className="bg-background/80 backdrop-blur-sm border border-border/50 rounded-2xl p-5 flex items-start sm:items-center gap-4 hover:shadow-md hover:border-indigo-500/30 transition-all group">
+                  <div key={doc.id} className="bg-background border border-border/50 rounded-2xl p-5 flex items-start sm:items-center gap-4 hover:shadow-md hover:border-indigo-500/30 transition-all group">
                     <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex flex-col items-center justify-center flex-shrink-0 shadow-inner group-hover:scale-105 transition-transform duration-300">
                       <FileText className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                     </div>
@@ -555,13 +555,13 @@ export function ApplicationDetail({ id }: { id: string }) {
         {activeTab === 'timeline' && (
           <div className="space-y-6">
             {/* Add note */}
-            <div className="bg-card/60 backdrop-blur-xl border border-border/50 rounded-3xl p-5 sm:p-6 flex flex-col sm:flex-row gap-4 shadow-sm">
+            <div className="bg-card border border-border/50 rounded-3xl p-5 sm:p-6 flex flex-col sm:flex-row gap-4 shadow-sm">
               <textarea
                 value={newNote}
                 onChange={(e) => setNewNote(e.target.value)}
                 placeholder="Add a timeline note..."
                 rows={2}
-                className="flex-1 px-4 py-3 rounded-2xl border border-border/60 bg-background/50 text-[14px] font-medium placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all resize-none shadow-inner"
+                className="flex-1 px-4 py-3 rounded-2xl border border-border/60 bg-background text-[14px] font-medium placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all resize-none shadow-inner"
               />
               <button
                 onClick={() => newNote.trim() && addNoteMutation.mutate()}
@@ -573,7 +573,7 @@ export function ApplicationDetail({ id }: { id: string }) {
             </div>
 
             {/* Timeline entries */}
-            <div className="bg-card/60 backdrop-blur-xl border border-border/50 rounded-3xl p-6 sm:p-8 shadow-sm relative pt-10">
+            <div className="bg-card border border-border/50 rounded-3xl p-6 sm:p-8 shadow-sm relative pt-10">
               <div className="absolute left-[38px] top-6 bottom-6 w-1 rounded-full bg-border/50" />
               <div className="space-y-6 relative">
                 {app.timeline.map((entry) => {
@@ -608,7 +608,7 @@ export function ApplicationDetail({ id }: { id: string }) {
         {activeTab === 'prompt' && (
           <div className="space-y-5">
             {/* SOP Prompt */}
-            <div className="bg-card/60 backdrop-blur-xl border border-border/50 rounded-3xl p-6 sm:p-8 shadow-sm">
+            <div className="bg-card border border-border/50 rounded-3xl p-6 sm:p-8 shadow-sm">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
                   <h3 className="font-black text-foreground text-[18px] flex items-center gap-2.5">
@@ -624,7 +624,7 @@ export function ApplicationDetail({ id }: { id: string }) {
                 <button
                   onClick={copyPrompt}
                   disabled={!promptData}
-                  className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-border/60 bg-background/50 text-[14px] font-bold transition-all hover:bg-muted disabled:opacity-50 shadow-sm w-full sm:w-auto hover:shadow-md"
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-border/60 bg-background text-[14px] font-bold transition-all hover:bg-muted disabled:opacity-50 shadow-sm w-full sm:w-auto hover:shadow-md"
                 >
                   {promptCopied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
                   {promptCopied ? 'Copied!' : 'Copy Prompt'}
@@ -651,7 +651,7 @@ export function ApplicationDetail({ id }: { id: string }) {
             </div>
 
             {/* Email Template Generator */}
-            <div className="bg-card/60 backdrop-blur-xl border border-border/50 rounded-3xl p-6 sm:p-8 shadow-sm">
+            <div className="bg-card border border-border/50 rounded-3xl p-6 sm:p-8 shadow-sm">
               <h3 className="font-black text-foreground text-[18px] flex items-center gap-2.5 mb-2">
                 <div className="p-1.5 bg-blue-500/10 rounded-lg">
                   ✉️
@@ -676,7 +676,7 @@ export function ApplicationDetail({ id }: { id: string }) {
                     }}
                     disabled={emailMutation.isPending}
                     className={cn(
-                      'flex items-center gap-2 px-4 py-3 rounded-2xl border border-border/50 bg-background/50 text-[13px] font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5',
+                      'flex items-center gap-2 px-4 py-3 rounded-2xl border border-border/50 bg-background text-[13px] font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5',
                       emailType === tmpl.key && emailPrompt
                         ? 'border-indigo-500 bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 ring-4 ring-indigo-500/10'
                         : 'hover:border-indigo-300 hover:bg-muted',
@@ -690,7 +690,7 @@ export function ApplicationDetail({ id }: { id: string }) {
               </div>
               
               {emailMutation.isPending && (
-                <div className="flex items-center gap-3 text-[14px] font-bold text-indigo-600 dark:text-indigo-400 py-8 justify-center bg-background/50 rounded-2xl border border-indigo-500/20 shadow-inner">
+                <div className="flex items-center gap-3 text-[14px] font-bold text-indigo-600 dark:text-indigo-400 py-8 justify-center bg-background rounded-2xl border border-indigo-500/20 shadow-inner">
                   <Loader2 className="w-5 h-5 animate-spin" /> Generating Magic...
                 </div>
               )}
@@ -766,7 +766,7 @@ function NotesEditor({ initialNotes, onSave, isSaving }: { initialNotes: string;
   }, []);
 
   return (
-    <div className="bg-card/60 backdrop-blur-xl border border-border/50 rounded-3xl p-6 sm:p-8 shadow-sm mt-4">
+    <div className="bg-card border border-border/50 rounded-3xl p-6 sm:p-8 shadow-sm mt-4">
       <div className="flex items-center justify-between mb-5">
         <h3 className="font-black text-foreground text-xl">Private Notes</h3>
         {isSaving && <span className="text-[11px] font-bold text-muted-foreground animate-pulse bg-muted px-2 py-0.5 rounded-md">Saving...</span>}
@@ -776,7 +776,7 @@ function NotesEditor({ initialNotes, onSave, isSaving }: { initialNotes: string;
         onChange={(e) => handleChange(e.target.value)}
         placeholder="Add thoughts, impressions, or specific requirements..."
         rows={5}
-        className="w-full px-4 py-4 rounded-2xl border border-border/60 bg-background/50 text-[14px] font-medium placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all resize-none shadow-inner leading-relaxed"
+        className="w-full px-4 py-4 rounded-2xl border border-border/60 bg-background text-[14px] font-medium placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all resize-none shadow-inner leading-relaxed"
       />
     </div>
   );

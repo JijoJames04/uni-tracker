@@ -88,7 +88,7 @@ export function ApplicationsList() {
   return (
     <div className="space-y-5">
       {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-card/60 backdrop-blur-md p-3 rounded-2xl border border-border/50 shadow-sm">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-card p-3 rounded-2xl border border-border/50 shadow-sm">
         {/* Search */}
         <div className="relative flex-1 w-full sm:max-w-xs">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -96,7 +96,7 @@ export function ApplicationsList() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search applications..."
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-border/60 bg-background/50 text-[14px] font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all shadow-inner"
+            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-border/60 bg-background text-[14px] font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all shadow-inner"
           />
         </div>
 
@@ -123,7 +123,7 @@ export function ApplicationsList() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-            className="px-3.5 py-2.5 rounded-xl border border-border/50 bg-background/50 text-[13px] font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/30 cursor-pointer hover:bg-muted/50 transition-colors hidden sm:block shadow-sm"
+            className="px-3.5 py-2.5 rounded-xl border border-border/50 bg-background text-[13px] font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/30 cursor-pointer hover:bg-muted/50 transition-colors hidden sm:block shadow-sm"
           >
             <option value="updated">Recent</option>
             <option value="deadline">Deadline</option>
@@ -209,7 +209,7 @@ function AppCard({ app, index }: { app: Application; index: number }) {
   return (
     <motion.div variants={FADE} initial="hidden" animate="visible" custom={index} whileHover={{ y: -2 }}>
       <Link href={`/applications/${app.id}`}>
-        <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-4 sm:p-5 hover:border-indigo-500/40 hover:shadow-lg hover:shadow-indigo-500/5 transition-all cursor-pointer group mb-3">
+        <div className="bg-card border border-border/50 rounded-2xl p-4 sm:p-5 hover:border-indigo-500/40 hover:shadow-lg hover:shadow-indigo-500/5 transition-all cursor-pointer group mb-3">
           <div className="flex flex-col sm:flex-row sm:items-start gap-4">
             <div className="hidden sm:block shadow-sm rounded-xl overflow-hidden flex-shrink-0">
               <UniversityLogo url={app.course.university.logoUrl} name={app.course.university.name} size="md" />
@@ -303,7 +303,7 @@ function KanbanView({ apps }: { apps: Application[] }) {
         const cfg = STATUS_CONFIG[status];
         return (
           <div key={status} className="flex-shrink-0 w-72 sm:w-80 snap-start bg-muted/20 border border-border/50 rounded-3xl p-3 flex flex-col max-h-[70vh]">
-            <div className="flex items-center gap-2 mb-4 px-2 pt-1 sticky top-0 bg-background/50 backdrop-blur-sm z-10 py-2 rounded-xl border border-border/30">
+            <div className="flex items-center gap-2 mb-4 px-2 pt-1 sticky top-0 bg-background z-10 py-2 rounded-xl border border-border/30">
               <div className={cn('w-2.5 h-2.5 rounded-full shadow-sm', cfg.dot)} />
               <span className="text-[13px] font-bold text-foreground uppercase tracking-widest">{cfg.label}</span>
               <span className="ml-auto text-xs font-bold text-muted-foreground bg-muted border border-border/50 rounded-lg px-2 py-0.5 shadow-sm">

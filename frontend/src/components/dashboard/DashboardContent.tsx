@@ -156,7 +156,7 @@ export function DashboardContent() {
         {applications && applications.length > 0 && (
           <button
             onClick={() => exportToCSV(applications)}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-border/50 bg-background/50 backdrop-blur-sm text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted shadow-sm hover:shadow-md transition-all duration-300 w-full sm:w-auto"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-border/50 bg-background text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted shadow-sm hover:shadow-md transition-all duration-300 w-full sm:w-auto"
           >
             <Download className="w-4 h-4" />
             <span className="sm:hidden md:inline">Export CSV</span>
@@ -211,7 +211,7 @@ export function DashboardContent() {
             variants={FADE_UP} initial="hidden" animate="visible" custom={i + 1}
             whileHover={{ y: -2 }}
             className={cn(
-              'bg-card/60 backdrop-blur-xl rounded-2xl p-5 border border-border/50 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group',
+              'bg-card rounded-2xl p-5 border border-border/50 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group',
               card.urgent && card.value > 0 && 'border-rose-500/30 bg-rose-500/5',
             )}
           >
@@ -259,7 +259,7 @@ export function DashboardContent() {
           {isLoading ? (
             Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-2xl" />)
           ) : actionNeeded.length === 0 ? (
-            <div className="empty-state bg-background/50 backdrop-blur-sm border border-border/50 rounded-2xl py-8">
+            <div className="empty-state bg-background border border-border/50 rounded-2xl py-8">
               <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center mb-3 mx-auto">
                 <CheckCircle2 className="w-6 h-6 text-emerald-500" />
               </div>
@@ -334,7 +334,7 @@ export function DashboardContent() {
         >
           {/* Visual donut chart */}
           {stats && stats.total > 0 && chartSegments.length > 0 && (
-            <div className="bg-card/60 backdrop-blur-xl border border-border/50 rounded-2xl p-5 shadow-sm">
+            <div className="bg-card border border-border/50 rounded-2xl p-5 shadow-sm">
               <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
                 <div className="p-1.5 bg-violet-500/10 rounded-lg">
                   <Zap className="w-4 h-4 text-violet-500" />
@@ -399,7 +399,7 @@ export function DashboardContent() {
           )}
 
           {/* Status breakdown bars */}
-          <div className="bg-card/60 backdrop-blur-xl border border-border/50 rounded-2xl p-5 shadow-sm">
+          <div className="bg-card border border-border/50 rounded-2xl p-5 shadow-sm">
             <h3 className="font-bold text-foreground mb-5 flex items-center gap-2">
               <div className="p-1.5 bg-indigo-500/10 rounded-lg">
                 <TrendingUp className="w-4 h-4 text-indigo-500" />
@@ -442,7 +442,7 @@ export function DashboardContent() {
           </div>
 
           {/* Upcoming deadlines */}
-          <div className="bg-card/60 backdrop-blur-xl border border-border/50 rounded-2xl p-5 shadow-sm">
+          <div className="bg-card border border-border/50 rounded-2xl p-5 shadow-sm">
             <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
               <div className="p-1.5 bg-amber-500/10 rounded-lg">
                 <Calendar className="w-4 h-4 text-amber-500" />

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Command } from 'cmdk';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, Building2 } from 'lucide-react';
-import { NAV_ITEMS, QUICK_ACTIONS } from '@/lib/navigation';
+import { NAV_ITEMS } from '@/lib/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { applicationApi, universityApi } from '@/lib/api';
 import { cn } from '@/lib/utils';
@@ -72,7 +72,7 @@ export default function SearchCommand() {
           >
             {/* Backdrop */}
             <div
-              className="absolute inset-0 bg-background/60"
+              className="absolute inset-0 bg-background"
               onClick={() => setOpen(false)}
             />
 
@@ -82,7 +82,7 @@ export default function SearchCommand() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.97, y: -10 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              className="relative w-full max-w-xl mx-4 bg-card/80 backdrop-blur-xl border border-border/50
+              className="relative w-full max-w-xl mx-4 bg-card border border-border/50
                 rounded-2xl shadow-2xl overflow-hidden ring-1 ring-black/5"
             >
               <Command className="[&_[cmdk-input]]:bg-transparent [&_[cmdk-group-heading]]:text-muted-foreground
@@ -94,7 +94,7 @@ export default function SearchCommand() {
                 <div className="flex items-center border-b border-border/40 px-4 mt-2">
                   <Search className="w-5 h-5 text-indigo-500 mr-3 flex-shrink-0" />
                   <Command.Input
-                    placeholder="Search for applications, documents, actions..."
+                    placeholder="Search universities, applications, actions..."
                     className="flex-1 h-12 bg-transparent text-[15px] font-medium text-foreground
                       placeholder:text-muted-foreground focus:outline-none"
                   />

@@ -21,14 +21,14 @@ const APS_OFFICE = {
 
 // ─── APS Required Documents ───────────────────────────────────
 const APS_DOCUMENTS = [
-  { id: 'passport', label: 'Valid passport (original + 2 copies)', category: 'Identity' },
+  { id: 'passport', label: 'Valid passport (Notarized copies only)', category: 'Identity' },
   { id: 'photos', label: '2 recent passport-size photographs', category: 'Identity' },
   { id: 'aps-form', label: 'APS application form (filled online)', category: 'Application' },
   { id: 'aps-fee', label: 'APS processing fee receipt (₹18,000 approx.)', category: 'Application' },
-  { id: 'class10', label: 'Class 10 mark sheet & certificate (original + copies)', category: 'Academic' },
-  { id: 'class12', label: 'Class 12 mark sheet & certificate (original + copies)', category: 'Academic' },
-  { id: 'degree', label: 'Bachelor degree certificate (original + copies)', category: 'Academic' },
-  { id: 'transcripts', label: 'All semester mark sheets / transcripts (original + copies)', category: 'Academic' },
+  { id: 'class10', label: 'Class 10 mark sheet & certificate (Notarized copies only)', category: 'Academic' },
+  { id: 'class12', label: 'Class 12 mark sheet & certificate (Notarized copies only)', category: 'Academic' },
+  { id: 'degree', label: 'Bachelor degree certificate (Notarized copies only)', category: 'Academic' },
+  { id: 'transcripts', label: 'All semester mark sheets / transcripts (Notarized copies only)', category: 'Academic' },
   { id: 'provisional', label: 'Provisional certificate (if degree not yet awarded)', category: 'Academic' },
   { id: 'naac', label: 'NAAC/NBA accreditation proof of university', category: 'Academic' },
   { id: 'language', label: 'Language certificate (IELTS/TOEFL/TestDaF) if available', category: 'Language' },
@@ -122,7 +122,7 @@ export default function VisaApsGuide({ className = '' }: { className?: string })
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-card/60 backdrop-blur-md rounded-3xl border border-border/50 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group"
+        className="bg-card rounded-3xl border border-border/50 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group"
       >
         <button
           onClick={() => toggleSection('aps')}
@@ -163,7 +163,7 @@ export default function VisaApsGuide({ className = '' }: { className?: string })
               className="px-6 pb-6 space-y-4"
             >
               {/* APS Office Info */}
-              <div className="bg-background/80 backdrop-blur-sm rounded-2xl p-5 space-y-3 border border-border/50 shadow-sm">
+              <div className="bg-background rounded-2xl p-5 space-y-3 border border-border/50 shadow-sm">
                 <h4 className="text-sm font-bold text-foreground flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-violet-500" />
                   APS Office Location
@@ -223,7 +223,7 @@ export default function VisaApsGuide({ className = '' }: { className?: string })
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="bg-card/60 backdrop-blur-md rounded-3xl border border-border/50 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group"
+        className="bg-card rounded-3xl border border-border/50 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group"
       >
         <button
           onClick={() => toggleSection('visa')}

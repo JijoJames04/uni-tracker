@@ -34,7 +34,7 @@ export function Navbar() {
 
   return (
     <>
-      <header className="h-16 border-b border-border/40 bg-background/80 backdrop-blur-md sticky top-0 z-30 flex items-center px-4 md:px-6 gap-4 shadow-sm shadow-black/5">
+      <header className="h-16 border-b border-border/40 bg-background sticky top-0 z-30 flex items-center px-4 md:px-6 gap-4 shadow-sm shadow-black/5">
         {/* Mobile menu */}
         <button
           onClick={toggleSidebar}

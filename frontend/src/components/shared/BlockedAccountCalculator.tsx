@@ -79,41 +79,13 @@ export default function BlockedAccountCalculator({ className = '' }: { className
   const maxRate = historicalRates.length ? Math.max(...historicalRates.map(r => r.rate)) : 0;
   const avgRate = historicalRates.length ? historicalRates.reduce((s, r) => s + r.rate, 0) / historicalRates.length : 0;
 
-  // SVG chart dimensions
-  const chartW = 600;
-  const chartH = 200;
-  const padding = { top: 20, right: 20, bottom: 30, left: 50 };
-
-  const getChartPath = (): string => {
-    if (historicalRates.length < 2) return '';
-    const w = chartW - padding.left - padding.right;
-    const h = chartH - padding.top - padding.bottom;
-    const range = maxRate - minRate || 1;
-
-    return historicalRates.map((r, i) => {
-      const x = padding.left + (i / (historicalRates.length - 1)) * w;
-      const y = padding.top + h - ((r.rate - minRate) / range) * h;
-      return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
-    }).join(' ');
-  };
-
-  const getAreaPath = (): string => {
-    const line = getChartPath();
-    if (!line) return '';
-    const w = chartW - padding.left - padding.right;
-    const h = chartH - padding.top - padding.bottom;
-    const lastX = padding.left + w;
-    const bottomY = padding.top + h;
-    return `${line} L ${lastX} ${bottomY} L ${padding.left} ${bottomY} Z`;
-  };
-
   return (
     <div className={`space-y-6 ${className} pb-6`} id="blocked-account-calculator">
       {/* Calculator Card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-card/60 backdrop-blur-md rounded-3xl border border-border/50 p-6 shadow-sm hover:shadow-md transition-all duration-300"
+        className="bg-card rounded-3xl border border-border/50 p-6 shadow-sm hover:shadow-md transition-all duration-300"
       >
         <div className="flex items-center gap-4 mb-6">
           <div className="p-3 bg-gradient-to-br from-amber-500/20 to-amber-500/5 rounded-2xl border border-amber-500/20 shadow-inner">
@@ -146,7 +118,7 @@ export default function BlockedAccountCalculator({ className = '' }: { className
           {/* Exchange Rate */}
           <div className="space-y-1.5">
             <label className="text-[13px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-              Rate (EUR → INR)
+              Today&apos;s Rate (EUR → INR)
               {exchangeRate.loading && <RefreshCw className="w-3.5 h-3.5 animate-spin text-amber-500" />}
             </label>
             <div className="bg-muted/50 border border-border/50 rounded-xl px-4 py-3 text-[15px] font-medium text-foreground shadow-sm flex items-center justify-between">
@@ -197,82 +169,53 @@ export default function BlockedAccountCalculator({ className = '' }: { className
         </div>
       </motion.div>
 
-      {/* Currency Graph (F19) */}
+      {/* Currency History */}
       {historicalRates.length > 10 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-card/60 backdrop-blur-md rounded-3xl border border-border/50 p-6 shadow-sm hover:shadow-md transition-all duration-300"
+          className="bg-card rounded-3xl border border-border/50 p-6 shadow-sm hover:shadow-md transition-all duration-300"
           id="currency-graph"
         >
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-gradient-to-br from-blue-500/20 to-blue-500/5 rounded-2xl border border-blue-500/20 shadow-inner">
                 <TrendingUp className="w-6 h-6 text-blue-500" />
               </div>
               <div>
-                <h3 className="font-bold text-foreground tracking-tight text-lg">EUR/INR — 1 Year</h3>
-                <p className="text-sm font-medium text-muted-foreground mt-0.5">Exchange rate history</p>
+                <h3 className="font-bold text-foreground tracking-tight text-lg">Exchange Rate Trends</h3>
+                <p className="text-sm font-medium text-muted-foreground mt-0.5">Historical overview (1 Year)</p>
               </div>
             </div>
-            <div className="flex gap-5 text-[12px]">
-              <div className="flex items-center gap-1.5 bg-background/50 backdrop-blur-sm px-2.5 py-1 rounded-lg border border-border/50 shadow-sm">
-                <span className="text-muted-foreground font-bold tracking-tight">Low:</span>
+            <div className="flex flex-wrap gap-3 text-[12px]">
+              <div className="flex items-center gap-1.5 bg-background px-3 py-1.5 rounded-xl border border-border/50 shadow-sm">
+                <span className="text-muted-foreground font-bold tracking-tight">Lowest:</span>
                 <span className="text-emerald-600 dark:text-emerald-400 font-black">₹{minRate.toFixed(2)}</span>
               </div>
-              <div className="flex items-center gap-1.5 bg-background/50 backdrop-blur-sm px-2.5 py-1 rounded-lg border border-border/50 shadow-sm">
-                <span className="text-muted-foreground font-bold tracking-tight">Avg:</span>
+              <div className="flex items-center gap-1.5 bg-background px-3 py-1.5 rounded-xl border border-border/50 shadow-sm">
+                <span className="text-muted-foreground font-bold tracking-tight">Average:</span>
                 <span className="text-foreground font-black">₹{avgRate.toFixed(2)}</span>
               </div>
-              <div className="flex items-center gap-1.5 bg-background/50 backdrop-blur-sm px-2.5 py-1 rounded-lg border border-border/50 shadow-sm">
-                <span className="text-muted-foreground font-bold tracking-tight">High:</span>
+              <div className="flex items-center gap-1.5 bg-background px-3 py-1.5 rounded-xl border border-border/50 shadow-sm">
+                <span className="text-muted-foreground font-bold tracking-tight">Highest:</span>
                 <span className="text-rose-600 dark:text-rose-400 font-black">₹{maxRate.toFixed(2)}</span>
               </div>
             </div>
           </div>
 
-          <svg viewBox={`0 0 ${chartW} ${chartH}`} className="w-full h-48" preserveAspectRatio="none">
-            {/* Grid lines */}
-            {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
-              const y = padding.top + (chartH - padding.top - padding.bottom) * (1 - ratio);
-              const val = minRate + (maxRate - minRate) * ratio;
+          {/* Clean Snapshot Data instead of distorted SVG */}
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
+            {historicalRates.filter((_, i) => i % Math.floor(historicalRates.length / 6) === 0 && i !== 0).map((r) => {
+              const label = new Date(r.date).toLocaleDateString('en', { month: 'short', year: 'numeric' });
               return (
-                <g key={ratio}>
-                  <line x1={padding.left} y1={y} x2={chartW - padding.right} y2={y} stroke="currentColor" className="text-border" strokeWidth="1" />
-                  <text x={padding.left - 8} y={y + 4} textAnchor="end" className="fill-muted-foreground text-[10px] font-bold">
-                    {val.toFixed(0)}
-                  </text>
-                </g>
+                <div key={r.date} className="flex flex-col items-center justify-center p-4 bg-muted/30 border border-border/40 rounded-2xl hover:bg-muted/60 transition-colors">
+                  <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2">{label}</span>
+                  <span className="text-[16px] font-black text-foreground">₹{r.rate.toFixed(2)}</span>
+                </div>
               );
             })}
-
-            {/* Area fill */}
-            <path d={getAreaPath()} fill="url(#chart-gradient)" opacity="0.3" />
-
-            {/* Line */}
-            <path d={getChartPath()} fill="none" stroke="#60a5fa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-
-            {/* Gradient definition */}
-            <defs>
-              <linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#60a5fa" stopOpacity="0.4" />
-                <stop offset="100%" stopColor="#60a5fa" stopOpacity="0" />
-              </linearGradient>
-            </defs>
-
-            {/* X-axis labels */}
-            {historicalRates.filter((_, i) => i % Math.floor(historicalRates.length / 6) === 0).map((r) => {
-              const idx = historicalRates.indexOf(r);
-              const x = padding.left + (idx / (historicalRates.length - 1)) * (chartW - padding.left - padding.right);
-              const label = new Date(r.date).toLocaleDateString('en', { month: 'short', year: '2-digit' });
-              return (
-                <text key={r.date} x={x} y={chartH - 5} textAnchor="middle" className="fill-muted-foreground text-[10px] font-bold tracking-wide">
-                  {label}
-                </text>
-              );
-            })}
-          </svg>
+          </div>
         </motion.div>
       )}
     </div>

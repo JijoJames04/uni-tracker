@@ -278,7 +278,7 @@ export default function DhlFacilityFinder() {
                     initial={{ opacity: 0, x: -12 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.06 }}
-                    className="bg-card/60 backdrop-blur-md border border-border/50 shadow-sm rounded-2xl px-5 py-4 space-y-3
+                    className="bg-card border border-border/50 shadow-sm rounded-2xl px-5 py-4 space-y-3
                       hover:border-amber-500/40 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group"
                   >
                     {/* Name + badge */}
@@ -332,7 +332,7 @@ export default function DhlFacilityFinder() {
                 <button
                   onClick={findFacilities}
                   className="w-full flex items-center justify-center gap-2.5 text-[14px] font-black text-muted-foreground
-                    hover:text-amber-600 dark:hover:text-amber-400 bg-background/50 hover:bg-amber-500/10 border border-border/50 hover:border-amber-500/30 rounded-2xl transition-all py-3.5 shadow-sm mt-4"
+                    hover:text-amber-600 dark:hover:text-amber-400 bg-background hover:bg-amber-500/10 border border-border/50 hover:border-amber-500/30 rounded-2xl transition-all py-3.5 shadow-sm mt-4"
                 >
                   <RefreshCw className="w-4 h-4" />
                   Refresh Location

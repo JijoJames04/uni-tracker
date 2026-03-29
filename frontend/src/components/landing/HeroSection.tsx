@@ -129,7 +129,7 @@ export default function HeroSection() {
             whileTap={{ scale: 0.97 }}
             onClick={handleLocalMode}
             className="flex items-center gap-3 px-8 py-4 rounded-2xl
-              border border-zinc-700 bg-zinc-800/50 backdrop-blur-sm
+              border border-zinc-700 bg-zinc-800/50
               text-zinc-200 font-semibold text-lg
               hover:bg-zinc-700/50 hover:border-zinc-600 transition-all"
           >
