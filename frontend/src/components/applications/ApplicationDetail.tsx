@@ -212,23 +212,23 @@ export function ApplicationDetail({ id }: { id: string }) {
                     💶 {formatFees(course.fees, course.currency)}
                   </Pill>
                 )}
-                {(course.deadline || course.deadlineInternational) && (
-                  editingDeadline ? (
-                    <div className="flex items-center gap-2 bg-background p-1 rounded-xl border border-border/50 shadow-sm">
-                      <select
-                        className="text-[12px] font-bold px-3 py-1.5 rounded-lg border border-border bg-background focus:ring-2 focus:ring-indigo-500/30"
-                        value={course.deadline || ''}
-                        onChange={(e) => {
-                          deadlineMutation.mutate({ deadline: e.target.value, label: e.target.value === course.deadlineInternational ? 'International Students' : 'Default' });
+                {editingDeadline ? (
+                  <div className="flex items-center gap-2 bg-background p-1.5 rounded-xl border border-border/50 shadow-sm">
+                    <input
+                      type="date"
+                      className="text-[12px] font-bold px-3 py-1.5 rounded-lg border border-border bg-background focus:ring-2 focus:ring-indigo-500/30 text-foreground"
+                      defaultValue={course.deadline ? new Date(course.deadline).toISOString().split('T')[0] : ''}
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          deadlineMutation.mutate({ deadline: new Date(e.target.value).toISOString(), label: 'Custom' });
                           setEditingDeadline(false);
-                        }}
-                      >
-                        {course.deadline && <option value={course.deadline}>Default: {formatDate(course.deadline)}</option>}
-                        {course.deadlineInternational && <option value={course.deadlineInternational}>International: {formatDate(course.deadlineInternational)}</option>}
-                      </select>
-                      <button onClick={() => setEditingDeadline(false)} className="px-2 py-1 text-[12px] font-bold text-muted-foreground hover:text-foreground transition-colors bg-muted hover:bg-muted/80 rounded-lg">✕</button>
-                    </div>
-                  ) : (
+                        }
+                      }}
+                    />
+                    <button onClick={() => setEditingDeadline(false)} className="px-2 py-1 text-[12px] font-bold text-muted-foreground hover:text-foreground transition-colors bg-muted hover:bg-muted/80 rounded-lg">✕</button>
+                  </div>
+                ) : (
+                  (course.deadline || course.deadlineInternational) ? (
                     <Pill 
                       className={cn(
                         'cursor-pointer hover:scale-105 transition-transform shadow-sm',
@@ -241,6 +241,10 @@ export function ApplicationDetail({ id }: { id: string }) {
                       <Calendar className="w-3.5 h-3.5 mr-1.5 opacity-70" /> {deadline.text}
                       {course.deadlineLabel && <span className="ml-1 opacity-75 hidden sm:inline-block">({course.deadlineLabel})</span>}
                     </Pill>
+                  ) : (
+                    <Pill onClick={() => setEditingDeadline(true)} className="cursor-pointer hover:bg-indigo-50 hover:text-indigo-600 transition-colors border-dashed border-2">
+                      <Plus className="w-3.5 h-3.5 mr-1 mb-[1px] inline" /> Add Deadline
+                    </Pill>
                   )
                 )}
               </div>
@@ -248,7 +252,7 @@ export function ApplicationDetail({ id }: { id: string }) {
           </div>
 
           {/* Application progress */}
-          <div className="mt-8 bg-background border border-border/50 rounded-2xl p-5 shadow-inner">
+          <div className="mt-8 bg-background border border-border/50 rounded-2xl p-5 pb-10 sm:pb-12 shadow-inner">
             <div className="flex items-center justify-between mb-3">
               <span className="text-[13px] font-bold text-muted-foreground tracking-wide uppercase">Application Progress</span>
               <span className="text-[13px] font-black text-foreground">{progress}%</span>
@@ -262,7 +266,7 @@ export function ApplicationDetail({ id }: { id: string }) {
               />
             </div>
             {/* Pipeline steps */}
-            <div className="flex justify-between mt-3">
+            <div className="flex justify-between mt-3 flex-wrap">
               {STATUS_PIPELINE.map((s) => {
                 const cfg = STATUS_CONFIG[s];
                 const done = STATUS_PIPELINE.indexOf(app.status) >= STATUS_PIPELINE.indexOf(s);
