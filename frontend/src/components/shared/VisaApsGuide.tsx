@@ -93,7 +93,7 @@ const VISA_STEPS = [
 
 export default function VisaApsGuide({ className = '' }: { className?: string }) {
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
-  const [expandedSection, setExpandedSection] = useState<string | null>('aps');
+  const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   const toggleCheck = (id: string) => {
     setCheckedItems(prev => {
