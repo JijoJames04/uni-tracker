@@ -11,7 +11,7 @@ import {
   LayoutGrid, List, Search, Calendar,
   ArrowRight, Euro, Trash2,
 } from 'lucide-react';
-import { cn, STATUS_CONFIG, formatDeadline, formatFees, isActionNeeded } from '@/lib/utils';
+import { cn, STATUS_CONFIG, formatDeadline, formatFees, isActionNeeded, getStatusProgress } from '@/lib/utils';
 import { StatusBadge, ViaBadge } from '@/components/shared/StatusBadge';
 import { UniversityLogo } from '@/components/shared/UniversityLogo';
 import { Skeleton } from '@/components/shared/Skeleton';
@@ -202,9 +202,10 @@ function ListView({ apps }: { apps: Application[] }) {
 
 function AppCard({ app, index }: { app: Application; index: number }) {
   const deadline = formatDeadline(app.course.deadline);
-  const progress = app.checklist.length > 0
+  const checklistProgress = app.checklist.length > 0
     ? Math.round((app.checklist.filter((c) => c.completed).length / app.checklist.length) * 100)
     : 0;
+  const statusProgress = getStatusProgress(app.status);
 
   return (
     <motion.div variants={FADE} initial="hidden" animate="visible" custom={index} whileHover={{ y: -2 }}>
@@ -267,17 +268,15 @@ function AppCard({ app, index }: { app: Application; index: number }) {
                     <span className="text-[12px] font-semibold text-muted-foreground bg-muted hover:bg-muted/80 px-2 py-0.5 rounded-lg border border-border/50 transition-colors shadow-sm">{formatFees(app.course.fees)}</span>
                   </div>
                 )}
-                {app.checklist.length > 0 && (
-                  <div className="flex items-center gap-2 mt-2 sm:mt-0 sm:ml-auto">
-                    <div className="w-full sm:w-24 h-1.5 rounded-full bg-border/50 shadow-inner overflow-hidden">
-                      <div
-                        className={cn('h-full rounded-full transition-all duration-1000', progress === 100 ? 'bg-emerald-500' : 'bg-indigo-500')}
-                        style={{ width: `${progress}%` }}
-                      />
-                    </div>
-                    <span className="text-[11px] font-bold text-muted-foreground">{progress}%</span>
+                <div className="flex items-center gap-2 mt-2 sm:mt-0 sm:ml-auto" title={`Status Progress`}>
+                  <div className="w-full sm:w-24 h-1.5 rounded-full bg-border/50 shadow-inner overflow-hidden">
+                    <div
+                      className={cn('h-full rounded-full transition-all duration-1000', statusProgress === 100 ? 'bg-emerald-500' : 'bg-indigo-500')}
+                      style={{ width: `${statusProgress}%` }}
+                    />
                   </div>
-                )}
+                  <span className="text-[11px] font-bold text-muted-foreground">{statusProgress}%</span>
+                </div>
               </div>
             </div>
             <ArrowRight className="hidden sm:block w-4 h-4 text-muted-foreground group-hover:text-indigo-500 group-hover:translate-x-1 transition-all flex-shrink-0 mt-2" />

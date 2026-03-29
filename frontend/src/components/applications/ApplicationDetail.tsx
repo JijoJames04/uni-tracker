@@ -269,7 +269,9 @@ export function ApplicationDetail({ id }: { id: string }) {
                 return (
                   <div key={s} className="flex flex-col items-center gap-1.5 relative w-8 sm:w-auto">
                     <div className={cn('w-3 h-3 rounded-full border-2 transition-all duration-500', done ? cn(cfg.border, cfg.bg) : 'border-border/50 bg-muted')} />
-                    <span className={cn('text-[10px] sm:text-[11px] font-bold text-center absolute top-4 hidden sm:block w-max', done ? cfg.color : 'text-muted-foreground/50 opacity-50')}>{cfg.label.split(' ')[0]}</span>
+                    <span className={cn('text-[10px] sm:text-[11px] font-bold text-center absolute top-4 hidden sm:block w-max leading-tight', done ? cfg.color : 'text-muted-foreground/50 opacity-50')}>
+                      {cfg.label.split(' ').map((word, i) => <span key={i} className="block">{word}</span>)}
+                    </span>
                   </div>
                 );
               })}
