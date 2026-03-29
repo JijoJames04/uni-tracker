@@ -14,11 +14,13 @@ import { saveAs } from 'file-saver';
 import { CheckCircle2, Circle, Download, RefreshCw } from 'lucide-react';
 
 const STANDARD_REQUIRED_DOCS = [
-  { type: 'PASSPORT', label: 'Passport (Upload identity doc)' },
+  { type: 'PASSPORT', label: 'Valid Passport' },
   { type: 'CV', label: 'CV / Resume' },
   { type: 'TRANSCRIPT', label: 'Academic Transcripts' },
   { type: 'BACHELOR_CERTIFICATE', label: 'Bachelor Certificate' },
   { type: 'SOP', label: 'SOP / Motivation Letter' },
+  { type: 'LANGUAGE_CERT_IELTS', label: 'Language Certificate' },
+  { type: 'RECOMMENDATION_LETTER', label: 'Recommendation Letter' },
 ];
 
 export function DocumentsVault() {
@@ -144,34 +146,35 @@ export function DocumentsVault() {
             ))
           }
 
-          {/* Checklist Panel */}
-          {selectedApp && (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="pt-4 mt-4 border-t border-border/50">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-1 mb-3">
-                Readiness Checklist
-              </p>
-              <div className="space-y-1.5 bg-card border border-border/50 p-4 rounded-2xl shadow-sm">
-                {STANDARD_REQUIRED_DOCS.map((req) => {
-                  // We map 'SOP' to also accept 'MOTIVATION_LETTER'
-                  const isSOP = req.type === 'SOP';
-                  const hasDoc = filtered.some((d) => 
-                    d.type === req.type || (isSOP && d.type === 'MOTIVATION_LETTER')
-                  );
-                  return (
-                    <div key={req.type} className="flex items-center gap-3 text-sm font-medium">
-                      {hasDoc 
-                        ? <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-                        : <Circle className="w-5 h-5 text-muted-foreground/30 flex-shrink-0" />
-                      }
-                      <span className={cn('truncate transition-all', hasDoc ? 'text-foreground' : 'text-muted-foreground')}>
-                        {req.label}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </motion.div>
-          )}
+          {/* Checklist Panel (Always Visible) */}
+          <div className="pt-4 mt-4 border-t border-border/50">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-1 mb-3">
+              {selectedApp ? 'Application Readiness Checklist' : 'Central Documents Checklist'}
+            </p>
+            <div className="space-y-1.5 bg-card border border-border/50 p-4 rounded-2xl shadow-sm">
+              {STANDARD_REQUIRED_DOCS.map((req) => {
+                // We map 'SOP' to also accept 'MOTIVATION_LETTER', and 'LANGUAGE_CERT_IELTS' for any language tests
+                const isSOP = req.type === 'SOP';
+                const isLang = req.type === 'LANGUAGE_CERT_IELTS';
+                const hasDoc = filtered.some((d) => 
+                  d.type === req.type || 
+                  (isSOP && d.type === 'MOTIVATION_LETTER') ||
+                  (isLang && d.type.startsWith('LANGUAGE_CERT_'))
+                );
+                return (
+                  <div key={req.type} className="flex items-center gap-3 text-sm font-medium">
+                    {hasDoc 
+                      ? <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0" />
+                      : <Circle className="w-5 h-5 text-muted-foreground/30 flex-shrink-0" />
+                    }
+                    <span className={cn('truncate transition-all', hasDoc ? 'text-foreground' : 'text-muted-foreground')}>
+                      {req.label}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
 
         </div>
 
