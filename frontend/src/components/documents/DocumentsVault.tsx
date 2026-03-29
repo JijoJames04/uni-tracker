@@ -14,12 +14,12 @@ import { saveAs } from 'file-saver';
 import { CheckCircle2, Circle, Download, RefreshCw } from 'lucide-react';
 
 const STANDARD_REQUIRED_DOCS = [
-  { type: 'PASSPORT', label: 'Valid Passport (Notarized valid copy optional)' },
-  { type: 'CV', label: 'CV / Resume (Notarized valid copy optional)' },
-  { type: 'TRANSCRIPT', label: 'Academic Transcripts (Notarized valid copy optional)' },
-  { type: 'BACHELOR_CERTIFICATE', label: 'Bachelor Certificate (Notarized valid copy optional)' },
+  { type: 'PASSPORT', label: 'Valid Passport' },
+  { type: 'CV', label: 'CV / Resume' },
+  { type: 'TRANSCRIPT', label: 'Academic Transcripts' },
+  { type: 'BACHELOR_CERTIFICATE', label: 'Bachelor Certificate' },
   { type: 'SOP', label: 'SOP / Motivation Letter' },
-  { type: 'LANGUAGE_CERT_IELTS', label: 'Language Certificate (Notarized valid copy optional)' },
+  { type: 'LANGUAGE_CERT_IELTS', label: 'Language Certificate' },
   { type: 'RECOMMENDATION_LETTER', label: 'Recommendation Letter' },
 ];
 
