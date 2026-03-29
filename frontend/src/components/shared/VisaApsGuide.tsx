@@ -21,20 +21,20 @@ const APS_OFFICE = {
 
 // ─── APS Required Documents ───────────────────────────────────
 const APS_DOCUMENTS = [
-  { id: 'passport', label: 'Valid passport', category: 'Identity' },
-  { id: 'photos', label: '2 recent passport-size photographs', category: 'Identity' },
-  { id: 'aps-form', label: 'APS application form filled online', category: 'Application' },
-  { id: 'aps-fee', label: 'APS processing fee receipt', category: 'Application' },
-  { id: 'class10', label: 'Class 10 mark sheet & certificate', category: 'Academic' },
-  { id: 'class12', label: 'Class 12 mark sheet & certificate', category: 'Academic' },
-  { id: 'degree', label: 'Bachelor degree certificate', category: 'Academic' },
-  { id: 'transcripts', label: 'All semester mark sheets / transcripts', category: 'Academic' },
-  { id: 'provisional', label: 'Provisional certificate', category: 'Academic' },
-  { id: 'naac', label: 'NAAC/NBA accreditation proof of university', category: 'Academic' },
-  { id: 'language', label: 'Language certificate (IELTS/TOEFL/TestDaF)', category: 'Language' },
-  { id: 'gre', label: 'GRE/GMAT score report', category: 'Tests' },
-  { id: 'cv', label: 'Updated CV/Resume', category: 'Documents' },
-  { id: 'work-exp', label: 'Work experience certificates', category: 'Documents' },
+  { id: 'passport', label: 'Valid passport (Copy only)', category: 'Identity' },
+  { id: 'photos', label: '2 recent passport-size photographs (Copy only)', category: 'Identity' },
+  { id: 'aps-form', label: 'APS application form filled online (Copy only)', category: 'Application' },
+  { id: 'aps-fee', label: 'APS processing fee receipt (Copy only)', category: 'Application' },
+  { id: 'class10', label: 'Class 10 mark sheet & certificate (Copy only)', category: 'Academic' },
+  { id: 'class12', label: 'Class 12 mark sheet & certificate (Copy only)', category: 'Academic' },
+  { id: 'degree', label: 'Bachelor degree certificate (Copy only)', category: 'Academic' },
+  { id: 'transcripts', label: 'All semester mark sheets / transcripts (Copy only)', category: 'Academic' },
+  { id: 'provisional', label: 'Provisional certificate (Copy only)', category: 'Academic' },
+  { id: 'naac', label: 'NAAC/NBA accreditation proof of university (Copy only)', category: 'Academic' },
+  { id: 'language', label: 'Language certificate (IELTS/TOEFL/TestDaF) (Copy only)', category: 'Language' },
+  { id: 'gre', label: 'GRE/GMAT score report (Copy only)', category: 'Tests' },
+  { id: 'cv', label: 'Updated CV/Resume (Copy only)', category: 'Documents' },
+  { id: 'work-exp', label: 'Work experience certificates (Copy only)', category: 'Documents' },
 ];
 
 // ─── Visa Application Steps (F12) ────────────────────────────
@@ -189,9 +189,9 @@ export default function VisaApsGuide({ className = '' }: { className?: string })
               <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 rounded-xl p-4 flex gap-3 shadow-sm my-2">
                 <FileText className="w-5 h-5 text-blue-600 dark:text-blue-500 flex-shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="text-sm font-bold text-blue-800 dark:text-blue-400">Document Requirements</h4>
+                  <h4 className="text-sm font-bold text-blue-800 dark:text-blue-400">Important Document Requirements</h4>
                   <p className="text-xs text-blue-700/90 dark:text-blue-500/90 mt-1 leading-relaxed">
-                    Stamping is not required. A copy for all documents only needs to be shared.
+                    Stamping is <span className="font-bold underline">not required</span>. A copy for all documents only needs to be shared. Please only send simple copies and do not send originals.
                   </p>
                 </div>
               </div>
