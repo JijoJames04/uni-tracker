@@ -257,35 +257,61 @@ export class ScraperService {
 
   // ─── University Name ──────────────────────────────────────────
   private extractUniversityName($: cheerio.CheerioAPI, text: string, url: string, hostname: string, jsonLd: any): string {
+    const cleanUniversity = (name: string): string => {
+      if (!name || typeof name !== 'string') return '';
+      // Remove trailing junk separated by pipes, dashes, commas, dots, newlines
+      let clean = name.split(/[|\n]| - | – | — /)[0].trim();
+      clean = clean.split(/, |\.\s/)[0].trim();
+      // Remove extra whitespaces
+      clean = clean.replace(/\s+/g, ' ');
+      // If the resulting string is uncharacteristically long, truncate it nicely
+      if (clean.length > 60) return clean.substring(0, 60).trim() + '...';
+      return clean;
+    };
+
+    let foundName = '';
+
     // 1. Known university mapping
     for (const [domain, info] of Object.entries(KNOWN_UNIVERSITIES)) {
       if (hostname.endsWith(domain) && info.name) return info.name;
     }
 
     // 2. JSON-LD
-    if (jsonLd?.provider?.name) return jsonLd.provider.name;
-    if (jsonLd?.['@type'] === 'CollegeOrUniversity' && jsonLd.name) return jsonLd.name;
+    if (jsonLd?.provider?.name && typeof jsonLd.provider.name === 'string') foundName = jsonLd.provider.name;
+    else if (jsonLd?.['@type'] === 'CollegeOrUniversity' && typeof jsonLd.name === 'string') foundName = jsonLd.name;
 
     // 3. OG site name
-    const ogSiteName = $('meta[property="og:site_name"]').attr('content')?.trim();
-    if (ogSiteName && ogSiteName.length > 3 && ogSiteName.length < 100) return ogSiteName;
+    if (!foundName) {
+      const ogSiteName = $('meta[property="og:site_name"]').attr('content')?.trim();
+      if (ogSiteName && ogSiteName.length > 3 && ogSiteName.length < 100) foundName = ogSiteName;
+    }
 
     // 4. Regex patterns on text
-    const patterns = [
-      /(?:Technische\s+Universit[äa]t|TU)\s+[\wäöüß\s-]+/i,
-      /(?:Ludwig[- ]Maximilians[- ]Universit[äa]t)\s*[\wäöüß\s]*/i,
-      /(?:Universit[äa]t|University)\s+(?:of\s+)?[\wäöüß\s-]{3,40}/i,
-      /[\wäöüß\s-]+\s+(?:Universit[äa]t|University|Hochschule|Institute\s+of\s+Technology)/i,
-      /(?:Hochschule|Fachhochschule)\s+[\wäöüß\s-]+/i,
-      /RWTH\s+Aachen(?:\s+University)?/i,
-      /KIT\b/i,
-    ];
-    for (const p of patterns) {
-      const m = text.match(p);
-      if (m) {
-        const name = m[0].trim();
-        if (name.length > 5 && name.length < 100) return name;
+    if (!foundName) {
+      const patterns = [
+        /(?:Technische\s+Universit[äa]t|TU)\s+[^.,|]{3,40}/i,
+        /(?:Ludwig[- ]Maximilians[- ]Universit[äa]t)\s*[^.,|]{1,30}/i,
+        /(?:Universit[äa]t|University)\s+(?:of\s+)?[A-Za-zÄÖÜäöüß\s-]{3,40}/i,
+        /[A-Za-zÄÖÜäöüß\s-]{3,40}\s+(?:Universit[äa]t|University|Hochschule|Institute\s+of\s+Technology)/i,
+        /(?:Hochschule|Fachhochschule)\s+[^.,|]{3,40}/i,
+        /RWTH\s+Aachen(?:\s+University)?/i,
+        /KIT\b/i,
+      ];
+      for (const p of patterns) {
+        const m = text.match(p);
+        if (m) {
+          const name = m[0].trim();
+          if (name.length > 5 && name.length < 100) {
+            foundName = name;
+            break;
+          }
+        }
       }
+    }
+
+    if (foundName) {
+      const cleaned = cleanUniversity(foundName);
+      if (cleaned.length > 3) return cleaned;
     }
 
     // 5. Hostname fallback
@@ -298,6 +324,7 @@ export class ScraperService {
       }
       return parts[parts.length - 2].charAt(0).toUpperCase() + parts[parts.length - 2].slice(1) + ' University';
     } catch {}
+    
     return 'Unknown University';
   }
 

@@ -209,33 +209,55 @@ let ScraperService = ScraperService_1 = class ScraperService {
         return kv;
     }
     extractUniversityName($, text, url, hostname, jsonLd) {
+        const cleanUniversity = (name) => {
+            if (!name || typeof name !== 'string')
+                return '';
+            let clean = name.split(/[|\n]| - | – | — /)[0].trim();
+            clean = clean.split(/, |\.\s/)[0].trim();
+            clean = clean.replace(/\s+/g, ' ');
+            if (clean.length > 60)
+                return clean.substring(0, 60).trim() + '...';
+            return clean;
+        };
+        let foundName = '';
         for (const [domain, info] of Object.entries(KNOWN_UNIVERSITIES)) {
             if (hostname.endsWith(domain) && info.name)
                 return info.name;
         }
-        if (jsonLd?.provider?.name)
-            return jsonLd.provider.name;
-        if (jsonLd?.['@type'] === 'CollegeOrUniversity' && jsonLd.name)
-            return jsonLd.name;
-        const ogSiteName = $('meta[property="og:site_name"]').attr('content')?.trim();
-        if (ogSiteName && ogSiteName.length > 3 && ogSiteName.length < 100)
-            return ogSiteName;
-        const patterns = [
-            /(?:Technische\s+Universit[äa]t|TU)\s+[\wäöüß\s-]+/i,
-            /(?:Ludwig[- ]Maximilians[- ]Universit[äa]t)\s*[\wäöüß\s]*/i,
-            /(?:Universit[äa]t|University)\s+(?:of\s+)?[\wäöüß\s-]{3,40}/i,
-            /[\wäöüß\s-]+\s+(?:Universit[äa]t|University|Hochschule|Institute\s+of\s+Technology)/i,
-            /(?:Hochschule|Fachhochschule)\s+[\wäöüß\s-]+/i,
-            /RWTH\s+Aachen(?:\s+University)?/i,
-            /KIT\b/i,
-        ];
-        for (const p of patterns) {
-            const m = text.match(p);
-            if (m) {
-                const name = m[0].trim();
-                if (name.length > 5 && name.length < 100)
-                    return name;
+        if (jsonLd?.provider?.name && typeof jsonLd.provider.name === 'string')
+            foundName = jsonLd.provider.name;
+        else if (jsonLd?.['@type'] === 'CollegeOrUniversity' && typeof jsonLd.name === 'string')
+            foundName = jsonLd.name;
+        if (!foundName) {
+            const ogSiteName = $('meta[property="og:site_name"]').attr('content')?.trim();
+            if (ogSiteName && ogSiteName.length > 3 && ogSiteName.length < 100)
+                foundName = ogSiteName;
+        }
+        if (!foundName) {
+            const patterns = [
+                /(?:Technische\s+Universit[äa]t|TU)\s+[^.,|]{3,40}/i,
+                /(?:Ludwig[- ]Maximilians[- ]Universit[äa]t)\s*[^.,|]{1,30}/i,
+                /(?:Universit[äa]t|University)\s+(?:of\s+)?[A-Za-zÄÖÜäöüß\s-]{3,40}/i,
+                /[A-Za-zÄÖÜäöüß\s-]{3,40}\s+(?:Universit[äa]t|University|Hochschule|Institute\s+of\s+Technology)/i,
+                /(?:Hochschule|Fachhochschule)\s+[^.,|]{3,40}/i,
+                /RWTH\s+Aachen(?:\s+University)?/i,
+                /KIT\b/i,
+            ];
+            for (const p of patterns) {
+                const m = text.match(p);
+                if (m) {
+                    const name = m[0].trim();
+                    if (name.length > 5 && name.length < 100) {
+                        foundName = name;
+                        break;
+                    }
+                }
             }
+        }
+        if (foundName) {
+            const cleaned = cleanUniversity(foundName);
+            if (cleaned.length > 3)
+                return cleaned;
         }
         try {
             const parts = hostname.split('.');
