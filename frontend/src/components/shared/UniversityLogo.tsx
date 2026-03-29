@@ -40,14 +40,12 @@ export function UniversityLogo({ url, name, size = 'md', className }: University
   if (url && !imgError) {
     return (
       <div className={cn(cfg.container, 'rounded-xl overflow-hidden flex-shrink-0 bg-white border border-border', className)}>
-        <Image
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           src={url}
           alt={name}
-          width={cfg.img}
-          height={cfg.img}
           className="w-full h-full object-contain p-0.5"
           onError={() => setImgError(true)}
-          unoptimized
         />
       </div>
     );

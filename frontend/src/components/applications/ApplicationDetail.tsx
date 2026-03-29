@@ -263,7 +263,7 @@ export function ApplicationDetail({ id }: { id: string }) {
             </div>
             {/* Pipeline steps */}
             <div className="flex justify-between mt-3">
-              {STATUS_PIPELINE.slice(0, -1).map((s) => {
+              {STATUS_PIPELINE.map((s) => {
                 const cfg = STATUS_CONFIG[s];
                 const done = STATUS_PIPELINE.indexOf(app.status) >= STATUS_PIPELINE.indexOf(s);
                 return (
