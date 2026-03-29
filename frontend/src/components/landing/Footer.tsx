@@ -18,7 +18,7 @@ export default function Footer() {
         </p>
 
         <a
-          href="https://github.com"
+          href="https://github.com/JijoJames04/uni-tracker"
           target="_blank"
           rel="noopener noreferrer"
           className="text-zinc-500 hover:text-zinc-300 transition-colors"

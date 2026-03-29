@@ -7,7 +7,23 @@ export declare class AuthService {
         email: string;
         displayName?: string;
         photoUrl?: string;
-    }): Promise<any>;
+    }): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        email: string;
+        firebaseUid: string;
+        displayName: string | null;
+        photoUrl: string | null;
+    }>;
     getUserCount(): Promise<number>;
-    findByFirebaseUid(firebaseUid: string): Promise<any>;
+    findByFirebaseUid(firebaseUid: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        email: string;
+        firebaseUid: string;
+        displayName: string | null;
+        photoUrl: string | null;
+    }>;
 }
