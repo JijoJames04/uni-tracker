@@ -712,7 +712,7 @@ export function ApplicationDetail({ id }: { id: string }) {
                     className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-[14px] font-bold shadow-sm transition-all hover:shadow-md w-full sm:w-auto ml-auto"
                   >
                     {emailCopied ? <Check className="w-4 h-4 text-white" /> : <Copy className="w-4 h-4" />}
-                    {emailCopied ? 'Copied!' : 'Copy Email'}
+                    {emailCopied ? 'Copied!' : 'Copy Prompt'}
                   </button>
                 </div>
               )}
