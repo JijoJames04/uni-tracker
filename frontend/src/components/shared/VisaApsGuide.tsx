@@ -21,20 +21,20 @@ const APS_OFFICE = {
 
 // ─── APS Required Documents ───────────────────────────────────
 const APS_DOCUMENTS = [
-  { id: 'passport', label: 'Valid passport (Notarized copies only)', category: 'Identity' },
-  { id: 'photos', label: '2 recent passport-size photographs', category: 'Identity' },
-  { id: 'aps-form', label: 'APS application form (filled online)', category: 'Application' },
-  { id: 'aps-fee', label: 'APS processing fee receipt (₹18,000 approx.)', category: 'Application' },
-  { id: 'class10', label: 'Class 10 mark sheet & certificate (Notarized copies only)', category: 'Academic' },
-  { id: 'class12', label: 'Class 12 mark sheet & certificate (Notarized copies only)', category: 'Academic' },
-  { id: 'degree', label: 'Bachelor degree certificate (Notarized copies only)', category: 'Academic' },
-  { id: 'transcripts', label: 'All semester mark sheets / transcripts (Notarized copies only)', category: 'Academic' },
-  { id: 'provisional', label: 'Provisional certificate (if degree not yet awarded)', category: 'Academic' },
-  { id: 'naac', label: 'NAAC/NBA accreditation proof of university', category: 'Academic' },
-  { id: 'language', label: 'Language certificate (IELTS/TOEFL/TestDaF) if available', category: 'Language' },
-  { id: 'gre', label: 'GRE/GMAT score report (if applicable)', category: 'Tests' },
-  { id: 'cv', label: 'Updated CV/Resume', category: 'Documents' },
-  { id: 'work-exp', label: 'Work experience certificates (if any)', category: 'Documents' },
+  { id: 'passport', label: 'Valid passport (Notarized copy)', category: 'Identity' },
+  { id: 'photos', label: '2 recent passport-size photographs (Notarized copy)', category: 'Identity' },
+  { id: 'aps-form', label: 'APS application form filled online (Notarized copy)', category: 'Application' },
+  { id: 'aps-fee', label: 'APS processing fee receipt (Notarized copy)', category: 'Application' },
+  { id: 'class10', label: 'Class 10 mark sheet & certificate (Notarized copy)', category: 'Academic' },
+  { id: 'class12', label: 'Class 12 mark sheet & certificate (Notarized copy)', category: 'Academic' },
+  { id: 'degree', label: 'Bachelor degree certificate (Notarized copy)', category: 'Academic' },
+  { id: 'transcripts', label: 'All semester mark sheets / transcripts (Notarized copy)', category: 'Academic' },
+  { id: 'provisional', label: 'Provisional certificate (Notarized copy)', category: 'Academic' },
+  { id: 'naac', label: 'NAAC/NBA accreditation proof of university (Notarized copy)', category: 'Academic' },
+  { id: 'language', label: 'Language certificate (IELTS/TOEFL/TestDaF) (Notarized copy)', category: 'Language' },
+  { id: 'gre', label: 'GRE/GMAT score report (Notarized copy)', category: 'Tests' },
+  { id: 'cv', label: 'Updated CV/Resume (Notarized copy)', category: 'Documents' },
+  { id: 'work-exp', label: 'Work experience certificates (Notarized copy)', category: 'Documents' },
 ];
 
 // ─── Visa Application Steps (F12) ────────────────────────────
@@ -182,6 +182,17 @@ export default function VisaApsGuide({ className = '' }: { className?: string })
                     className="inline-flex items-center gap-1.5 text-xs font-medium text-foreground bg-muted hover:bg-muted/80 px-3 py-1.5 rounded-lg border border-border/50 transition-colors">
                     <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" /> Official Site
                   </a>
+                </div>
+              </div>
+              
+              {/* Mandatory Notarization Note */}
+              <div className="bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-xl p-4 flex gap-3 shadow-sm my-2">
+                <FileText className="w-5 h-5 text-amber-600 dark:text-amber-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="text-sm font-bold text-amber-800 dark:text-amber-400">Critical Requirement: Notarization</h4>
+                  <p className="text-xs text-amber-700/90 dark:text-amber-500/90 mt-1 leading-relaxed">
+                    Every document that is sending for APS should be <span className="font-bold">notarized</span>. Ensure all copies are verified and stamped by a recognized notary public or official authority before submission.
+                  </p>
                 </div>
               </div>
 

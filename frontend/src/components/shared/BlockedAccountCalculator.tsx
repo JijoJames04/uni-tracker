@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Calculator, TrendingUp, ExternalLink, RefreshCw } from 'lucide-react';
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
 // Official blocked account amount (updated from official sources)
 const OFFICIAL_BLOCKED_AMOUNT_EUR = 11904; // 2024/2025 requirement: €11,904/year
@@ -75,9 +76,26 @@ export default function BlockedAccountCalculator({ className = '' }: { className
   }, []);
 
   const inrAmount = customAmount * exchangeRate.rate;
-  const minRate = historicalRates.length ? Math.min(...historicalRates.map(r => r.rate)) : 0;
-  const maxRate = historicalRates.length ? Math.max(...historicalRates.map(r => r.rate)) : 0;
-  const avgRate = historicalRates.length ? historicalRates.reduce((s, r) => s + r.rate, 0) / historicalRates.length : 0;
+  
+  const displayRates = [...historicalRates];
+  const todayStr = new Date().toISOString().split('T')[0];
+  if (displayRates.length > 0 && !exchangeRate.loading && !exchangeRate.error) {
+    const lastPoint = displayRates[displayRates.length - 1];
+    if (lastPoint.date !== exchangeRate.date && exchangeRate.date > lastPoint.date) {
+      displayRates.push({ date: exchangeRate.date, rate: exchangeRate.rate });
+    } else if (lastPoint.date === exchangeRate.date && lastPoint.rate !== exchangeRate.rate) {
+      displayRates[displayRates.length - 1] = { date: exchangeRate.date, rate: exchangeRate.rate };
+    }
+    
+    const newLastPoint = displayRates[displayRates.length - 1];
+    if (newLastPoint.date !== todayStr) {
+      displayRates.push({ date: todayStr, rate: exchangeRate.rate });
+    }
+  }
+
+  const minRate = displayRates.length ? Math.min(...displayRates.map(r => r.rate)) : 0;
+  const maxRate = displayRates.length ? Math.max(...displayRates.map(r => r.rate)) : 0;
+  const avgRate = displayRates.length ? displayRates.reduce((s, r) => s + r.rate, 0) / displayRates.length : 0;
 
   return (
     <div className={`space-y-6 ${className} pb-6`} id="blocked-account-calculator">
@@ -170,7 +188,7 @@ export default function BlockedAccountCalculator({ className = '' }: { className
       </motion.div>
 
       {/* Currency History */}
-      {historicalRates.length > 10 && (
+      {displayRates.length > 10 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -204,17 +222,56 @@ export default function BlockedAccountCalculator({ className = '' }: { className
             </div>
           </div>
 
-          {/* Clean Snapshot Data instead of distorted SVG */}
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
-            {historicalRates.filter((_, i) => i % Math.floor(historicalRates.length / 6) === 0 && i !== 0).map((r) => {
-              const label = new Date(r.date).toLocaleDateString('en', { month: 'short', year: 'numeric' });
-              return (
-                <div key={r.date} className="flex flex-col items-center justify-center p-4 bg-muted/30 border border-border/40 rounded-2xl hover:bg-muted/60 transition-colors">
-                  <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2">{label}</span>
-                  <span className="text-[16px] font-black text-foreground">₹{r.rate.toFixed(2)}</span>
-                </div>
-              );
-            })}
+          {/* Responsive Area Chart */}
+          <div className="h-[250px] w-full mt-6">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={displayRates} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorRate" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.5} />
+                <XAxis 
+                  dataKey="date" 
+                  tickFormatter={(val) => new Date(val).toLocaleDateString('en', { month: 'short', year: '2-digit' })}
+                  minTickGap={30}
+                  tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                  tickLine={false}
+                  axisLine={false}
+                  dy={10}
+                />
+                <YAxis 
+                  domain={['auto', 'auto']}
+                  tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                  tickFormatter={(val) => `₹${val.toFixed(0)}`}
+                  tickLine={false}
+                  axisLine={false}
+                  dx={-10}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'hsl(var(--card))', 
+                    borderRadius: '12px',
+                    border: '1px solid hsl(var(--border))',
+                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)'
+                  }}
+                  itemStyle={{ color: 'hsl(var(--foreground))', fontWeight: 'bold' }}
+                  labelStyle={{ color: 'hsl(var(--muted-foreground))', marginBottom: '4px', fontSize: '12px' }}
+                  formatter={(value: any) => [`₹${Number(value).toFixed(2)}`, 'Exchange Rate']}
+                  labelFormatter={(label) => new Date(label).toLocaleDateString('en', { month: 'long', day: 'numeric', year: 'numeric' })}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="rate" 
+                  stroke="#3b82f6" 
+                  strokeWidth={2}
+                  fillOpacity={1} 
+                  fill="url(#colorRate)" 
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </motion.div>
       )}

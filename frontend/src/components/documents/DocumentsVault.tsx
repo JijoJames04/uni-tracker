@@ -9,10 +9,22 @@ import { cn, DOC_TYPE_LABELS, formatFileSize, formatRelativeTime } from '@/lib/u
 import { UniversityLogo } from '@/components/shared/UniversityLogo';
 import { DocumentUpload } from './DocumentUpload';
 import { Skeleton } from '@/components/shared/Skeleton';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
+import { CheckCircle2, Circle, Download, RefreshCw } from 'lucide-react';
+
+const STANDARD_REQUIRED_DOCS = [
+  { type: 'PASSPORT', label: 'Passport (Upload identity doc)' },
+  { type: 'CV', label: 'CV / Resume' },
+  { type: 'TRANSCRIPT', label: 'Academic Transcripts' },
+  { type: 'BACHELOR_CERTIFICATE', label: 'Bachelor Certificate' },
+  { type: 'SOP', label: 'SOP / Motivation Letter' },
+];
 
 export function DocumentsVault() {
   const [selectedApp, setSelectedApp] = useState<string | null>(null);
   const [uploadOpen, setUploadOpen]   = useState(false);
+  const [isZipping, setIsZipping]     = useState(false);
   const queryClient = useQueryClient();
 
   const { data: applications = [], isLoading } = useQuery({
@@ -34,6 +46,32 @@ export function DocumentsVault() {
   const FADE = {
     hidden: { opacity: 0, y: 8 },
     visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.04, duration: 0.3 } }),
+  };
+
+  const handleZipDownload = async () => {
+    if (!filtered.length) return;
+    setIsZipping(true);
+    try {
+      const zip = new JSZip();
+      const promises = filtered.map(async (doc) => {
+        try {
+          const res = await fetch(documentApi.download(doc.id));
+          const blob = await res.blob();
+          let name = doc.originalName;
+          if (zip.file(name)) name = `${doc.id.slice(0, 6)}-${name}`;
+          zip.file(name, blob);
+        } catch (e) {
+          console.error(`Failed to fetch ${doc.originalName}`, e);
+        }
+      });
+      await Promise.all(promises);
+      const content = await zip.generateAsync({ type: 'blob' });
+      saveAs(content, selectedApp ? 'application-documents.zip' : 'all-documents.zip');
+    } catch (err) {
+      console.error('ZIP generation failed:', err);
+    } finally {
+      setIsZipping(false);
+    }
   };
 
   return (
@@ -105,6 +143,36 @@ export function DocumentsVault() {
               </button>
             ))
           }
+
+          {/* Checklist Panel */}
+          {selectedApp && (
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="pt-4 mt-4 border-t border-border/50">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-1 mb-3">
+                Readiness Checklist
+              </p>
+              <div className="space-y-1.5 bg-card border border-border/50 p-4 rounded-2xl shadow-sm">
+                {STANDARD_REQUIRED_DOCS.map((req) => {
+                  // We map 'SOP' to also accept 'MOTIVATION_LETTER'
+                  const isSOP = req.type === 'SOP';
+                  const hasDoc = filtered.some((d) => 
+                    d.type === req.type || (isSOP && d.type === 'MOTIVATION_LETTER')
+                  );
+                  return (
+                    <div key={req.type} className="flex items-center gap-3 text-sm font-medium">
+                      {hasDoc 
+                        ? <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0" />
+                        : <Circle className="w-5 h-5 text-muted-foreground/30 flex-shrink-0" />
+                      }
+                      <span className={cn('truncate transition-all', hasDoc ? 'text-foreground' : 'text-muted-foreground')}>
+                        {req.label}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+
         </div>
 
         {/* Documents grid */}
@@ -114,19 +182,35 @@ export function DocumentsVault() {
               {filtered.length} document{filtered.length !== 1 ? 's' : ''}
               {selectedApp && applications.find((a) => a.id === selectedApp) && (
                 <span className="ml-1.5 text-foreground font-medium">
-                  — {applications.find((a) => a.id === selectedApp)?.course.name}
+              — {applications.find((a) => a.id === selectedApp)?.course.name}
                 </span>
               )}
             </p>
-            {selectedApp && (
+            <div className="flex items-center gap-2">
               <button
-                onClick={() => setUploadOpen(true)}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition-colors"
+                onClick={handleZipDownload}
+                disabled={filtered.length === 0 || isZipping}
+                className={cn(
+                  "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors border shadow-sm",
+                  filtered.length === 0 || isZipping 
+                    ? "bg-muted text-muted-foreground border-transparent cursor-not-allowed opacity-70"
+                    : "bg-background border-border/50 hover:bg-muted text-foreground"
+                )}
               >
-                <Upload className="w-3.5 h-3.5" />
-                Upload
+                {isZipping ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+                {isZipping ? 'Zipping...' : 'Zip All'}
               </button>
-            )}
+              
+              {selectedApp && (
+                <button
+                  onClick={() => setUploadOpen(true)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition-colors shadow-sm"
+                >
+                  <Upload className="w-3.5 h-3.5" />
+                  Upload
+                </button>
+              )}
+            </div>
           </div>
 
           {isLoading ? (
