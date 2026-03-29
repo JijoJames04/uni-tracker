@@ -259,7 +259,8 @@ export default function BlockedAccountCalculator({ className = '' }: { className
                   }}
                   itemStyle={{ color: 'hsl(var(--foreground))', fontWeight: 'bold' }}
                   labelStyle={{ color: 'hsl(var(--muted-foreground))', marginBottom: '4px', fontSize: '12px' }}
-                  formatter={(value: number) => [`₹${Number(value).toFixed(2)}`, 'Exchange Rate']}
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  formatter={(value: any) => [`₹${Number(value).toFixed(2)}`, 'Exchange Rate']}
                   labelFormatter={(label) => new Date(label).toLocaleDateString('en', { month: 'long', day: 'numeric', year: 'numeric' })}
                 />
                 <Area 
