@@ -8,8 +8,8 @@ import { applicationApi } from '@/lib/api';
 import { toast } from 'sonner';
 import type { Application, ApplicationStatus } from '@/lib/api';
 import {
-  LayoutGrid, List, Filter, Search, Calendar,
-  ArrowRight, ChevronDown, Euro, Trash2,
+  LayoutGrid, List, Search, Calendar,
+  ArrowRight, Euro, Trash2,
 } from 'lucide-react';
 import { cn, STATUS_CONFIG, formatDeadline, formatFees, isActionNeeded } from '@/lib/utils';
 import { StatusBadge, ViaBadge } from '@/components/shared/StatusBadge';

@@ -4,28 +4,10 @@ import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Command } from 'cmdk';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Search, LayoutDashboard, BookOpen, GraduationCap,
-  FolderOpen, Calendar, User, FileText, X, Compass, Shield, Calculator,
-} from 'lucide-react';
+import { Search, X } from 'lucide-react';
+import { NAV_ITEMS, QUICK_ACTIONS } from '@/lib/navigation';
 
-const NAV_ITEMS = [
-  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, group: 'Pages' },
-  { label: 'Applications', href: '/applications', icon: BookOpen, group: 'Pages' },
-  { label: 'Universities', href: '/universities', icon: GraduationCap, group: 'Pages' },
-  { label: 'Documents', href: '/documents', icon: FolderOpen, group: 'Pages' },
-  { label: 'Calendar', href: '/calendar', icon: Calendar, group: 'Pages' },
-  { label: 'My Profile', href: '/profile', icon: User, group: 'Pages' },
-  { label: 'Resources & Tools', href: '/resources', icon: Compass, group: 'Pages' },
-];
 
-const QUICK_ACTIONS = [
-  { label: 'Add Application', href: '/applications?action=add', icon: BookOpen, group: 'Actions' },
-  { label: 'Upload Document', href: '/documents?action=upload', icon: FileText, group: 'Actions' },
-  { label: 'Create Event', href: '/calendar?action=create', icon: Calendar, group: 'Actions' },
-  { label: 'Visa & APS Guide', href: '/resources', icon: Shield, group: 'Actions' },
-  { label: 'Blocked Account Calculator', href: '/resources?tab=blocked-account', icon: Calculator, group: 'Actions' },
-];
 
 export default function SearchCommand() {
   const [open, setOpen] = useState(false);

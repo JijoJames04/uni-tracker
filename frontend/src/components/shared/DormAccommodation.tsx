@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Home, ExternalLink, Phone, MapPin, Building2 } from 'lucide-react';
+import { Home, ExternalLink, Phone, Building2 } from 'lucide-react';
 
 interface DormAccommodationProps {
   universityName: string;
@@ -42,6 +42,7 @@ const ACCOMMODATION_LINKS = [
   { name: 'HousingAnywhere', url: 'https://housinganywhere.com', description: 'International student housing platform' },
 ];
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function DormAccommodation({ universityName, city, className = '' }: DormAccommodationProps) {
   const studentenwerk = city ? STUDENTENWERK_MAP[city] : null;
 

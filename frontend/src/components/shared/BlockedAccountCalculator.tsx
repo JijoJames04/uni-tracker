@@ -61,9 +61,10 @@ export default function BlockedAccountCalculator({ className = '' }: { className
         const startDate = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
         const res = await fetch(`https://api.frankfurter.app/${startDate}..${endDate}?from=EUR&to=INR`);
         const data = await res.json();
-        const rates: HistoricalRate[] = Object.entries(data.rates).map(([date, rates]: [string, any]) => ({
+        const ratesData = data.rates as Record<string, Record<string, number>>;
+        const rates: HistoricalRate[] = Object.entries(ratesData).map(([date, rateValues]) => ({
           date,
-          rate: rates.INR,
+          rate: rateValues.INR,
         }));
         setHistoricalRates(rates);
       } catch {
@@ -259,7 +260,7 @@ export default function BlockedAccountCalculator({ className = '' }: { className
             </defs>
 
             {/* X-axis labels */}
-            {historicalRates.filter((_, i) => i % Math.floor(historicalRates.length / 6) === 0).map((r, i, arr) => {
+            {historicalRates.filter((_, i) => i % Math.floor(historicalRates.length / 6) === 0).map((r) => {
               const idx = historicalRates.indexOf(r);
               const x = padding.left + (idx / (historicalRates.length - 1)) * (chartW - padding.left - padding.right);
               const label = new Date(r.date).toLocaleDateString('en', { month: 'short', year: '2-digit' });

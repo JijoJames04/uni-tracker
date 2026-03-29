@@ -59,7 +59,7 @@ export function ProfileView() {
     queryFn: profileApi.get,
   });
 
-  const { register, handleSubmit, reset, formState: { isDirty, errors } } = useForm<FormValues>({
+  const { register, handleSubmit, reset, formState: { isDirty } } = useForm<FormValues>({
     resolver: zodResolver(schema),
   });
 

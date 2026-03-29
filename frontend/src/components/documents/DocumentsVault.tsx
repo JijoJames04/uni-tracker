@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { applicationApi, documentApi } from '@/lib/api';
-import type { Application } from '@/lib/api';
 import { FileText, Upload, ExternalLink, FolderOpen, Filter } from 'lucide-react';
 import { cn, DOC_TYPE_LABELS, formatFileSize, formatRelativeTime } from '@/lib/utils';
 import { UniversityLogo } from '@/components/shared/UniversityLogo';

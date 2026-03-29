@@ -1,28 +1,19 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import {
-  LayoutDashboard, GraduationCap, FileText, Calendar,
-  FolderOpen, User, ChevronLeft, ChevronRight, X,
-  BookOpen, Sparkles, BarChart3, Compass,
+  GraduationCap, ChevronLeft, ChevronRight, X, Sparkles,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAppStore } from '@/store/app.store';
 import { useQuery } from '@tanstack/react-query';
 import { universityApi } from '@/lib/api';
+import { NAV_ITEMS } from '@/lib/navigation';
 
-const NAV_ITEMS = [
-  { href: '/dashboard',     icon: LayoutDashboard, label: 'Dashboard',     badge: null },
-  { href: '/applications',  icon: BookOpen,        label: 'Applications',  badge: 'count' },
-  { href: '/universities',  icon: GraduationCap,   label: 'Universities',  badge: null },
-  { href: '/documents',     icon: FolderOpen,      label: 'Documents',     badge: null },
-  { href: '/calendar',      icon: Calendar,        label: 'Calendar',      badge: null },
-  { href: '/profile',       icon: User,            label: 'My Profile',    badge: null },
-  { href: '/resources',     icon: Compass,         label: 'Resources',     badge: null },
-];
+
 
 export function Sidebar() {
   const pathname = usePathname();

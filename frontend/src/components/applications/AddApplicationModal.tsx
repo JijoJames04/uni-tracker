@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import { universityApi, scraperApi } from '@/lib/api';
 import type { ScrapedData } from '@/lib/api';
 import {
-  Link, Loader2, X, Wand2, Globe, Building2,
+  Loader2, X, Wand2, Globe, Building2,
   BookOpen, Clock, DollarSign, Calendar, CheckCircle2,
   AlertTriangle, ChevronDown, ChevronUp,
 } from 'lucide-react';
@@ -77,7 +77,8 @@ export function AddApplicationModal({ open, onClose }: { open: boolean; onClose:
   });
 
   const addMutation = useMutation({
-    mutationFn: async (values: FormValues) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    mutationFn: async (_values: FormValues) => {
       if (scraped) {
         return universityApi.addFromUrl(url || scraped.sourceUrl);
       }
@@ -211,7 +212,7 @@ export function AddApplicationModal({ open, onClose }: { open: boolean; onClose:
                   </button>
                 </div>
                 <p className="text-[11px] text-muted-foreground">
-                  Paste the course page URL from any German university. We'll extract the course name, fees, deadline, and more automatically.
+                  Paste the course page URL from any German university. We&apos;ll extract the course name, fees, deadline, and more automatically.
                 </p>
               </div>
 

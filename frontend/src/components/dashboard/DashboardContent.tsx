@@ -7,7 +7,7 @@ import { universityApi, applicationApi } from '@/lib/api';
 import type { Application } from '@/lib/api';
 import { formatFees, formatDeadline, STATUS_CONFIG, cn } from '@/lib/utils';
 import {
-  TrendingUp, CheckCircle2, XCircle, Clock, AlertCircle,
+  TrendingUp, CheckCircle2, Clock, AlertCircle,
   Euro, GraduationCap, ArrowRight, Calendar, Download,
   Timer, Zap,
 } from 'lucide-react';
@@ -150,7 +150,7 @@ export function DashboardContent() {
         <div>
           <h2 className="text-2xl font-bold text-foreground">{mounted ? greeting : 'Welcome'}</h2>
           <p className="text-muted-foreground mt-0.5 text-sm">
-            Here's an overview of your German university applications.
+            Here&apos;s an overview of your German university applications.
           </p>
         </div>
         {applications && applications.length > 0 && (

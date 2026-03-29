@@ -11,16 +11,9 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import SearchCommand from '@/components/shared/SearchCommand';
 import SyncButton from '@/components/shared/SyncButton';
+import { BREADCRUMBS } from '@/lib/navigation';
 
-const BREADCRUMBS: Record<string, string> = {
-  '/dashboard':    'Dashboard',
-  '/applications': 'Applications',
-  '/universities': 'Universities',
-  '/documents':    'Documents',
-  '/calendar':     'Calendar',
-  '/profile':      'Profile',
-  '/resources':    'Resources & Tools',
-};
+
 
 export function Navbar() {
   const pathname = usePathname();

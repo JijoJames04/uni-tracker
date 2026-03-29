@@ -5,10 +5,10 @@ import { useDropzone } from 'react-dropzone';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMutation } from '@tanstack/react-query';
 import { documentApi } from '@/lib/api';
-import { DOC_TYPE_LABELS } from '@/lib/constants';
+import { DOC_TYPE_LABELS } from '@/lib/utils';
 import type { DocumentType } from '@/lib/api';
 import { toast } from 'sonner';
-import { Upload, X, FileText, Loader2, Check } from 'lucide-react';
+import { Upload, X, Loader2, Check } from 'lucide-react';
 import { cn, formatFileSize } from '@/lib/utils';
 
 const DOC_TYPES = Object.entries(DOC_TYPE_LABELS) as [DocumentType, string][];

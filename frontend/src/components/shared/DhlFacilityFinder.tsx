@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Package, MapPin, Phone, Navigation, Loader2,
+  Package, MapPin, Phone, Navigation,
   ExternalLink, AlertCircle, RefreshCw, Map,
 } from 'lucide-react';
 

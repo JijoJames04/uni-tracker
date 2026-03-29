@@ -4,20 +4,20 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { applicationApi, documentApi, timelineApi, promptApi, universityApi } from '@/lib/api';
-import type { ApplicationStatus, DocumentType, Priority } from '@/lib/api';
+import type { ApplicationStatus, Priority } from '@/lib/api';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
-  ArrowLeft, ExternalLink, Calendar, Euro, Globe, Clock,
-  ChevronRight, FileText, Upload, Copy, Check, Loader2,
+  ArrowLeft, ExternalLink, Globe, Clock,
+  FileText, Upload, Copy, Check, Loader2,
   Plus, Trash2, BookOpen, Sparkles, AlertCircle, CheckCircle2,
   Building2, MapPin,
 } from 'lucide-react';
 import {
   cn, STATUS_CONFIG, STATUS_PIPELINE, getStatusProgress,
   formatDeadline, formatFees, formatRelativeTime, formatDate,
-  DOC_TYPE_LABELS, TIMELINE_TYPE_CONFIG, formatFileSize, VIA_CONFIG,
+  DOC_TYPE_LABELS, TIMELINE_TYPE_CONFIG, formatFileSize,
 } from '@/lib/utils';
 import { StatusBadge, ViaBadge } from '@/components/shared/StatusBadge';
 import { UniversityLogo } from '@/components/shared/UniversityLogo';
@@ -34,12 +34,10 @@ export function ApplicationDetail({ id }: { id: string }) {
   const [newNote, setNewNote] = useState('');
   const [uploadOpen, setUploadOpen] = useState(false);
   const [editingDeadline, setEditingDeadline] = useState(false);
-  const [localNotes, setLocalNotes] = useState('');
   const [newChecklistItem, setNewChecklistItem] = useState('');
   const [emailType, setEmailType] = useState<string>('inquiry');
   const [emailPrompt, setEmailPrompt] = useState<string | null>(null);
   const [emailCopied, setEmailCopied] = useState(false);
-  const notesTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const { data: app, isLoading } = useQuery({
     queryKey: ['application', id],

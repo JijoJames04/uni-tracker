@@ -8,7 +8,6 @@ import {
   eachDayOfInterval, isSameMonth, isToday, isSameDay, addMonths, subMonths,
 } from 'date-fns';
 import { calendarApi, applicationApi } from '@/lib/api';
-import type { CalendarEvent } from '@/lib/api';
 
 type EventType = 'DEADLINE' | 'INTERVIEW' | 'PAYMENT' | 'REMINDER' | 'MILESTONE';
 import { ChevronLeft, ChevronRight, Plus, X, Calendar, Loader2 } from 'lucide-react';

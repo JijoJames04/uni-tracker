@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-  Shield, Calculator, Building2, Bot, Link2,
+  Shield, Calculator,
 } from 'lucide-react';
 import VisaApsGuide from '@/components/shared/VisaApsGuide';
 import BlockedAccountCalculator from '@/components/shared/BlockedAccountCalculator';

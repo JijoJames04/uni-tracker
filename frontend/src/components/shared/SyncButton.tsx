@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Cloud, CloudOff, RefreshCw, Check, AlertCircle } from 'lucide-react';
+import { Cloud, RefreshCw, Check, AlertCircle } from 'lucide-react';
 import { useSyncStore } from '@/store/sync.store';
 import { useAuthStore } from '@/store/auth.store';
 import { formatDistanceToNow } from 'date-fns';
