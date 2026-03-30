@@ -1,1 +1,12 @@
 backend/node_modules/
+node_modules/
+dist/
+build/
+.next/
+.env*
+!.env.example
+!.env.local.example
+.vercel/
+coverage/
+*.log
+.DS_Store
