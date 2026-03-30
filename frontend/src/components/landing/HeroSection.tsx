@@ -20,12 +20,13 @@ export default function HeroSection() {
 
   const handleGoogleSignIn = async () => {
     try {
-      const result = await signInWithGoogle();
+      const { user, token } = await signInWithGoogle();
       setUser({
-        uid: result.user.uid,
-        email: result.user.email,
-        displayName: result.user.displayName,
-        photoURL: result.user.photoURL,
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        googleAccessToken: token || undefined,
       });
       router.push('/dashboard');
     } catch {

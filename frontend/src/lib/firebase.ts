@@ -53,10 +53,17 @@ if (app && typeof window !== 'undefined') {
 }
 
 const googleProvider = new GoogleAuthProvider();
+googleProvider.addScope('https://www.googleapis.com/auth/drive.appdata');
 
 export async function signInWithGoogle() {
   if (!auth) throw new Error('Firebase not configured');
-  return signInWithPopup(auth, googleProvider);
+  const result = await signInWithPopup(auth, googleProvider);
+  const credential = GoogleAuthProvider.credentialFromResult(result);
+  
+  return {
+    user: result.user,
+    token: credential?.accessToken || null,
+  };
 }
 
 export async function signOutUser() {
