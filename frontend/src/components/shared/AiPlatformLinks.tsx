@@ -70,7 +70,7 @@ export default function AiPlatformLinks({ prompt, className = '' }: AiPlatformLi
 
   return (
     <div className={`space-y-2 ${className}`} id="ai-platform-links">
-      <p className="text-xs font-medium text-zinc-400 uppercase tracking-wider mb-3">
+      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
         Copy prompt & open in
       </p>
       <div className="grid grid-cols-3 gap-2">
@@ -85,11 +85,11 @@ export default function AiPlatformLinks({ prompt, className = '' }: AiPlatformLi
             title={`Copy prompt & open ${platform.name}`}
           >
             {platform.logo}
-            <span className="text-xs font-medium text-zinc-300">{platform.name}</span>
-            <span className="text-[10px] text-zinc-500 flex items-center gap-1">
+            <span className="text-xs font-medium text-foreground">{platform.name}</span>
+            <span className="text-[10px] text-muted-foreground flex items-center gap-1">
               {copiedIndex === index ? (
                 <>
-                  <Check className="w-3 h-3 text-green-400" />
+                  <Check className="w-3 h-3 text-emerald-500" />
                   Copied!
                 </>
               ) : (

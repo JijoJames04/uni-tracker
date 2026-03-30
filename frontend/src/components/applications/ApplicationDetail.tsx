@@ -23,6 +23,7 @@ import { StatusBadge, ViaBadge } from '@/components/shared/StatusBadge';
 import { UniversityLogo } from '@/components/shared/UniversityLogo';
 import { Skeleton } from '@/components/shared/Skeleton';
 import { DocumentUpload } from '@/components/documents/DocumentUpload';
+import AiPlatformLinks from '@/components/shared/AiPlatformLinks';
 
 const FADE = { hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0 } };
 
@@ -38,6 +39,11 @@ export function ApplicationDetail({ id }: { id: string }) {
   const [emailType, setEmailType] = useState<string>('inquiry');
   const [emailPrompt, setEmailPrompt] = useState<string | null>(null);
   const [emailCopied, setEmailCopied] = useState(false);
+  
+  const [recommenderName, setRecommenderName] = useState('');
+  const [recommenderTitle, setRecommenderTitle] = useState('');
+  const [relationship, setRelationship] = useState('');
+  const [lorPrompt, setLorPrompt] = useState<string | null>(null);
 
   const { data: app, isLoading } = useQuery({
     queryKey: ['application', id],
@@ -121,6 +127,12 @@ export function ApplicationDetail({ id }: { id: string }) {
     onSuccess: (data) => {
       setEmailPrompt(data.prompt);
     },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const lorMutation = useMutation({
+    mutationFn: () => promptApi.generateLor(id, recommenderName.trim(), recommenderTitle.trim(), relationship.trim()),
+    onSuccess: (data) => setLorPrompt(data.prompt),
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -669,12 +681,49 @@ export function ApplicationDetail({ id }: { id: string }) {
                   <pre className="text-[13px] text-foreground whitespace-pre-wrap leading-relaxed font-mono overflow-x-auto max-h-[500px] overflow-y-auto no-scrollbar">
                     {promptData.prompt}
                   </pre>
+                  <AiPlatformLinks prompt={promptData.prompt} className="mt-6 border-t border-border/50 pt-5" />
                 </div>
               ) : (
                 <button onClick={() => fetchPrompt()} className="w-full py-10 rounded-2xl border-2 border-dashed border-border hover:border-indigo-400 bg-background/30 hover:bg-indigo-500/5 transition-all text-[15px] font-bold text-muted-foreground hover:text-indigo-600 dark:hover:text-indigo-400 flex flex-col items-center gap-3">
                   <Sparkles className="w-8 h-8 opacity-50" />
                   Click to generate customized SOP prompt
                 </button>
+              )}
+            </div>
+
+            {/* LOR Template Generator */}
+            <div className="bg-card border border-border/50 rounded-3xl p-6 sm:p-8 shadow-sm">
+              <h3 className="font-black text-foreground text-[18px] flex items-center gap-2.5 mb-2">
+                <div className="p-1.5 bg-emerald-500/10 rounded-lg">
+                  📝
+                </div>
+                Letter of Recommendation Builder
+              </h3>
+              <p className="text-[14px] font-medium text-muted-foreground mb-6 pl-[42px]">
+                Generate a targeted LOR request template using your application context.
+              </p>
+              
+              <div className="space-y-3 mb-6 pl-[42px] max-w-xl">
+                <input value={recommenderName} onChange={(e) => setRecommenderName(e.target.value)} placeholder="Recommender's Name (e.g. Prof. Alan Turing)" className="w-full px-4 py-2.5 rounded-xl border bg-background text-sm focus:ring-2 focus:ring-emerald-500/30" />
+                <input value={recommenderTitle} onChange={(e) => setRecommenderTitle(e.target.value)} placeholder="Title & Dept (e.g. Head of Computer Science)" className="w-full px-4 py-2.5 rounded-xl border bg-background text-sm focus:ring-2 focus:ring-emerald-500/30" />
+                <input value={relationship} onChange={(e) => setRelationship(e.target.value)} placeholder="Relationship (e.g. Thesis Supervisor)" className="w-full px-4 py-2.5 rounded-xl border bg-background text-sm focus:ring-2 focus:ring-emerald-500/30" />
+                
+                <button
+                  onClick={() => lorMutation.mutate()}
+                  disabled={lorMutation.isPending}
+                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[14px] font-bold shadow-sm transition-all hover:shadow-md w-full sm:w-auto"
+                >
+                  {lorMutation.isPending ? <><Loader2 className="w-4 h-4 inline animate-spin mr-2" /> Generating...</> : 'Generate LOR Prompt'}
+                </button>
+              </div>
+
+              {lorPrompt && !lorMutation.isPending && (
+                <div className="bg-background border border-border/50 rounded-2xl p-5 sm:p-6 shadow-inner space-y-4">
+                  <pre className="text-[13px] text-foreground whitespace-pre-wrap leading-relaxed font-mono overflow-x-auto max-h-[300px] overflow-y-auto no-scrollbar">
+                    {lorPrompt}
+                  </pre>
+                  <AiPlatformLinks prompt={lorPrompt} className="mt-6 border-t border-border/50 pt-5" />
+                </div>
               )}
             </div>
 
@@ -729,6 +778,7 @@ export function ApplicationDetail({ id }: { id: string }) {
                     <pre className="text-[13px] text-foreground whitespace-pre-wrap leading-relaxed font-mono overflow-x-auto max-h-[300px] overflow-y-auto no-scrollbar">
                       {emailPrompt}
                     </pre>
+                    <AiPlatformLinks prompt={emailPrompt} className="mt-6 border-t border-border/50 pt-5" />
                   </div>
                   <button
                     onClick={async () => {
