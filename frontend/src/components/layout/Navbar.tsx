@@ -5,14 +5,14 @@ import { Menu, Plus, LogOut } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAppStore } from '@/store/app.store';
 import { useAuthStore } from '@/store/auth.store';
-import { signOutUser } from '@/lib/firebase';
 import { AddApplicationModal } from '@/components/applications/AddApplicationModal';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import SearchCommand from '@/components/shared/SearchCommand';
 import SyncButton from '@/components/shared/SyncButton';
 import { BREADCRUMBS } from '@/lib/navigation';
-import { signInWithGoogle } from '@/lib/firebase';
+import { initiateGoogleAuth } from '@/lib/googleAuth';
+import { GoogleConfigModal } from '@/components/auth/GoogleConfigModal';
 
 
 
@@ -21,31 +21,28 @@ export function Navbar() {
   const { toggleSidebar } = useAppStore();
   const { user, isAuthenticated, signOut: clearAuth } = useAuthStore();
   const [addOpen, setAddOpen] = useState(false);
+  const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
 
   const pageTitle = BREADCRUMBS[pathname] ?? BREADCRUMBS[`/${pathname.split('/')[1]}`] ?? 'UniTracker';
 
-  const handleSignOut = async () => {
-    try {
-      await signOutUser();
-    } catch {
-      // Firebase might not be configured
-    }
+  const handleSignOut = () => {
+    // In our manual OAuth flow, signing out just means clearing the local store.
+    // If we wanted to revoke the token, we could call Google's revoke endpoint, 
+    // but clearing it locally is sufficient for logging out.
     clearAuth();
   };
 
-  const handleSignIn = async () => {
-    try {
-      const { user: firebaseUser, token } = await signInWithGoogle();
-      useAuthStore.getState().setUser({
-        uid: firebaseUser.uid,
-        email: firebaseUser.email,
-        displayName: firebaseUser.displayName,
-        photoURL: firebaseUser.photoURL,
-        googleAccessToken: token || undefined,
-      });
-    } catch (err) {
-      console.error('Sign in failed:', err);
+  const handleSignIn = () => {
+    const success = initiateGoogleAuth();
+    if (!success) {
+      setIsConfigModalOpen(true);
     }
+  };
+
+  const handleSaveClientId = (clientId: string) => {
+    localStorage.setItem('CUSTOM_GOOGLE_CLIENT_ID', clientId);
+    setIsConfigModalOpen(false);
+    initiateGoogleAuth();
   };
 
   return (
@@ -128,6 +125,12 @@ export function Navbar() {
       </header>
 
       <AddApplicationModal open={addOpen} onClose={() => setAddOpen(false)} />
+      
+      <GoogleConfigModal
+        isOpen={isConfigModalOpen}
+        onClose={() => setIsConfigModalOpen(false)}
+        onSave={handleSaveClientId}
+      />
     </>
   );
 }

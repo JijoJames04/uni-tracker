@@ -52,8 +52,14 @@ export default function SyncButton() {
           )}
         </AnimatePresence>
 
-        <span className="hidden sm:inline text-xs">
-          {isLoading ? 'Syncing…' : status === 'done' ? 'Synced' : status === 'error' ? 'Retry' : 'Sync'}
+        <span className="hidden sm:inline text-xs truncate max-w-[120px]">
+          {isLoading 
+            ? 'Syncing…' 
+            : status === 'error' 
+              ? 'Retry' 
+              : lastSyncedAt 
+                ? formatDistanceToNow(new Date(lastSyncedAt), { addSuffix: true })
+                : 'Sync to cloud'}
         </span>
       </motion.button>
 

@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { universityApi } from '@/lib/api';
-import { Search, GraduationCap, MapPin, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, GraduationCap, MapPin, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn, formatDeadline, formatFees } from '@/lib/utils';
 import { UniversityLogo } from '@/components/shared/UniversityLogo';
 import { StatusBadge, ViaBadge } from '@/components/shared/StatusBadge';

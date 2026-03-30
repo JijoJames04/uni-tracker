@@ -34,7 +34,7 @@ export const useSyncStore = create<SyncState>()(
 
       pushToCloud: async () => {
         const user = useAuthStore.getState().user;
-        const authStore = useAuthStore.getState();
+        useAuthStore.getState();
         if (!user || user.googleAccessToken == null) {
           // Fallback to error if no token
           set({ status: 'error', error: 'Missing Google Drive permissions. Please sign out and sign back in.' });

@@ -2,10 +2,11 @@
 
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { GraduationCap, ArrowRight, Sparkles, Globe2, CheckCircle2, Star, Github, LogIn, UserPlus } from 'lucide-react';
-import { signInWithGoogle } from '@/lib/firebase';
+import { GraduationCap, ArrowRight, Sparkles, CheckCircle2, Star, Github, LogIn, UserPlus } from 'lucide-react';
+import { initiateGoogleAuth } from '@/lib/googleAuth';
 import { useAuthStore } from '@/store/auth.store';
-import { isFirebaseConfigured } from '@/lib/firebase';
+import { GoogleConfigModal } from '@/components/auth/GoogleConfigModal';
+import { useState } from 'react';
 
 const TRUST_BADGES = [
   '100% Free Forever',
@@ -16,22 +17,21 @@ const TRUST_BADGES = [
 
 export default function HeroSection() {
   const router = useRouter();
-  const { setUser, setLocalMode } = useAuthStore();
+  const { setLocalMode } = useAuthStore();
 
-  const handleGoogleSignIn = async () => {
-    try {
-      const { user, token } = await signInWithGoogle();
-      setUser({
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL,
-        googleAccessToken: token || undefined,
-      });
-      router.push('/dashboard');
-    } catch {
-      console.error('Google sign-in failed');
+  const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
+
+  const handleGoogleSignIn = () => {
+    const success = initiateGoogleAuth();
+    if (!success) {
+      setIsConfigModalOpen(true);
     }
+  };
+
+  const handleSaveClientId = (clientId: string) => {
+    localStorage.setItem('CUSTOM_GOOGLE_CLIENT_ID', clientId);
+    setIsConfigModalOpen(false);
+    initiateGoogleAuth();
   };
 
   const handleLocalMode = () => {
@@ -126,8 +126,6 @@ export default function HeroSection() {
           transition={{ duration: 0.6, delay: 0.45 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12"
         >
-          {isFirebaseConfigured && (
-            <>
               <motion.button
                 whileHover={{ scale: 1.05, boxShadow: '0 0 50px rgba(99,102,241,0.4)' }}
                 whileTap={{ scale: 0.97 }}
@@ -146,8 +144,6 @@ export default function HeroSection() {
                 <LogIn className="w-5 h-5" />
                 Sign In & Sync
               </motion.button>
-            </>
-          )}
           <motion.a
             href="https://github.com/JijoJames04/uni-tracker"
             target="_blank" rel="noopener noreferrer"
@@ -165,7 +161,7 @@ export default function HeroSection() {
             className="flex items-center gap-3 px-8 py-4 rounded-2xl border border-white/10 bg-white/[0.03] text-slate-200 font-bold text-lg hover:border-white/20 transition-all"
           >
             <GraduationCap className="w-5 h-5" />
-            {isFirebaseConfigured ? 'Try without sign-in' : 'Open Dashboard — Free'}
+            Open Dashboard
             <ArrowRight className="w-5 h-5 opacity-50" />
           </motion.button>
         </motion.div>
@@ -243,6 +239,11 @@ export default function HeroSection() {
         {/* Card glow */}
         <div className="absolute inset-0 -z-10 rounded-3xl bg-indigo-600/10 blur-3xl scale-110" />
       </motion.div>
+      <GoogleConfigModal
+        isOpen={isConfigModalOpen}
+        onClose={() => setIsConfigModalOpen(false)}
+        onSave={handleSaveClientId}
+      />
     </section>
   );
 }
