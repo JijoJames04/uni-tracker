@@ -10,21 +10,21 @@ export declare class UniversitiesController {
         } & {
             name: string;
             description: string | null;
-            deadline: Date | null;
+            universityId: string;
             degree: string | null;
             language: string | null;
             duration: string | null;
             fees: number | null;
             feesPerSemester: number | null;
+            currency: string;
+            deadline: Date | null;
             startDate: Date | null;
             applicationUrl: string | null;
+            sourceUrl: string | null;
             ects: number | null;
             applicationVia: import(".prisma/client").$Enums.ApplicationVia;
             uniAssistInfo: string | null;
             requirements: string | null;
-            universityId: string;
-            currency: string;
-            sourceUrl: string | null;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -33,12 +33,12 @@ export declare class UniversitiesController {
         })[];
     } & {
         name: string;
-        description: string | null;
-        city: string | null;
-        address: string | null;
         logoUrl: string | null;
+        address: string | null;
+        city: string | null;
         country: string;
         website: string | null;
+        description: string | null;
         id: string;
         linkedinUrl: string | null;
         instagramUrl: string | null;
@@ -64,12 +64,12 @@ export declare class UniversitiesController {
         upcomingDeadlines: ({
             university: {
                 name: string;
-                description: string | null;
-                city: string | null;
-                address: string | null;
                 logoUrl: string | null;
+                address: string | null;
+                city: string | null;
                 country: string;
                 website: string | null;
+                description: string | null;
                 id: string;
                 linkedinUrl: string | null;
                 instagramUrl: string | null;
@@ -95,21 +95,21 @@ export declare class UniversitiesController {
         } & {
             name: string;
             description: string | null;
-            deadline: Date | null;
+            universityId: string;
             degree: string | null;
             language: string | null;
             duration: string | null;
             fees: number | null;
             feesPerSemester: number | null;
+            currency: string;
+            deadline: Date | null;
             startDate: Date | null;
             applicationUrl: string | null;
+            sourceUrl: string | null;
             ects: number | null;
             applicationVia: import(".prisma/client").$Enums.ApplicationVia;
             uniAssistInfo: string | null;
             requirements: string | null;
-            universityId: string;
-            currency: string;
-            sourceUrl: string | null;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -157,21 +157,21 @@ export declare class UniversitiesController {
         } & {
             name: string;
             description: string | null;
-            deadline: Date | null;
+            universityId: string;
             degree: string | null;
             language: string | null;
             duration: string | null;
             fees: number | null;
             feesPerSemester: number | null;
+            currency: string;
+            deadline: Date | null;
             startDate: Date | null;
             applicationUrl: string | null;
+            sourceUrl: string | null;
             ects: number | null;
             applicationVia: import(".prisma/client").$Enums.ApplicationVia;
             uniAssistInfo: string | null;
             requirements: string | null;
-            universityId: string;
-            currency: string;
-            sourceUrl: string | null;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -180,12 +180,12 @@ export declare class UniversitiesController {
         })[];
     } & {
         name: string;
-        description: string | null;
-        city: string | null;
-        address: string | null;
         logoUrl: string | null;
+        address: string | null;
+        city: string | null;
         country: string;
         website: string | null;
+        description: string | null;
         id: string;
         linkedinUrl: string | null;
         instagramUrl: string | null;
@@ -197,12 +197,12 @@ export declare class UniversitiesController {
     }>;
     create(dto: CreateUniversityDto): Promise<{
         name: string;
-        description: string | null;
-        city: string | null;
-        address: string | null;
         logoUrl: string | null;
+        address: string | null;
+        city: string | null;
         country: string;
         website: string | null;
+        description: string | null;
         id: string;
         linkedinUrl: string | null;
         instagramUrl: string | null;
@@ -215,12 +215,12 @@ export declare class UniversitiesController {
     addFromUrl(dto: AddFromUrlDto): Promise<{
         university: {
             name: string;
-            description: string | null;
-            city: string | null;
-            address: string | null;
             logoUrl: string | null;
+            address: string | null;
+            city: string | null;
             country: string;
             website: string | null;
+            description: string | null;
             id: string;
             linkedinUrl: string | null;
             instagramUrl: string | null;
@@ -233,21 +233,21 @@ export declare class UniversitiesController {
         course: {
             name: string;
             description: string | null;
-            deadline: Date | null;
+            universityId: string;
             degree: string | null;
             language: string | null;
             duration: string | null;
             fees: number | null;
             feesPerSemester: number | null;
+            currency: string;
+            deadline: Date | null;
             startDate: Date | null;
             applicationUrl: string | null;
+            sourceUrl: string | null;
             ects: number | null;
             applicationVia: import(".prisma/client").$Enums.ApplicationVia;
             uniAssistInfo: string | null;
             requirements: string | null;
-            universityId: string;
-            currency: string;
-            sourceUrl: string | null;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -272,12 +272,12 @@ export declare class UniversitiesController {
         course: {
             university: {
                 name: string;
-                description: string | null;
-                city: string | null;
-                address: string | null;
                 logoUrl: string | null;
+                address: string | null;
+                city: string | null;
                 country: string;
                 website: string | null;
+                description: string | null;
                 id: string;
                 linkedinUrl: string | null;
                 instagramUrl: string | null;
@@ -290,21 +290,21 @@ export declare class UniversitiesController {
         } & {
             name: string;
             description: string | null;
-            deadline: Date | null;
+            universityId: string;
             degree: string | null;
             language: string | null;
             duration: string | null;
             fees: number | null;
             feesPerSemester: number | null;
+            currency: string;
+            deadline: Date | null;
             startDate: Date | null;
             applicationUrl: string | null;
+            sourceUrl: string | null;
             ects: number | null;
             applicationVia: import(".prisma/client").$Enums.ApplicationVia;
             uniAssistInfo: string | null;
             requirements: string | null;
-            universityId: string;
-            currency: string;
-            sourceUrl: string | null;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -327,12 +327,12 @@ export declare class UniversitiesController {
     }>;
     update(id: string, dto: Partial<CreateUniversityDto>): Promise<{
         name: string;
-        description: string | null;
-        city: string | null;
-        address: string | null;
         logoUrl: string | null;
+        address: string | null;
+        city: string | null;
         country: string;
         website: string | null;
+        description: string | null;
         id: string;
         linkedinUrl: string | null;
         instagramUrl: string | null;
@@ -348,12 +348,12 @@ export declare class UniversitiesController {
     }): Promise<{
         university: {
             name: string;
-            description: string | null;
-            city: string | null;
-            address: string | null;
             logoUrl: string | null;
+            address: string | null;
+            city: string | null;
             country: string;
             website: string | null;
+            description: string | null;
             id: string;
             linkedinUrl: string | null;
             instagramUrl: string | null;
@@ -366,21 +366,21 @@ export declare class UniversitiesController {
     } & {
         name: string;
         description: string | null;
-        deadline: Date | null;
+        universityId: string;
         degree: string | null;
         language: string | null;
         duration: string | null;
         fees: number | null;
         feesPerSemester: number | null;
+        currency: string;
+        deadline: Date | null;
         startDate: Date | null;
         applicationUrl: string | null;
+        sourceUrl: string | null;
         ects: number | null;
         applicationVia: import(".prisma/client").$Enums.ApplicationVia;
         uniAssistInfo: string | null;
         requirements: string | null;
-        universityId: string;
-        currency: string;
-        sourceUrl: string | null;
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -389,12 +389,12 @@ export declare class UniversitiesController {
     }>;
     remove(id: string): Promise<{
         name: string;
-        description: string | null;
-        city: string | null;
-        address: string | null;
         logoUrl: string | null;
+        address: string | null;
+        city: string | null;
         country: string;
         website: string | null;
+        description: string | null;
         id: string;
         linkedinUrl: string | null;
         instagramUrl: string | null;

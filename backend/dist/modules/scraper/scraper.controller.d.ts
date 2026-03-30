@@ -5,5 +5,5 @@ export declare class ScrapeUrlDto {
 export declare class ScraperController {
     private readonly scraperService;
     constructor(scraperService: ScraperService);
-    scrapeUrl(dto: ScrapeUrlDto): Promise<import("./scraper.types").ScrapedCourseData>;
+    scrapeUrl(dto: ScrapeUrlDto): Promise<import("./scraper.service").ScrapedCourseData>;
 }

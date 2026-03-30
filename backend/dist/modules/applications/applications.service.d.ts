@@ -34,12 +34,12 @@ export declare class ApplicationsService {
         course: {
             university: {
                 name: string;
-                description: string | null;
-                city: string | null;
-                address: string | null;
                 logoUrl: string | null;
+                address: string | null;
+                city: string | null;
                 country: string;
                 website: string | null;
+                description: string | null;
                 id: string;
                 linkedinUrl: string | null;
                 instagramUrl: string | null;
@@ -52,21 +52,21 @@ export declare class ApplicationsService {
         } & {
             name: string;
             description: string | null;
-            deadline: Date | null;
+            universityId: string;
             degree: string | null;
             language: string | null;
             duration: string | null;
             fees: number | null;
             feesPerSemester: number | null;
+            currency: string;
+            deadline: Date | null;
             startDate: Date | null;
             applicationUrl: string | null;
+            sourceUrl: string | null;
             ects: number | null;
             applicationVia: import(".prisma/client").$Enums.ApplicationVia;
             uniAssistInfo: string | null;
             requirements: string | null;
-            universityId: string;
-            currency: string;
-            sourceUrl: string | null;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -95,12 +95,12 @@ export declare class ApplicationsService {
             type: import(".prisma/client").$Enums.TimelineType;
         }[];
         checklist: {
-            label: string;
             id: string;
             createdAt: Date;
             applicationId: string;
             completed: boolean;
             order: number;
+            label: string;
         }[];
     } & {
         id: string;
@@ -119,12 +119,12 @@ export declare class ApplicationsService {
         course: {
             university: {
                 name: string;
-                description: string | null;
-                city: string | null;
-                address: string | null;
                 logoUrl: string | null;
+                address: string | null;
+                city: string | null;
                 country: string;
                 website: string | null;
+                description: string | null;
                 id: string;
                 linkedinUrl: string | null;
                 instagramUrl: string | null;
@@ -137,21 +137,21 @@ export declare class ApplicationsService {
         } & {
             name: string;
             description: string | null;
-            deadline: Date | null;
+            universityId: string;
             degree: string | null;
             language: string | null;
             duration: string | null;
             fees: number | null;
             feesPerSemester: number | null;
+            currency: string;
+            deadline: Date | null;
             startDate: Date | null;
             applicationUrl: string | null;
+            sourceUrl: string | null;
             ects: number | null;
             applicationVia: import(".prisma/client").$Enums.ApplicationVia;
             uniAssistInfo: string | null;
             requirements: string | null;
-            universityId: string;
-            currency: string;
-            sourceUrl: string | null;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -180,12 +180,12 @@ export declare class ApplicationsService {
             type: import(".prisma/client").$Enums.TimelineType;
         }[];
         checklist: {
-            label: string;
             id: string;
             createdAt: Date;
             applicationId: string;
             completed: boolean;
             order: number;
+            label: string;
         }[];
     } & {
         id: string;
@@ -204,12 +204,12 @@ export declare class ApplicationsService {
         course: {
             university: {
                 name: string;
-                description: string | null;
-                city: string | null;
-                address: string | null;
                 logoUrl: string | null;
+                address: string | null;
+                city: string | null;
                 country: string;
                 website: string | null;
+                description: string | null;
                 id: string;
                 linkedinUrl: string | null;
                 instagramUrl: string | null;
@@ -222,21 +222,21 @@ export declare class ApplicationsService {
         } & {
             name: string;
             description: string | null;
-            deadline: Date | null;
+            universityId: string;
             degree: string | null;
             language: string | null;
             duration: string | null;
             fees: number | null;
             feesPerSemester: number | null;
+            currency: string;
+            deadline: Date | null;
             startDate: Date | null;
             applicationUrl: string | null;
+            sourceUrl: string | null;
             ects: number | null;
             applicationVia: import(".prisma/client").$Enums.ApplicationVia;
             uniAssistInfo: string | null;
             requirements: string | null;
-            universityId: string;
-            currency: string;
-            sourceUrl: string | null;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -265,12 +265,12 @@ export declare class ApplicationsService {
             type: import(".prisma/client").$Enums.TimelineType;
         }[];
         checklist: {
-            label: string;
             id: string;
             createdAt: Date;
             applicationId: string;
             completed: boolean;
             order: number;
+            label: string;
         }[];
     } & {
         id: string;
@@ -289,12 +289,12 @@ export declare class ApplicationsService {
         course: {
             university: {
                 name: string;
-                description: string | null;
-                city: string | null;
-                address: string | null;
                 logoUrl: string | null;
+                address: string | null;
+                city: string | null;
                 country: string;
                 website: string | null;
+                description: string | null;
                 id: string;
                 linkedinUrl: string | null;
                 instagramUrl: string | null;
@@ -307,21 +307,21 @@ export declare class ApplicationsService {
         } & {
             name: string;
             description: string | null;
-            deadline: Date | null;
+            universityId: string;
             degree: string | null;
             language: string | null;
             duration: string | null;
             fees: number | null;
             feesPerSemester: number | null;
+            currency: string;
+            deadline: Date | null;
             startDate: Date | null;
             applicationUrl: string | null;
+            sourceUrl: string | null;
             ects: number | null;
             applicationVia: import(".prisma/client").$Enums.ApplicationVia;
             uniAssistInfo: string | null;
             requirements: string | null;
-            universityId: string;
-            currency: string;
-            sourceUrl: string | null;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -350,12 +350,12 @@ export declare class ApplicationsService {
             type: import(".prisma/client").$Enums.TimelineType;
         }[];
         checklist: {
-            label: string;
             id: string;
             createdAt: Date;
             applicationId: string;
             completed: boolean;
             order: number;
+            label: string;
         }[];
     } & {
         id: string;
@@ -371,28 +371,28 @@ export declare class ApplicationsService {
         courseId: string;
     }>;
     updateChecklist(id: string, dto: UpdateChecklistDto): Promise<{
-        label: string;
         id: string;
         createdAt: Date;
         applicationId: string;
         completed: boolean;
         order: number;
+        label: string;
     }>;
     addChecklistItem(applicationId: string, label: string): Promise<{
-        label: string;
         id: string;
         createdAt: Date;
         applicationId: string;
         completed: boolean;
         order: number;
+        label: string;
     }>;
     removeChecklistItem(itemId: string): Promise<{
-        label: string;
         id: string;
         createdAt: Date;
         applicationId: string;
         completed: boolean;
         order: number;
+        label: string;
     }>;
     remove(id: string): Promise<{
         message: string;
@@ -404,12 +404,12 @@ export declare class ApplicationsService {
         course: {
             university: {
                 name: string;
-                description: string | null;
-                city: string | null;
-                address: string | null;
                 logoUrl: string | null;
+                address: string | null;
+                city: string | null;
                 country: string;
                 website: string | null;
+                description: string | null;
                 id: string;
                 linkedinUrl: string | null;
                 instagramUrl: string | null;
@@ -422,21 +422,21 @@ export declare class ApplicationsService {
         } & {
             name: string;
             description: string | null;
-            deadline: Date | null;
+            universityId: string;
             degree: string | null;
             language: string | null;
             duration: string | null;
             fees: number | null;
             feesPerSemester: number | null;
+            currency: string;
+            deadline: Date | null;
             startDate: Date | null;
             applicationUrl: string | null;
+            sourceUrl: string | null;
             ects: number | null;
             applicationVia: import(".prisma/client").$Enums.ApplicationVia;
             uniAssistInfo: string | null;
             requirements: string | null;
-            universityId: string;
-            currency: string;
-            sourceUrl: string | null;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -465,12 +465,12 @@ export declare class ApplicationsService {
             type: import(".prisma/client").$Enums.TimelineType;
         }[];
         checklist: {
-            label: string;
             id: string;
             createdAt: Date;
             applicationId: string;
             completed: boolean;
             order: number;
+            label: string;
         }[];
     } & {
         id: string;
