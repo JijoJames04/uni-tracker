@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { GraduationCap, Heart, Github, Twitter } from 'lucide-react';
+import { GraduationCap, Heart, Github } from 'lucide-react';
 
 const FOOTER_LINKS = {
   Platform: [
@@ -43,11 +43,15 @@ export default function Footer() {
               The free, all-in-one platform for international students applying to German universities. Built with love for the global student community.
             </p>
             <div className="flex items-center gap-3">
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:border-white/20 transition-all">
+              <a
+                href="https://github.com/JijoJames04/uni-tracker"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="View source on GitHub"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:border-white/20 hover:bg-white/10 transition-all text-sm font-medium"
+              >
                 <Github className="w-4 h-4" />
-              </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:border-white/20 transition-all">
-                <Twitter className="w-4 h-4" />
+                GitHub
               </a>
             </div>
           </div>
