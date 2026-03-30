@@ -319,12 +319,12 @@ export declare class CalendarService {
     getEvents(): Promise<({
         title: string;
         description: string | null;
+        date: Date;
         id: string;
         createdAt: Date;
         courseId: string | null;
         type: import(".prisma/client").$Enums.EventType;
         completed: boolean;
-        date: Date;
         color: string | null;
     } | {
         id: string;
@@ -341,34 +341,34 @@ export declare class CalendarService {
     createEvent(data: CreateCalendarEventDto): Promise<{
         title: string;
         description: string | null;
+        date: Date;
         id: string;
         createdAt: Date;
         courseId: string | null;
         type: import(".prisma/client").$Enums.EventType;
         completed: boolean;
-        date: Date;
         color: string | null;
     }>;
     updateEvent(id: string, data: UpdateCalendarEventDto): Promise<{
         title: string;
         description: string | null;
+        date: Date;
         id: string;
         createdAt: Date;
         courseId: string | null;
         type: import(".prisma/client").$Enums.EventType;
         completed: boolean;
-        date: Date;
         color: string | null;
     }>;
     deleteEvent(id: string): Promise<{
         title: string;
         description: string | null;
+        date: Date;
         id: string;
         createdAt: Date;
         courseId: string | null;
         type: import(".prisma/client").$Enums.EventType;
         completed: boolean;
-        date: Date;
         color: string | null;
     }>;
 }
@@ -378,12 +378,12 @@ export declare class CalendarController {
     getEvents(): Promise<({
         title: string;
         description: string | null;
+        date: Date;
         id: string;
         createdAt: Date;
         courseId: string | null;
         type: import(".prisma/client").$Enums.EventType;
         completed: boolean;
-        date: Date;
         color: string | null;
     } | {
         id: string;
@@ -400,34 +400,34 @@ export declare class CalendarController {
     createEvent(body: CreateCalendarEventDto): Promise<{
         title: string;
         description: string | null;
+        date: Date;
         id: string;
         createdAt: Date;
         courseId: string | null;
         type: import(".prisma/client").$Enums.EventType;
         completed: boolean;
-        date: Date;
         color: string | null;
     }>;
     updateEvent(id: string, body: UpdateCalendarEventDto): Promise<{
         title: string;
         description: string | null;
+        date: Date;
         id: string;
         createdAt: Date;
         courseId: string | null;
         type: import(".prisma/client").$Enums.EventType;
         completed: boolean;
-        date: Date;
         color: string | null;
     }>;
     deleteEvent(id: string): Promise<{
         title: string;
         description: string | null;
+        date: Date;
         id: string;
         createdAt: Date;
         courseId: string | null;
         type: import(".prisma/client").$Enums.EventType;
         completed: boolean;
-        date: Date;
         color: string | null;
     }>;
 }

@@ -43,21 +43,21 @@ export declare class UniversitiesService {
         } & {
             name: string;
             description: string | null;
-            universityId: string;
+            deadline: Date | null;
             degree: string | null;
             language: string | null;
             duration: string | null;
             fees: number | null;
             feesPerSemester: number | null;
-            currency: string;
-            deadline: Date | null;
             startDate: Date | null;
             applicationUrl: string | null;
-            sourceUrl: string | null;
             ects: number | null;
             applicationVia: import(".prisma/client").$Enums.ApplicationVia;
             uniAssistInfo: string | null;
             requirements: string | null;
+            universityId: string;
+            currency: string;
+            sourceUrl: string | null;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -66,12 +66,12 @@ export declare class UniversitiesService {
         })[];
     } & {
         name: string;
-        logoUrl: string | null;
-        address: string | null;
+        description: string | null;
         city: string | null;
+        address: string | null;
+        logoUrl: string | null;
         country: string;
         website: string | null;
-        description: string | null;
         id: string;
         linkedinUrl: string | null;
         instagramUrl: string | null;
@@ -121,21 +121,21 @@ export declare class UniversitiesService {
         } & {
             name: string;
             description: string | null;
-            universityId: string;
+            deadline: Date | null;
             degree: string | null;
             language: string | null;
             duration: string | null;
             fees: number | null;
             feesPerSemester: number | null;
-            currency: string;
-            deadline: Date | null;
             startDate: Date | null;
             applicationUrl: string | null;
-            sourceUrl: string | null;
             ects: number | null;
             applicationVia: import(".prisma/client").$Enums.ApplicationVia;
             uniAssistInfo: string | null;
             requirements: string | null;
+            universityId: string;
+            currency: string;
+            sourceUrl: string | null;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -144,12 +144,12 @@ export declare class UniversitiesService {
         })[];
     } & {
         name: string;
-        logoUrl: string | null;
-        address: string | null;
+        description: string | null;
         city: string | null;
+        address: string | null;
+        logoUrl: string | null;
         country: string;
         website: string | null;
-        description: string | null;
         id: string;
         linkedinUrl: string | null;
         instagramUrl: string | null;
@@ -161,12 +161,12 @@ export declare class UniversitiesService {
     }>;
     create(dto: CreateUniversityDto): Promise<{
         name: string;
-        logoUrl: string | null;
-        address: string | null;
+        description: string | null;
         city: string | null;
+        address: string | null;
+        logoUrl: string | null;
         country: string;
         website: string | null;
-        description: string | null;
         id: string;
         linkedinUrl: string | null;
         instagramUrl: string | null;
@@ -178,12 +178,12 @@ export declare class UniversitiesService {
     }>;
     update(id: string, dto: Partial<CreateUniversityDto>): Promise<{
         name: string;
-        logoUrl: string | null;
-        address: string | null;
+        description: string | null;
         city: string | null;
+        address: string | null;
+        logoUrl: string | null;
         country: string;
         website: string | null;
-        description: string | null;
         id: string;
         linkedinUrl: string | null;
         instagramUrl: string | null;
@@ -195,12 +195,12 @@ export declare class UniversitiesService {
     }>;
     remove(id: string): Promise<{
         name: string;
-        logoUrl: string | null;
-        address: string | null;
+        description: string | null;
         city: string | null;
+        address: string | null;
+        logoUrl: string | null;
         country: string;
         website: string | null;
-        description: string | null;
         id: string;
         linkedinUrl: string | null;
         instagramUrl: string | null;
@@ -213,12 +213,12 @@ export declare class UniversitiesService {
     updateCourseDeadline(courseId: string, deadline: string, label?: string): Promise<{
         university: {
             name: string;
-            logoUrl: string | null;
-            address: string | null;
+            description: string | null;
             city: string | null;
+            address: string | null;
+            logoUrl: string | null;
             country: string;
             website: string | null;
-            description: string | null;
             id: string;
             linkedinUrl: string | null;
             instagramUrl: string | null;
@@ -231,21 +231,21 @@ export declare class UniversitiesService {
     } & {
         name: string;
         description: string | null;
-        universityId: string;
+        deadline: Date | null;
         degree: string | null;
         language: string | null;
         duration: string | null;
         fees: number | null;
         feesPerSemester: number | null;
-        currency: string;
-        deadline: Date | null;
         startDate: Date | null;
         applicationUrl: string | null;
-        sourceUrl: string | null;
         ects: number | null;
         applicationVia: import(".prisma/client").$Enums.ApplicationVia;
         uniAssistInfo: string | null;
         requirements: string | null;
+        universityId: string;
+        currency: string;
+        sourceUrl: string | null;
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -255,12 +255,12 @@ export declare class UniversitiesService {
     addFromUrl(dto: AddFromUrlDto): Promise<{
         university: {
             name: string;
-            logoUrl: string | null;
-            address: string | null;
+            description: string | null;
             city: string | null;
+            address: string | null;
+            logoUrl: string | null;
             country: string;
             website: string | null;
-            description: string | null;
             id: string;
             linkedinUrl: string | null;
             instagramUrl: string | null;
@@ -273,21 +273,21 @@ export declare class UniversitiesService {
         course: {
             name: string;
             description: string | null;
-            universityId: string;
+            deadline: Date | null;
             degree: string | null;
             language: string | null;
             duration: string | null;
             fees: number | null;
             feesPerSemester: number | null;
-            currency: string;
-            deadline: Date | null;
             startDate: Date | null;
             applicationUrl: string | null;
-            sourceUrl: string | null;
             ects: number | null;
             applicationVia: import(".prisma/client").$Enums.ApplicationVia;
             uniAssistInfo: string | null;
             requirements: string | null;
+            universityId: string;
+            currency: string;
+            sourceUrl: string | null;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -313,12 +313,12 @@ export declare class UniversitiesService {
         course: {
             university: {
                 name: string;
-                logoUrl: string | null;
-                address: string | null;
+                description: string | null;
                 city: string | null;
+                address: string | null;
+                logoUrl: string | null;
                 country: string;
                 website: string | null;
-                description: string | null;
                 id: string;
                 linkedinUrl: string | null;
                 instagramUrl: string | null;
@@ -331,21 +331,21 @@ export declare class UniversitiesService {
         } & {
             name: string;
             description: string | null;
-            universityId: string;
+            deadline: Date | null;
             degree: string | null;
             language: string | null;
             duration: string | null;
             fees: number | null;
             feesPerSemester: number | null;
-            currency: string;
-            deadline: Date | null;
             startDate: Date | null;
             applicationUrl: string | null;
-            sourceUrl: string | null;
             ects: number | null;
             applicationVia: import(".prisma/client").$Enums.ApplicationVia;
             uniAssistInfo: string | null;
             requirements: string | null;
+            universityId: string;
+            currency: string;
+            sourceUrl: string | null;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -382,12 +382,12 @@ export declare class UniversitiesService {
         upcomingDeadlines: ({
             university: {
                 name: string;
-                logoUrl: string | null;
-                address: string | null;
+                description: string | null;
                 city: string | null;
+                address: string | null;
+                logoUrl: string | null;
                 country: string;
                 website: string | null;
-                description: string | null;
                 id: string;
                 linkedinUrl: string | null;
                 instagramUrl: string | null;
@@ -413,21 +413,21 @@ export declare class UniversitiesService {
         } & {
             name: string;
             description: string | null;
-            universityId: string;
+            deadline: Date | null;
             degree: string | null;
             language: string | null;
             duration: string | null;
             fees: number | null;
             feesPerSemester: number | null;
-            currency: string;
-            deadline: Date | null;
             startDate: Date | null;
             applicationUrl: string | null;
-            sourceUrl: string | null;
             ects: number | null;
             applicationVia: import(".prisma/client").$Enums.ApplicationVia;
             uniAssistInfo: string | null;
             requirements: string | null;
+            universityId: string;
+            currency: string;
+            sourceUrl: string | null;
             id: string;
             createdAt: Date;
             updatedAt: Date;

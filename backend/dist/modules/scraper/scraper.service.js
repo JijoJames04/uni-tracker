@@ -10,69 +10,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ScraperService = void 0;
 const common_1 = require("@nestjs/common");
 const cheerio = require("cheerio");
-const KNOWN_UNIVERSITIES = {
-    'tum.de': { name: 'Technical University of Munich', city: 'Munich' },
-    'tu-berlin.de': { name: 'Technische Universität Berlin', city: 'Berlin' },
-    'tu-darmstadt.de': { name: 'Technische Universität Darmstadt', city: 'Darmstadt' },
-    'tu-dresden.de': { name: 'Technische Universität Dresden', city: 'Dresden' },
-    'tu-braunschweig.de': { name: 'Technische Universität Braunschweig', city: 'Braunschweig' },
-    'lmu.de': { name: 'Ludwig-Maximilians-Universität München', city: 'Munich' },
-    'fu-berlin.de': { name: 'Freie Universität Berlin', city: 'Berlin' },
-    'hu-berlin.de': { name: 'Humboldt-Universität zu Berlin', city: 'Berlin' },
-    'uni-heidelberg.de': { name: 'Universität Heidelberg', city: 'Heidelberg' },
-    'uni-freiburg.de': { name: 'Universität Freiburg', city: 'Freiburg' },
-    'uni-muenchen.de': { name: 'Ludwig-Maximilians-Universität München', city: 'Munich' },
-    'uni-bonn.de': { name: 'Universität Bonn', city: 'Bonn' },
-    'uni-koeln.de': { name: 'Universität zu Köln', city: 'Cologne' },
-    'uni-hamburg.de': { name: 'Universität Hamburg', city: 'Hamburg' },
-    'uni-goettingen.de': { name: 'Georg-August-Universität Göttingen', city: 'Göttingen' },
-    'uni-tuebingen.de': { name: 'Universität Tübingen', city: 'Tübingen' },
-    'uni-mannheim.de': { name: 'Universität Mannheim', city: 'Mannheim' },
-    'uni-muenster.de': { name: 'Universität Münster', city: 'Münster' },
-    'uni-stuttgart.de': { name: 'Universität Stuttgart', city: 'Stuttgart' },
-    'uni-erlangen.de': { name: 'Friedrich-Alexander-Universität Erlangen-Nürnberg', city: 'Erlangen' },
-    'fau.de': { name: 'Friedrich-Alexander-Universität Erlangen-Nürnberg', city: 'Erlangen' },
-    'kit.edu': { name: 'Karlsruhe Institute of Technology', city: 'Karlsruhe' },
-    'rwth-aachen.de': { name: 'RWTH Aachen University', city: 'Aachen' },
-    'uni-frankfurt.de': { name: 'Goethe-Universität Frankfurt', city: 'Frankfurt' },
-    'uni-jena.de': { name: 'Friedrich-Schiller-Universität Jena', city: 'Jena' },
-    'uni-wuerzburg.de': { name: 'Julius-Maximilians-Universität Würzburg', city: 'Würzburg' },
-    'uni-potsdam.de': { name: 'Universität Potsdam', city: 'Potsdam' },
-    'uni-augsburg.de': { name: 'Universität Augsburg', city: 'Augsburg' },
-    'uni-bayreuth.de': { name: 'Universität Bayreuth', city: 'Bayreuth' },
-    'uni-leipzig.de': { name: 'Universität Leipzig', city: 'Leipzig' },
-    'uni-konstanz.de': { name: 'Universität Konstanz', city: 'Constance' },
-    'uni-saarland.de': { name: 'Universität des Saarlandes', city: 'Saarbrücken' },
-    'uni-hannover.de': { name: 'Leibniz Universität Hannover', city: 'Hannover' },
-    'tu-clausthal.de': { name: 'TU Clausthal', city: 'Clausthal-Zellerfeld' },
-    'tu-chemnitz.de': { name: 'Technische Universität Chemnitz', city: 'Chemnitz' },
-    'tu-ilmenau.de': { name: 'Technische Universität Ilmenau', city: 'Ilmenau' },
-    'tu-kaiserslautern.de': { name: 'TU Kaiserslautern', city: 'Kaiserslautern' },
-    'rptu.de': { name: 'RPTU Kaiserslautern-Landau', city: 'Kaiserslautern' },
-    'hs-mannheim.de': { name: 'Hochschule Mannheim', city: 'Mannheim' },
-    'daad.de': { name: 'DAAD', city: '' },
-    'studieren.de': { name: '', city: '' },
-};
-const GERMAN_CITIES = [
-    'Berlin', 'Munich', 'München', 'Hamburg', 'Frankfurt', 'Cologne', 'Köln',
-    'Stuttgart', 'Düsseldorf', 'Leipzig', 'Dresden', 'Heidelberg', 'Freiburg',
-    'Münster', 'Hannover', 'Nuremberg', 'Nürnberg', 'Bremen', 'Bochum',
-    'Dortmund', 'Karlsruhe', 'Mannheim', 'Augsburg', 'Wiesbaden', 'Bielefeld',
-    'Bonn', 'Aachen', 'Constance', 'Konstanz', 'Jena', 'Erfurt', 'Potsdam',
-    'Kassel', 'Regensburg', 'Tübingen', 'Würzburg', 'Saarbrücken', 'Braunschweig',
-    'Darmstadt', 'Göttingen', 'Marburg', 'Passau', 'Rostock', 'Magdeburg',
-    'Kaiserslautern', 'Chemnitz', 'Ilmenau', 'Bayreuth', 'Erlangen',
-    'Clausthal-Zellerfeld', 'Siegen', 'Paderborn', 'Osnabrück', 'Oldenburg',
-    'Greifswald', 'Kiel', 'Lübeck', 'Giessen', 'Gießen', 'Mainz', 'Trier',
-    'Wuppertal', 'Duisburg', 'Essen', 'Halle', 'Cottbus', 'Weimar', 'Fulda',
-];
-const MONTH_MAP = {
-    january: 0, february: 1, march: 2, april: 3, may: 4, june: 5,
-    july: 6, august: 7, september: 8, october: 9, november: 10, december: 11,
-    jan: 0, feb: 1, mar: 2, apr: 3, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11,
-    januar: 0, februar: 1, märz: 2, april_de: 3, mai: 4, juni: 5,
-    juli: 6, august_de: 7, september_de: 8, oktober: 9, november_de: 10, dezember: 11,
-};
+const scraper_constants_1 = require("./scraper.constants");
+const scraper_utils_1 = require("./scraper.utils");
+const scraper_extractors_1 = require("./scraper.extractors");
 let ScraperService = ScraperService_1 = class ScraperService {
     constructor() {
         this.logger = new common_1.Logger(ScraperService_1.name);
@@ -80,776 +20,173 @@ let ScraperService = ScraperService_1 = class ScraperService {
     async scrapeUniversityCourse(url) {
         this.logger.log(`Scraping URL: ${url}`);
         try {
-            const html = await this.fetchWithTimeout(url);
+            const html = await this.fetchWithRetry(url);
             const result = this.parseHTML(html, url);
-            this.logger.log(`Scraped: uni="${result.universityName}" course="${result.courseName}" degree="${result.degree}" lang="${result.language}" dur="${result.duration}" fees=${result.fees} deadline="${result.deadline}" ects=${result.ects} city="${result.city}"`);
-            return result;
+            this.logResult(result);
+            return this.validate(result);
         }
         catch (error) {
+            if (error instanceof common_1.HttpException)
+                throw error;
             this.logger.error(`Scraping failed: ${error.message}`);
             throw new common_1.HttpException(`Failed to scrape URL: ${error.message}`, common_1.HttpStatus.BAD_REQUEST);
         }
     }
-    async fetchWithTimeout(url, timeoutMs = 20000) {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), timeoutMs);
-        try {
-            const response = await fetch(url, {
-                signal: controller.signal,
-                headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                    'Accept-Language': 'en-US,en;q=0.9,de;q=0.8',
-                },
-                redirect: 'follow',
-            });
-            if (!response.ok)
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            return await response.text();
+    async fetchWithRetry(url, maxRetries = 3, baseTimeoutMs = 20000) {
+        let lastError = null;
+        for (let attempt = 0; attempt < maxRetries; attempt++) {
+            const ua = scraper_constants_1.USER_AGENTS[attempt % scraper_constants_1.USER_AGENTS.length];
+            const timeoutMs = baseTimeoutMs + attempt * 5000;
+            try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), timeoutMs);
+                try {
+                    const response = await fetch(url, {
+                        signal: controller.signal,
+                        headers: {
+                            'User-Agent': ua,
+                            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                            'Accept-Language': 'en-US,en;q=0.9,de;q=0.8',
+                            'Accept-Encoding': 'gzip, deflate',
+                            'Cache-Control': 'no-cache',
+                            'Connection': 'keep-alive',
+                        },
+                        redirect: 'follow',
+                    });
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    const html = await response.text();
+                    if (html.length < 500) {
+                        throw new Error('Response too short — likely blocked or error page');
+                    }
+                    if (/captcha|cloudflare|challenge|bot.detection/i.test(html.substring(0, 2000))) {
+                        throw new Error('Bot detection / CAPTCHA detected');
+                    }
+                    this.logger.debug(`Fetch success on attempt ${attempt + 1} (${html.length} bytes)`);
+                    return html;
+                }
+                finally {
+                    clearTimeout(timeout);
+                }
+            }
+            catch (error) {
+                lastError = error;
+                this.logger.warn(`Fetch attempt ${attempt + 1}/${maxRetries} failed: ${error.message}`);
+                if (attempt < maxRetries - 1) {
+                    const delay = Math.pow(2, attempt) * 1000;
+                    await new Promise((resolve) => setTimeout(resolve, delay));
+                }
+            }
         }
-        finally {
-            clearTimeout(timeout);
-        }
+        throw new common_1.HttpException(`Failed after ${maxRetries} attempts: ${lastError?.message || 'unknown error'}`, common_1.HttpStatus.BAD_GATEWAY);
     }
     parseHTML(html, url) {
-        const $ = cheerio.load(html);
         const $full = cheerio.load(html);
+        const $ = cheerio.load(html);
         const baseUrl = new URL(url).origin;
         const hostname = new URL(url).hostname.replace(/^www\./, '');
-        const socialLinks = this.extractSocialLinks($full, baseUrl);
-        $('nav, footer, header, script, style, noscript, [role="navigation"], [role="banner"], .nav, .footer, .header, .sidebar, #nav, #footer, #header, #sidebar, .cookie, .breadcrumb').remove();
+        const socialLinks = (0, scraper_extractors_1.extractSocialLinks)($full);
+        const logoUrl = (0, scraper_extractors_1.extractLogo)($full, baseUrl);
+        const sd = (0, scraper_utils_1.extractStructuredData)($full);
+        this.logger.debug(`Structured data: ${sd.jsonLd.length} JSON-LD, ${Object.keys(sd.og).length} OG, ${Object.keys(sd.microdata).length} microdata items`);
+        $('nav, footer, header, script, style, noscript, [role="navigation"], [role="banner"], .nav, .footer, .header, .sidebar, #nav, #footer, #header, #sidebar, .cookie, .breadcrumb, .banner, .modal, .popup, .advertisement, .ad, [class*="cookie"], [class*="consent"]').remove();
         const cleanText = $('body').text().replace(/\s+/g, ' ').trim();
-        const fullText = $('body').text();
-        const jsonLd = this.extractJsonLd($);
-        const kvPairs = this.extractKeyValuePairs($);
-        const city = this.extractCity(cleanText, url, hostname, kvPairs);
+        const kv = (0, scraper_utils_1.extractKeyValuePairs)($);
+        this.logger.debug(`Found ${kv.size} KV pairs`);
+        const city = this.safeExtract('city', () => (0, scraper_extractors_1.extractCity)(cleanText, hostname, kv, sd));
+        const deadlineResult = this.safeExtract('deadline', () => (0, scraper_extractors_1.extractDeadline)(cleanText, kv, sd), { date: null, internationalDate: null, label: null });
         return {
-            universityName: this.extractUniversityName($, cleanText, url, hostname, jsonLd),
-            courseName: this.extractCourseName($, cleanText, jsonLd, kvPairs),
-            description: this.extractDescription($, jsonLd),
-            degree: this.extractDegree(cleanText, kvPairs, jsonLd),
-            language: this.extractLanguage(cleanText, kvPairs),
-            duration: this.extractDuration(cleanText, kvPairs),
-            fees: this.extractFees(cleanText, kvPairs),
-            feesPerSemester: this.extractFeesPerSemester(cleanText, kvPairs),
+            universityName: this.safeExtract('universityName', () => (0, scraper_extractors_1.extractUniversityName)($, cleanText, hostname, sd, kv), 'Unknown University'),
+            courseName: this.safeExtract('courseName', () => (0, scraper_extractors_1.extractCourseName)($, cleanText, sd, kv), 'Unknown Course'),
+            description: this.safeExtract('description', () => (0, scraper_extractors_1.extractDescription)($, sd)),
+            degree: this.safeExtract('degree', () => (0, scraper_extractors_1.extractDegree)(cleanText, sd, kv)),
+            language: this.safeExtract('language', () => (0, scraper_extractors_1.extractLanguage)(cleanText, kv)),
+            duration: this.safeExtract('duration', () => (0, scraper_extractors_1.extractDuration)(cleanText, kv, sd)),
+            fees: this.safeExtractNull('fees', () => (0, scraper_extractors_1.extractFees)(cleanText, kv, sd)),
+            feesPerSemester: this.safeExtractNull('feesPerSemester', () => (0, scraper_extractors_1.extractFeesPerSemester)(cleanText, kv)),
             currency: 'EUR',
-            deadline: this.extractDeadline(cleanText, kvPairs).date,
-            deadlineInternational: this.extractDeadline(cleanText, kvPairs).internationalDate,
-            deadlineLabel: this.extractDeadline(cleanText, kvPairs).label,
-            startDate: this.extractStartDate(cleanText, kvPairs),
-            applicationUrl: this.extractApplicationUrl($, baseUrl, url),
+            deadline: deadlineResult.date,
+            deadlineInternational: deadlineResult.internationalDate,
+            deadlineLabel: deadlineResult.label,
+            startDate: this.safeExtractNull('startDate', () => (0, scraper_extractors_1.extractStartDate)(cleanText, kv, sd)),
+            applicationUrl: this.safeExtract('applicationUrl', () => (0, scraper_extractors_1.extractApplicationUrl)($, baseUrl, url), url),
             sourceUrl: url,
-            logoUrl: this.extractLogo($full, baseUrl),
-            address: this.extractAddress(cleanText),
+            logoUrl,
+            address: this.safeExtract('address', () => (0, scraper_extractors_1.extractAddress)(cleanText, sd)),
             city,
-            ects: this.extractECTS(cleanText, kvPairs),
-            applicationVia: this.detectApplicationVia(cleanText),
-            uniAssistInfo: this.extractUniAssistInfo(cleanText),
-            requirements: this.extractRequirements($, cleanText, kvPairs),
+            ects: this.safeExtractNull('ects', () => (0, scraper_extractors_1.extractECTS)(cleanText, kv, sd)),
+            applicationVia: this.safeExtract('applicationVia', () => (0, scraper_extractors_1.detectApplicationVia)(cleanText), 'DIRECT'),
+            uniAssistInfo: this.safeExtract('uniAssistInfo', () => (0, scraper_extractors_1.extractUniAssistInfo)(cleanText)),
+            requirements: this.safeExtract('requirements', () => (0, scraper_extractors_1.extractRequirements)($, cleanText, kv)),
             linkedinUrl: socialLinks.linkedin,
             instagramUrl: socialLinks.instagram,
             websiteUrl: baseUrl,
-            ...this.getCityCoordinates(city),
+            ...(0, scraper_extractors_1.getCityCoordinates)(city),
         };
     }
-    extractJsonLd($) {
+    safeExtract(fieldName, fn, fallback) {
         try {
-            const scripts = $('script[type="application/ld+json"]');
-            for (let i = 0; i < scripts.length; i++) {
-                const text = $(scripts[i]).html();
-                if (!text)
-                    continue;
-                const data = JSON.parse(text);
-                const items = Array.isArray(data) ? data : [data];
-                for (const item of items) {
-                    if (item['@type'] === 'Course' || item['@type'] === 'EducationalOccupationalProgram' || item['@type'] === 'CollegeOrUniversity') {
-                        return item;
-                    }
-                }
-            }
+            return fn();
         }
-        catch (e) {
-            this.logger.debug(`JSON-LD parse error: ${e.message}`);
+        catch (error) {
+            this.logger.warn(`Extraction failed for "${fieldName}": ${error.message}`);
+            return fallback !== undefined ? fallback : '';
         }
-        return null;
     }
-    extractKeyValuePairs($) {
-        const kv = new Map();
-        $('dl').each((_, dl) => {
-            const dts = $(dl).find('dt');
-            dts.each((i, dt) => {
-                const key = $(dt).text().replace(/\s+/g, ' ').trim().toLowerCase().replace(/:$/, '');
-                const dd = $(dt).nextAll('dd').first();
-                const val = dd.text().replace(/\s+/g, ' ').trim();
-                if (key && val && key.length < 80 && val.length < 500)
-                    kv.set(key, val);
-            });
-        });
-        $('table').each((_, table) => {
-            $(table).find('tr').each((_, tr) => {
-                const cells = $(tr).find('td, th');
-                if (cells.length === 2) {
-                    const key = $(cells[0]).text().replace(/\s+/g, ' ').trim().toLowerCase().replace(/:$/, '');
-                    const val = $(cells[1]).text().replace(/\s+/g, ' ').trim();
-                    if (key && val && key.length < 80 && val.length < 500)
-                        kv.set(key, val);
-                }
-            });
-        });
-        $('li, p, div, span').each((_, el) => {
-            const text = $(el).clone().children().remove().end().text().trim();
-            const m = text.match(/^([A-Za-zÄÖÜäöüß\s/&-]{3,40}):\s*(.{2,200})$/);
-            if (m) {
-                const key = m[1].trim().toLowerCase();
-                const val = m[2].trim();
-                if (!kv.has(key))
-                    kv.set(key, val);
-            }
-        });
-        return kv;
-    }
-    extractUniversityName($, text, url, hostname, jsonLd) {
-        const cleanUniversity = (name) => {
-            if (!name || typeof name !== 'string')
-                return '';
-            let clean = name.split(/[|\n\/]| - | – | — | \| /)[0].trim();
-            clean = clean.replace(/\s*[-–—]?\s*(study\s*programs?|studiengang|faculty\s*of|department\s*of|courses?|programs?|page|home|website|official|portal|degrees?|master|bachelor).*$/i, '').trim();
-            clean = clean.replace(/[,;:.]+$/, '').trim();
-            clean = clean.replace(/\s+/g, ' ');
-            if (clean.length > 60) {
-                const shorter = clean.split(/[,.]\s/)[0].trim();
-                if (shorter.length > 5 && shorter.length <= 80)
-                    return shorter;
-                return clean.substring(0, 60).trim();
-            }
-            return clean;
-        };
-        let foundName = '';
-        for (const [domain, info] of Object.entries(KNOWN_UNIVERSITIES)) {
-            if (hostname.endsWith(domain) && info.name)
-                return info.name;
-        }
-        if (jsonLd?.provider?.name && typeof jsonLd.provider.name === 'string')
-            foundName = jsonLd.provider.name;
-        else if (jsonLd?.['@type'] === 'CollegeOrUniversity' && typeof jsonLd.name === 'string')
-            foundName = jsonLd.name;
-        if (!foundName) {
-            const ogSiteName = $('meta[property="og:site_name"]').attr('content')?.trim();
-            if (ogSiteName && ogSiteName.length > 3 && ogSiteName.length < 100)
-                foundName = ogSiteName;
-        }
-        if (!foundName) {
-            const patterns = [
-                /(?:Technische\s+Universit[äa]t|TU)\s+[^.,|]{3,40}/i,
-                /(?:Ludwig[- ]Maximilians[- ]Universit[äa]t)\s*[^.,|]{1,30}/i,
-                /(?:Universit[äa]t|University)\s+(?:of\s+)?[A-Za-zÄÖÜäöüß\s-]{3,40}/i,
-                /[A-Za-zÄÖÜäöüß\s-]{3,40}\s+(?:Universit[äa]t|University|Hochschule|Institute\s+of\s+Technology)/i,
-                /(?:Hochschule|Fachhochschule)\s+[^.,|]{3,40}/i,
-                /RWTH\s+Aachen(?:\s+University)?/i,
-                /KIT\b/i,
-            ];
-            for (const p of patterns) {
-                const m = text.match(p);
-                if (m) {
-                    const name = m[0].trim();
-                    if (name.length > 5 && name.length < 100) {
-                        foundName = name;
-                        break;
-                    }
-                }
-            }
-        }
-        if (foundName) {
-            const cleaned = cleanUniversity(foundName);
-            if (cleaned.length > 3)
-                return cleaned;
-        }
+    safeExtractNull(fieldName, fn) {
         try {
-            const parts = hostname.split('.');
-            const main = parts.find(p => p.startsWith('uni-') || p.startsWith('tu-') || p.startsWith('hs-'));
-            if (main) {
-                const clean = main.replace(/^(uni|tu|hs)-/, '');
-                return (main.startsWith('tu-') ? 'TU ' : main.startsWith('hs-') ? 'Hochschule ' : 'Universität ') + clean.charAt(0).toUpperCase() + clean.slice(1);
-            }
-            return parts[parts.length - 2].charAt(0).toUpperCase() + parts[parts.length - 2].slice(1) + ' University';
+            return fn();
         }
-        catch { }
-        return 'Unknown University';
-    }
-    extractCourseName($, text, jsonLd, kv) {
-        const clean = (raw) => {
-            if (!raw)
-                return '';
-            let name = raw.replace(/\s+/g, ' ').trim();
-            name = name.split(/\s+[|–—]\s+/)[0].trim();
-            name = name.replace(/\s+(?:if|with|for|to|in|is|are|we|you|our|this|that|it|by|from|about|on|at|learn|discover|find|join|become|get|start|study|build|make|create|develop|explore|apply|lead|shape|design|be|do|let|have|take|use)\b.*/i, '').trim();
-            name = name.replace(/[,;:.!?]+$/, '').trim();
-            if (name.length > 120)
-                name = name.substring(0, 120).trim();
-            return name;
-        };
-        if (jsonLd?.name) {
-            const name = clean(jsonLd.name);
-            if (name.length > 3)
-                return name;
-        }
-        for (const [k, v] of kv) {
-            if (/^(programme?|course|studiengang|study\s*programme?|degree\s*programme?)$/.test(k) && v.length > 3) {
-                const name = clean(v);
-                if (name.length > 3)
-                    return name;
-            }
-        }
-        const h1 = $('h1').first().text().replace(/\s+/g, ' ').trim();
-        if (h1 && h1.length > 3) {
-            const name = clean(h1);
-            if (name.length > 3 && name.length < 160)
-                return name;
-        }
-        const ogTitle = $('meta[property="og:title"]').attr('content')?.trim();
-        if (ogTitle && ogTitle.length > 3) {
-            return ogTitle.replace(/\s*[|\-–—]\s*.*$/, '').trim() || ogTitle;
-        }
-        const title = $('title').text().trim();
-        if (title) {
-            const cleaned = title.split(/[|\-–—]/)[0].trim();
-            if (cleaned.length > 3)
-                return cleaned;
-        }
-        return 'Unknown Course';
-    }
-    extractDescription($, jsonLd) {
-        if (jsonLd?.description)
-            return jsonLd.description.substring(0, 1000);
-        const ogDesc = $('meta[property="og:description"]').attr('content')?.trim();
-        if (ogDesc && ogDesc.length > 20)
-            return ogDesc.substring(0, 1000);
-        const metaDesc = $('meta[name="description"]').attr('content')?.trim();
-        if (metaDesc && metaDesc.length > 20)
-            return metaDesc.substring(0, 1000);
-        const firstP = $('main p, article p, .content p, #content p, [role="main"] p').first().text().replace(/\s+/g, ' ').trim();
-        if (firstP && firstP.length > 50)
-            return firstP.substring(0, 1000);
-        return '';
-    }
-    extractDegree(text, kv, jsonLd) {
-        for (const [k, v] of kv) {
-            if (/^(degree|abschluss|academic\s*degree|award|qualification)$/.test(k) && v.length < 60)
-                return v;
-        }
-        if (jsonLd?.educationalCredentialAwarded)
-            return jsonLd.educationalCredentialAwarded;
-        const patterns = [
-            /\b(Master\s+of\s+(?:Science|Arts|Engineering|Business\s+Administration|Laws|Education))\b/i,
-            /\b(Bachelor\s+of\s+(?:Science|Arts|Engineering|Education))\b/i,
-            /\b(M\.?\s*Sc\.?|M\.?\s*A\.?|M\.?\s*Eng\.?|M\.?\s*B\.?\s*A\.?)\b/,
-            /\b(B\.?\s*Sc\.?|B\.?\s*A\.?|B\.?\s*Eng\.?)\b/,
-            /\b(Master|Bachelor|PhD|Doctorate|Diplom|Staatsexamen|Magister)\b/i,
-        ];
-        for (const p of patterns) {
-            const m = text.match(p);
-            if (m)
-                return m[1].trim();
-        }
-        return '';
-    }
-    extractLanguage(text, kv) {
-        for (const [k, v] of kv) {
-            if (/^(language|language\s*of\s*instruction|unterrichtssprache|sprache|teaching\s*language|medium\s*of\s*instruction)$/.test(k)) {
-                const lower = v.toLowerCase();
-                if (/\benglis[ch]?\b/i.test(v) && /\bgerma[n]?\b|deutsch/i.test(v))
-                    return 'German & English';
-                if (/\benglis[ch]?\b/i.test(v))
-                    return 'English';
-                if (/\bdeutsch\b|\bgerma[n]?\b/i.test(v))
-                    return 'German';
-                if (v.length < 40)
-                    return v;
-            }
-        }
-        const langPatterns = [
-            [/(?:language\s+of\s+instruction|teaching\s+language|taught\s+in|unterrichtssprache)[:\s]*(?:is\s+)?english(?:\s+and\s+german)?/i, ''],
-            [/taught\s+(?:entirely\s+)?in\s+english/i, 'English'],
-            [/taught\s+(?:entirely\s+)?in\s+german/i, 'German'],
-            [/(?:language|taught)[:\s]*english\s+(?:and|&|\/)\s*german/i, 'German & English'],
-            [/(?:language|taught)[:\s]*german\s+(?:and|&|\/)\s*english/i, 'German & English'],
-            [/english[- ]taught\s+(?:programme|program|course)/i, 'English'],
-            [/(?:all|fully)\s+in\s+english/i, 'English'],
-            [/german\s+only|only\s+(?:in\s+)?german|deutschsprachig|ausschließlich.*deutsch/i, 'German'],
-            [/english\s+only|only\s+(?:in\s+)?english/i, 'English'],
-            [/bilingual|zweisprachig/i, 'German & English'],
-        ];
-        for (const [p, val] of langPatterns) {
-            const m = text.match(p);
-            if (m) {
-                if (val)
-                    return val;
-                const ctx = m[0].toLowerCase();
-                if (ctx.includes('english') && (ctx.includes('german') || ctx.includes('deutsch')))
-                    return 'German & English';
-                if (ctx.includes('english'))
-                    return 'English';
-                if (ctx.includes('german') || ctx.includes('deutsch'))
-                    return 'German';
-            }
-        }
-        return '';
-    }
-    extractDuration(text, kv) {
-        for (const [k, v] of kv) {
-            if (/^(duration|dauer|regelstudienzeit|standard\s*period|study\s*duration|period\s*of\s*study|length)$/.test(k)) {
-                const m = v.match(/(\d+)\s*(semester|year|jahr|term)/i);
-                if (m)
-                    return m[0];
-                if (v.length < 30)
-                    return v;
-            }
-        }
-        const patterns = [
-            /(?:duration|dauer|regelstudienzeit|standard\s+period\s+of\s+study|study\s+duration)[:\s]+(\d+\s*(?:semesters?|years?|Semester|Jahre?))/i,
-            /(\d+)\s*(?:-|\s+to\s+)\s*(\d+)\s*semesters?/i,
-            /(\d+)\s*semesters?\s*\((\d+)\s*years?\)/i,
-            /(\d+)\s*semesters?/i,
-            /(\d+)\s*years?/i,
-        ];
-        for (const p of patterns) {
-            const m = text.match(p);
-            if (m)
-                return m[0].replace(/.*?(\d)/, '$1').trim();
-        }
-        return '';
-    }
-    extractFees(text, kv) {
-        for (const [k, v] of kv) {
-            if (/^(tuition\s*fee|fees?|studiengebühr|gebühr|kosten|cost|tuition)s?$/.test(k)) {
-                const num = this.parseGermanNumber(v);
-                if (num !== null && num > 0)
-                    return num;
-            }
-        }
-        const patterns = [
-            /tuition\s*fees?\s*[:=]?\s*(?:€|EUR)?\s*([\d.,]+)\s*(?:€|EUR)?/i,
-            /(?:€|EUR)\s*([\d.,]+)\s*(?:per\s+(?:year|annum|semester))/i,
-            /([\d.,]+)\s*(?:€|EUR)\s*(?:per\s+(?:year|annum))?/i,
-            /fees?\s*[:=]?\s*(?:approx\.?\s*)?(?:€|EUR)?\s*([\d.,]+)/i,
-            /(?:semester\s*(?:fee|beitrag|contribution))\s*[:=]?\s*(?:€|EUR)?\s*([\d.,]+)/i,
-            /(?:no|none|keine)\s*tuition\s*fees?/i,
-        ];
-        for (const p of patterns) {
-            const m = text.match(p);
-            if (m) {
-                if (/(?:no|none|keine)/i.test(m[0]))
-                    return 0;
-                if (m[1]) {
-                    const num = this.parseGermanNumber(m[1]);
-                    if (num !== null && num >= 0 && num < 100000)
-                        return num;
-                }
-            }
-        }
-        return null;
-    }
-    extractFeesPerSemester(text, kv) {
-        for (const [k, v] of kv) {
-            if (/semester\s*(?:fee|beitrag|contribution|gebühr)/i.test(k)) {
-                const num = this.parseGermanNumber(v);
-                if (num !== null && num > 0 && num < 2000)
-                    return num;
-            }
-        }
-        const patterns = [
-            /([\d.,]+)\s*(?:€|EUR)\s*(?:per|\/|each)\s*semester/i,
-            /semester\s*(?:fee|beitrag|contribution)\s*[:=]?\s*(?:€|EUR)?\s*([\d.,]+)/i,
-        ];
-        for (const p of patterns) {
-            const m = text.match(p);
-            if (m) {
-                const num = this.parseGermanNumber(m[1] || m[2]);
-                if (num !== null && num > 0 && num < 2000)
-                    return num;
-            }
-        }
-        return null;
-    }
-    parseGermanNumber(str) {
-        if (!str)
+        catch (error) {
+            this.logger.warn(`Extraction failed for "${fieldName}": ${error.message}`);
             return null;
-        let cleaned = str.replace(/\s/g, '');
-        if (/^\d{1,3}(\.\d{3})+(,\d{1,2})?$/.test(cleaned)) {
-            cleaned = cleaned.replace(/\./g, '').replace(',', '.');
         }
-        else if (/^\d{1,3}(,\d{3})+(\.\d{1,2})?$/.test(cleaned)) {
-            cleaned = cleaned.replace(/,/g, '');
-        }
-        else if (/^\d+,\d{1,2}$/.test(cleaned)) {
-            cleaned = cleaned.replace(',', '.');
-        }
-        const num = parseFloat(cleaned);
-        return isNaN(num) ? null : num;
     }
-    extractDeadline(text, kv) {
-        const result = { date: null, internationalDate: null, label: null };
-        for (const [k, v] of kv) {
-            if (/(?:application\s*)?deadline|bewerbungsfrist|application\s*period/i.test(k)) {
-                const parsed = this.parseDateString(v);
-                if (parsed && !result.date) {
-                    result.date = parsed;
-                    if (/international|non[- ]?eu|ausländ/i.test(k))
-                        result.label = 'International Students';
-                }
+    validate(data) {
+        const warnings = [];
+        if (data.deadline) {
+            const dl = new Date(data.deadline);
+            const sixMonthsAgo = new Date();
+            sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+            if (dl < sixMonthsAgo) {
+                warnings.push(`Deadline ${data.deadline} is in the past — may be outdated`);
+                const nextYear = new Date(dl);
+                nextYear.setFullYear(nextYear.getFullYear() + 1);
+                data.deadline = nextYear.toISOString().split('T')[0];
             }
         }
-        const datePatterns = [
-            /(?:application\s+deadline|bewerbungsfrist|apply\s+(?:by|before|until)|deadline\s+(?:for\s+)?(?:application|admission))[:\s]+(.{5,40}?)(?:\.|$|\n|<)/gim,
-            /(?:deadline|frist)[:\s]+(\d{1,2}[\.\/-]\d{1,2}[\.\/-]\d{2,4})/gi,
-            /(?:deadline|frist)[:\s]+(\d{1,2}\s+\w+\s+\d{4})/gi,
-        ];
-        if (!result.date) {
-            for (const p of datePatterns) {
-                const matches = [...text.matchAll(p)];
-                for (const m of matches) {
-                    const parsed = this.parseDateString(m[1]);
-                    if (parsed && !result.date) {
-                        result.date = parsed;
-                        break;
-                    }
-                }
-                if (result.date)
-                    break;
+        if (data.fees !== null && data.fees > 30000) {
+            warnings.push(`Fees ${data.fees}€ seem unusually high for German university`);
+        }
+        if (data.degree && data.courseName) {
+            const degreeIsMaster = /master|m\.?\s*sc|m\.?\s*a\./i.test(data.degree);
+            const nameIsBachelor = /bachelor|b\.?\s*sc|b\.?\s*a\./i.test(data.courseName);
+            if (degreeIsMaster && nameIsBachelor) {
+                warnings.push('Degree says Master but course name mentions Bachelor — possible mismatch');
             }
         }
-        const intlPatterns = [
-            /(?:international|non[- ]?eu|foreign|ausländ)\s*(?:students?|applicants?|bewerber)?\s*(?:deadline|frist)?[:\s]+(.{5,40}?)(?:\.|$|\n)/gim,
-        ];
-        for (const p of intlPatterns) {
-            const matches = [...text.matchAll(p)];
-            for (const m of matches) {
-                const parsed = this.parseDateString(m[1]);
-                if (parsed && !result.internationalDate) {
-                    result.internationalDate = parsed;
-                    result.label = 'International Students';
-                    break;
-                }
-            }
+        if (data.ects !== null && (data.ects < 30 || data.ects > 300)) {
+            warnings.push(`ECTS value ${data.ects} seems unusual`);
+            if (data.ects < 10 || data.ects > 500)
+                data.ects = null;
         }
-        if (!result.date) {
-            if (/winter\s*semester.*?15\s*(?:\.?\s*)?(?:juli?y?|07)/i.test(text))
-                result.date = this.nextDeadline(7, 15);
-            else if (/summer\s*semester.*?15\s*(?:\.?\s*)?(?:januar?y?|01)/i.test(text))
-                result.date = this.nextDeadline(1, 15);
+        if (data.courseName === data.universityName) {
+            warnings.push('Course name matches university name — likely extraction error');
         }
-        return result;
+        if (data.applicationUrl && !data.applicationUrl.startsWith('http')) {
+            data.applicationUrl = data.sourceUrl;
+        }
+        if (warnings.length > 0) {
+            this.logger.warn(`Validation warnings:\n  - ${warnings.join('\n  - ')}`);
+        }
+        return data;
     }
-    parseDateString(str) {
-        if (!str)
-            return null;
-        const s = str.trim().replace(/,/g, '');
-        let m = s.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
-        if (m)
-            return `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`;
-        m = s.match(/(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})/);
-        if (m)
-            return `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
-        m = s.match(/(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{2})(?!\d)/);
-        if (m) {
-            const year = parseInt(m[3]) < 50 ? 2000 + parseInt(m[3]) : 1900 + parseInt(m[3]);
-            return `${year}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
-        }
-        m = s.match(/(\d{1,2})\.?\s+(\w+)\s+(\d{4})/);
-        if (m) {
-            const month = MONTH_MAP[m[2].toLowerCase()];
-            if (month !== undefined)
-                return `${m[3]}-${String(month + 1).padStart(2, '0')}-${m[1].padStart(2, '0')}`;
-        }
-        m = s.match(/(\w+)\s+(\d{1,2})\s+(\d{4})/);
-        if (m) {
-            const month = MONTH_MAP[m[1].toLowerCase()];
-            if (month !== undefined)
-                return `${m[3]}-${String(month + 1).padStart(2, '0')}-${m[2].padStart(2, '0')}`;
-        }
-        return null;
-    }
-    nextDeadline(month, day) {
-        const now = new Date();
-        let year = now.getFullYear();
-        const dl = new Date(year, month - 1, day);
-        if (dl < now)
-            year++;
-        return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    }
-    extractStartDate(text, kv) {
-        for (const [k, v] of kv) {
-            if (/^(start|begin|start\s*date|beginn|studienbeginn|commencement)$/.test(k)) {
-                if (/winter/i.test(v))
-                    return 'Winter';
-                if (/summer|sommer/i.test(v))
-                    return 'Summer';
-                if (v.length < 30)
-                    return v;
-            }
-        }
-        if (/winter\s*semester|wintersemester/i.test(text))
-            return 'Winter';
-        if (/summer\s*semester|sommersemester/i.test(text))
-            return 'Summer';
-        return null;
-    }
-    extractApplicationUrl($, baseUrl, sourceUrl) {
-        const selectors = [
-            'a[href*="apply"]', 'a[href*="bewerbung"]', 'a[href*="application"]',
-            'a[href*="admission"]', 'a[href*="zulassung"]', 'a[href*="enrol"]',
-        ];
-        for (const sel of selectors) {
-            const href = $(sel).first().attr('href');
-            if (href)
-                return this.resolveUrl(href, baseUrl);
-        }
-        const applyBtn = $('a, button').filter((_, el) => /apply|bewerben|application/i.test($(el).text())).first();
-        const href = applyBtn.attr('href');
-        if (href)
-            return this.resolveUrl(href, baseUrl);
-        return sourceUrl;
-    }
-    resolveUrl(href, baseUrl) {
-        if (href.startsWith('http'))
-            return href;
-        if (href.startsWith('//'))
-            return 'https:' + href;
-        if (href.startsWith('/'))
-            return baseUrl + href;
-        return baseUrl + '/' + href;
-    }
-    extractLogo($, baseUrl) {
-        const logoSelectors = [
-            'img[class*="logo"]', 'img[id*="logo"]',
-            'img[alt*="logo" i]', 'img[alt*="Logo"]', 'img[alt*="Universit"]',
-            '.logo img', '#logo img', '.site-logo img',
-            '[class*="brand"] img', '.navbar-brand img', 'a[class*="logo"] img',
-            'header img', '.header img', '#header img',
-            'img[class*="header"]', 'img[id*="header"]',
-        ];
-        for (const sel of logoSelectors) {
-            const el = $(sel).first();
-            const src = el.attr('src') || el.attr('data-src');
-            if (src && !src.includes('pixel') && !src.includes('spacer') && !src.includes('1x1') && !src.includes('tracking')) {
-                const resolved = this.resolveUrl(src, baseUrl);
-                if (!resolved.startsWith('data:')) {
-                    const width = parseInt(el.attr('width') || '0');
-                    if (width === 0 || width > 20)
-                        return resolved;
-                }
-            }
-        }
-        const ogImage = $('meta[property="og:image"]').attr('content');
-        if (ogImage && !ogImage.includes('placeholder') && !ogImage.includes('default')) {
-            const resolved = this.resolveUrl(ogImage, baseUrl);
-            if (resolved.startsWith('http'))
-                return resolved;
-        }
-        const faviconSelectors = [
-            'link[rel="icon"][type="image/png"]',
-            'link[rel="icon"][type="image/svg+xml"]',
-            'link[rel="apple-touch-icon"]',
-            'link[rel="apple-touch-icon-precomposed"]',
-            'link[rel="icon"]',
-        ];
-        for (const sel of faviconSelectors) {
-            const icon = $(sel).first().attr('href');
-            if (icon && !icon.endsWith('.ico') && icon.length > 1) {
-                return this.resolveUrl(icon, baseUrl);
-            }
-        }
-        for (const sel of faviconSelectors) {
-            const icon = $(sel).first().attr('href');
-            if (icon && icon.length > 1)
-                return this.resolveUrl(icon, baseUrl);
-        }
-        return baseUrl + '/favicon.ico';
-    }
-    extractSocialLinks($, baseUrl) {
-        let linkedin = null;
-        let instagram = null;
-        $('a[href]').each((_, el) => {
-            const href = $(el).attr('href') || '';
-            if (!linkedin && /linkedin\.com\/(?:school|company|in)\//i.test(href)) {
-                linkedin = href.startsWith('http') ? href : 'https://' + href.replace(/^\/\//, '');
-            }
-            if (!instagram && /instagram\.com\/[\w.]+/i.test(href)) {
-                instagram = href.startsWith('http') ? href : 'https://' + href.replace(/^\/\//, '');
-            }
-        });
-        return { linkedin, instagram };
-    }
-    getCityCoordinates(city) {
-        const CITY_COORDS = {
-            'Berlin': { lat: 52.520, lng: 13.405 },
-            'Munich': { lat: 48.137, lng: 11.576 },
-            'München': { lat: 48.137, lng: 11.576 },
-            'Hamburg': { lat: 53.551, lng: 9.994 },
-            'Frankfurt': { lat: 50.110, lng: 8.682 },
-            'Cologne': { lat: 50.938, lng: 6.960 },
-            'Köln': { lat: 50.938, lng: 6.960 },
-            'Stuttgart': { lat: 48.776, lng: 9.183 },
-            'Düsseldorf': { lat: 51.228, lng: 6.773 },
-            'Leipzig': { lat: 51.340, lng: 12.375 },
-            'Dresden': { lat: 51.051, lng: 13.738 },
-            'Heidelberg': { lat: 49.399, lng: 8.672 },
-            'Freiburg': { lat: 47.999, lng: 7.842 },
-            'Münster': { lat: 51.962, lng: 7.626 },
-            'Hannover': { lat: 52.376, lng: 9.739 },
-            'Nuremberg': { lat: 49.452, lng: 11.077 },
-            'Nürnberg': { lat: 49.452, lng: 11.077 },
-            'Bremen': { lat: 53.075, lng: 8.807 },
-            'Bochum': { lat: 51.483, lng: 7.216 },
-            'Dortmund': { lat: 51.514, lng: 7.468 },
-            'Karlsruhe': { lat: 49.007, lng: 8.404 },
-            'Mannheim': { lat: 49.489, lng: 8.467 },
-            'Augsburg': { lat: 48.366, lng: 10.898 },
-            'Bonn': { lat: 50.735, lng: 7.100 },
-            'Aachen': { lat: 50.776, lng: 6.084 },
-            'Constance': { lat: 47.660, lng: 9.176 },
-            'Konstanz': { lat: 47.660, lng: 9.176 },
-            'Jena': { lat: 50.927, lng: 11.586 },
-            'Erfurt': { lat: 50.985, lng: 11.030 },
-            'Potsdam': { lat: 52.400, lng: 13.066 },
-            'Tübingen': { lat: 48.521, lng: 9.058 },
-            'Würzburg': { lat: 49.791, lng: 9.953 },
-            'Saarbrücken': { lat: 49.240, lng: 6.997 },
-            'Braunschweig': { lat: 52.269, lng: 10.522 },
-            'Darmstadt': { lat: 49.873, lng: 8.651 },
-            'Göttingen': { lat: 51.533, lng: 9.935 },
-            'Erlangen': { lat: 49.590, lng: 11.006 },
-            'Kaiserslautern': { lat: 49.443, lng: 7.769 },
-            'Chemnitz': { lat: 50.833, lng: 12.925 },
-            'Ilmenau': { lat: 50.684, lng: 10.914 },
-            'Bayreuth': { lat: 49.947, lng: 11.578 },
-            'Clausthal-Zellerfeld': { lat: 51.803, lng: 10.339 },
-            'Marburg': { lat: 50.812, lng: 8.771 },
-            'Rostock': { lat: 54.092, lng: 12.099 },
-            'Magdeburg': { lat: 52.121, lng: 11.628 },
-            'Kiel': { lat: 54.323, lng: 10.123 },
-            'Mainz': { lat: 49.993, lng: 8.247 },
-            'Trier': { lat: 49.750, lng: 6.637 },
-            'Passau': { lat: 48.574, lng: 13.461 },
-            'Regensburg': { lat: 49.013, lng: 12.102 },
-            'Giessen': { lat: 50.583, lng: 8.678 },
-            'Gießen': { lat: 50.583, lng: 8.678 },
-            'Siegen': { lat: 50.874, lng: 8.024 },
-            'Paderborn': { lat: 51.719, lng: 8.757 },
-            'Osnabrück': { lat: 52.279, lng: 8.043 },
-            'Oldenburg': { lat: 53.144, lng: 8.214 },
-            'Wuppertal': { lat: 51.256, lng: 7.150 },
-            'Duisburg': { lat: 51.435, lng: 6.763 },
-            'Essen': { lat: 51.455, lng: 7.012 },
-            'Weimar': { lat: 50.980, lng: 11.330 },
-            'Cottbus': { lat: 51.756, lng: 14.332 },
-        };
-        const coords = CITY_COORDS[city];
-        return coords
-            ? { latitude: coords.lat, longitude: coords.lng }
-            : { latitude: null, longitude: null };
-    }
-    extractAddress(text) {
-        const patterns = [
-            /(?:address|anschrift|standort)[:\s]+([^\n]{10,150})/i,
-            /\d{4,5}\s+[A-Za-zÄÖÜäöüß\s-]+,?\s+(?:Germany|Deutschland)/i,
-        ];
-        for (const p of patterns) {
-            const m = text.match(p);
-            if (m)
-                return (m[1] || m[0]).trim().substring(0, 200);
-        }
-        return '';
-    }
-    extractCity(text, url, hostname, kv) {
-        for (const [domain, info] of Object.entries(KNOWN_UNIVERSITIES)) {
-            if (hostname.endsWith(domain) && info.city)
-                return info.city;
-        }
-        for (const [k, v] of kv) {
-            if (/^(city|stadt|ort|location|standort)$/.test(k) && v.length < 40) {
-                const found = GERMAN_CITIES.find(c => v.includes(c));
-                if (found)
-                    return found;
-                return v;
-            }
-        }
-        for (const city of GERMAN_CITIES) {
-            if (text.includes(city))
-                return city;
-        }
-        try {
-            const parts = hostname.split('.');
-            const m = hostname.match(/(?:^|\.)([\w-]+)\.(?:de|uni|edu)/);
-            if (m) {
-                const slug = m[1].replace(/^(uni|tu|hs|fh)-/, '');
-                const found = GERMAN_CITIES.find(c => c.toLowerCase() === slug);
-                if (found)
-                    return found;
-                return slug.charAt(0).toUpperCase() + slug.slice(1);
-            }
-        }
-        catch { }
-        return '';
-    }
-    extractECTS(text, kv) {
-        for (const [k, v] of kv) {
-            if (/^(ects|credits?|credit\s*points?|leistungspunkte)$/.test(k)) {
-                const m = v.match(/(\d{2,3})/);
-                if (m)
-                    return parseInt(m[1], 10);
-            }
-        }
-        const m = text.match(/(\d{2,3})\s*(?:ECTS|credit\s*points?|CP|LP|Leistungspunkte)/i);
-        if (m)
-            return parseInt(m[1], 10);
-        return null;
-    }
-    detectApplicationVia(text) {
-        const uniAssist = /uni[- ]?assist/i.test(text);
-        const direct = /apply\s+directly|online[- ]?bewerbung|bewerbungsportal|apply\s+online\s+portal|direct\s+application/i.test(text);
-        if (uniAssist && direct)
-            return 'BOTH';
-        if (uniAssist)
-            return 'UNI_ASSIST';
-        return 'DIRECT';
-    }
-    extractUniAssistInfo(text) {
-        if (!/uni[- ]?assist/i.test(text))
-            return '';
-        const m = text.match(/(?:uni[- ]?assist)[^.!?\n]{0,200}[.!?]/i);
-        return m ? m[0].trim().substring(0, 300) : 'Application via uni-assist required';
-    }
-    extractRequirements($, text, kv) {
-        for (const [k, v] of kv) {
-            if (/^(requirements?|admission\s*requirements?|entry\s*requirements?|prerequisites?|zugangsvoraussetzungen?|voraussetzungen?|eligibility)$/.test(k)) {
-                if (v.length > 20)
-                    return v.substring(0, 500);
-            }
-        }
-        const headings = $('h1, h2, h3, h4, h5');
-        for (let i = 0; i < headings.length; i++) {
-            const heading = $(headings[i]).text().trim();
-            if (/requirement|prerequisite|eligibility|admission|zugangsvoraussetzung|voraussetzung/i.test(heading)) {
-                const next = $(headings[i]).nextAll('p, ul, ol, div').slice(0, 3);
-                const content = next.map((_, el) => $(el).text().replace(/\s+/g, ' ').trim()).get().join(' ');
-                if (content.length > 30)
-                    return content.substring(0, 500);
-            }
-        }
-        const patterns = [
-            /(?:entry\s*requirements?|admission\s*requirements?|prerequisites?|eligibility)[:\s]+(.{40,500})/i,
-            /(?:toefl|ielts|dsh|testdaf|language\s*(?:certificate|requirement|proficiency))[:\s]+(.{20,300})/i,
-        ];
-        for (const p of patterns) {
-            const m = text.match(p);
-            if (m?.[1]) {
-                const cleaned = m[1].replace(/\s+/g, ' ').trim().substring(0, 500);
-                if (cleaned.length > 30)
-                    return cleaned;
-            }
-        }
-        return '';
+    logResult(result) {
+        this.logger.log(`Scraped: uni="${result.universityName}" course="${result.courseName}" ` +
+            `degree="${result.degree}" lang="${result.language}" dur="${result.duration}" ` +
+            `fees=${result.fees} ects=${result.ects} city="${result.city}" ` +
+            `deadline="${result.deadline}" via="${result.applicationVia}"`);
     }
 };
 exports.ScraperService = ScraperService;
