@@ -4,12 +4,15 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth.store';
 import { fetchGoogleProfile } from '@/lib/googleAuth';
-import { Loader2 } from 'lucide-react';
+import { useSyncStore } from '@/store/sync.store';
+import { Loader2, CloudDownload } from 'lucide-react';
 
 export default function AuthCallbackPage() {
   const router = useRouter();
   const { setUser } = useAuthStore();
+  const { pullFromCloud } = useSyncStore();
   const [error, setError] = useState<string | null>(null);
+  const [syncPhase, setSyncPhase] = useState<'auth' | 'sync'>('auth');
 
   useEffect(() => {
     const handleAuth = async () => {
@@ -46,7 +49,19 @@ export default function AuthCallbackPage() {
         });
         
         // Successfully logged in and saved token
-        router.push('/dashboard');
+        setSyncPhase('sync');
+        
+        // Auto pull from cloud for a smooth experience
+        try {
+          await useSyncStore.getState().pullFromCloud();
+        } catch (syncErr) {
+          console.warn('Initial sync failed, continuing to dashboard', syncErr);
+        }
+
+        // Add a slight delay for smooth visual transition
+        setTimeout(() => {
+          router.push('/dashboard');
+        }, 800);
       } catch (err: unknown) {
         console.error('Authentication parsing error:', err);
         const errorMessage = err instanceof Error ? err.message : 'Verification failed. Please try again.';
@@ -70,9 +85,19 @@ export default function AuthCallbackPage() {
 
   return (
     <div className="flex h-screen flex-col items-center justify-center">
-      <Loader2 className="w-8 h-8 animate-spin text-indigo-500 mb-4" />
-      <h1 className="text-xl font-bold text-slate-700">Connecting Google...</h1>
-      <p className="text-slate-500 mt-2">Setting up your personal save destination.</p>
+      {syncPhase === 'auth' ? (
+        <>
+          <Loader2 className="w-8 h-8 animate-spin text-indigo-500 mb-4" />
+          <h1 className="text-xl font-bold text-slate-700">Connecting Google...</h1>
+          <p className="text-slate-500 mt-2">Setting up your personal save destination.</p>
+        </>
+      ) : (
+        <>
+          <CloudDownload className="w-8 h-8 animate-bounce text-emerald-500 mb-4" />
+          <h1 className="text-xl font-bold text-slate-700">Syncing your data...</h1>
+          <p className="text-slate-500 mt-2">Retrieving your latest backup from Google Drive.</p>
+        </>
+      )}
     </div>
   );
 }
