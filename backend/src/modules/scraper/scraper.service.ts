@@ -259,13 +259,20 @@ export class ScraperService {
   private extractUniversityName($: cheerio.CheerioAPI, text: string, url: string, hostname: string, jsonLd: any): string {
     const cleanUniversity = (name: string): string => {
       if (!name || typeof name !== 'string') return '';
-      // Remove trailing junk separated by pipes, dashes, commas, dots, newlines
-      let clean = name.split(/[|\n]| - | – | — /)[0].trim();
-      clean = clean.split(/, |\.\s/)[0].trim();
-      // Remove extra whitespaces
+      // Remove trailing breadcrumbs separated by pipes, dashes, slashes, colons, newlines
+      let clean = name.split(/[|\n\/]| - | – | — | \| /)[0].trim();
+      // Remove common page suffix junk like "Study Programs", "Faculty of...", "Department of..."
+      clean = clean.replace(/\s*[-–—]?\s*(study\s*programs?|studiengang|faculty\s*of|department\s*of|courses?|programs?|page|home|website|official|portal|degrees?|master|bachelor).*$/i, '').trim();
+      // Remove trailing commas, colons, dots
+      clean = clean.replace(/[,;:.]+$/, '').trim();
+      // Collapse whitespace
       clean = clean.replace(/\s+/g, ' ');
-      // If the resulting string is uncharacteristically long, truncate it nicely
-      if (clean.length > 60) return clean.substring(0, 60).trim() + '...';
+      // If still uncharacteristically long, take only the part up to the first comma or dot
+      if (clean.length > 60) {
+        const shorter = clean.split(/[,.]\s/)[0].trim();
+        if (shorter.length > 5 && shorter.length <= 80) return shorter;
+        return clean.substring(0, 60).trim();
+      }
       return clean;
     };
 
@@ -693,36 +700,53 @@ export class ScraperService {
     return baseUrl + '/' + href;
   }
 
-  // ─── Logo (enhanced: prefers actual logos over favicons) ──────
+  // ─── Logo (enhanced: prefers actual logos over favicons, og:image fallback) ───
   private extractLogo($: cheerio.CheerioAPI, baseUrl: string): string | null {
-    // 1. Try to find actual university logo images
+    // 1. Try to find actual university logo images by priority selectors
     const logoSelectors = [
-      'img[class*="logo"]', 'img[id*="logo"]', 'img[alt*="logo"]', 'img[alt*="Logo"]',
-      '.logo img', '#logo img', '[class*="brand"] img', 'header img',
-      'a[class*="logo"] img', '.site-logo img', '.navbar-brand img',
+      'img[class*="logo"]', 'img[id*="logo"]',
+      'img[alt*="logo" i]', 'img[alt*="Logo"]', 'img[alt*="Universit"]',
+      '.logo img', '#logo img', '.site-logo img',
+      '[class*="brand"] img', '.navbar-brand img', 'a[class*="logo"] img',
+      'header img', '.header img', '#header img',
+      'img[class*="header"]', 'img[id*="header"]',
     ];
     for (const sel of logoSelectors) {
-      const src = $(sel).first().attr('src');
-      if (src && !src.includes('pixel') && !src.includes('spacer')) {
+      const el = $(sel).first();
+      const src = el.attr('src') || el.attr('data-src');
+      if (src && !src.includes('pixel') && !src.includes('spacer') && !src.includes('1x1') && !src.includes('tracking')) {
         const resolved = this.resolveUrl(src, baseUrl);
-        // Prefer larger images (not tiny tracking pixels)
-        const width = parseInt($(sel).first().attr('width') || '0');
-        if (width === 0 || width > 30) return resolved;
+        if (!resolved.startsWith('data:')) {
+          const width = parseInt(el.attr('width') || '0');
+          if (width === 0 || width > 20) return resolved;
+        }
       }
     }
 
-    // 2. Fallback to favicon (prefer PNG/SVG over ICO)
+    // 2. og:image as a reasonable logo fallback (universities often set this to their logo)
+    const ogImage = $('meta[property="og:image"]').attr('content');
+    if (ogImage && !ogImage.includes('placeholder') && !ogImage.includes('default')) {
+      const resolved = this.resolveUrl(ogImage, baseUrl);
+      if (resolved.startsWith('http')) return resolved;
+    }
+
+    // 3. Fallback to favicon — prefer PNG/SVG over ICO
     const faviconSelectors = [
-      'link[rel="icon"][type="image/png"]', 'link[rel="icon"][type="image/svg+xml"]',
-      'link[rel="apple-touch-icon"]', 'link[rel="apple-touch-icon-precomposed"]', 'link[rel="icon"]',
+      'link[rel="icon"][type="image/png"]',
+      'link[rel="icon"][type="image/svg+xml"]',
+      'link[rel="apple-touch-icon"]',
+      'link[rel="apple-touch-icon-precomposed"]',
+      'link[rel="icon"]',
     ];
     for (const sel of faviconSelectors) {
       const icon = $(sel).first().attr('href');
-      if (icon && !icon.endsWith('.ico')) return this.resolveUrl(icon, baseUrl);
+      if (icon && !icon.endsWith('.ico') && icon.length > 1) {
+        return this.resolveUrl(icon, baseUrl);
+      }
     }
     for (const sel of faviconSelectors) {
       const icon = $(sel).first().attr('href');
-      if (icon) return this.resolveUrl(icon, baseUrl);
+      if (icon && icon.length > 1) return this.resolveUrl(icon, baseUrl);
     }
     return baseUrl + '/favicon.ico';
   }
