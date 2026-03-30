@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import SearchCommand from '@/components/shared/SearchCommand';
 import SyncButton from '@/components/shared/SyncButton';
 import { BREADCRUMBS } from '@/lib/navigation';
+import { signInWithGoogle } from '@/lib/firebase';
 
 
 
@@ -30,6 +31,21 @@ export function Navbar() {
       // Firebase might not be configured
     }
     clearAuth();
+  };
+
+  const handleSignIn = async () => {
+    try {
+      const { user: firebaseUser, token } = await signInWithGoogle();
+      useAuthStore.getState().setUser({
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        displayName: firebaseUser.displayName,
+        photoURL: firebaseUser.photoURL,
+        googleAccessToken: token || undefined,
+      });
+    } catch (err) {
+      console.error('Sign in failed:', err);
+    }
   };
 
   return (
@@ -64,7 +80,7 @@ export function Navbar() {
         <SyncButton />
 
         {/* User avatar / sign out */}
-        {isAuthenticated && user && (
+        {isAuthenticated && user ? (
           <div className="flex items-center gap-2">
             {user.photoURL ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -86,6 +102,13 @@ export function Navbar() {
               <LogOut className="w-4 h-4" />
             </button>
           </div>
+        ) : (
+          <button
+            onClick={handleSignIn}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-[13px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 transition-colors"
+          >
+            Sign In & Sync
+          </button>
         )}
 
         {/* Add button */}

@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { GraduationCap, ArrowRight, Sparkles, Globe2, CheckCircle2, Star } from 'lucide-react';
+import { GraduationCap, ArrowRight, Sparkles, Globe2, CheckCircle2, Star, Github, LogIn, UserPlus } from 'lucide-react';
 import { signInWithGoogle } from '@/lib/firebase';
 import { useAuthStore } from '@/store/auth.store';
 import { isFirebaseConfigured } from '@/lib/firebase';
@@ -127,17 +127,37 @@ export default function HeroSection() {
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12"
         >
           {isFirebaseConfigured && (
-            <motion.button
-              whileHover={{ scale: 1.05, boxShadow: '0 0 50px rgba(99,102,241,0.4)' }}
-              whileTap={{ scale: 0.97 }}
-              onClick={handleGoogleSignIn}
-              className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold text-lg shadow-2xl shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all"
-            >
-              <Globe2 className="w-5 h-5" />
-              Start with Google — Free
-              <ArrowRight className="w-5 h-5" />
-            </motion.button>
+            <>
+              <motion.button
+                whileHover={{ scale: 1.05, boxShadow: '0 0 50px rgba(99,102,241,0.4)' }}
+                whileTap={{ scale: 0.97 }}
+                onClick={handleGoogleSignIn}
+                className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold text-lg shadow-2xl shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all"
+              >
+                <UserPlus className="w-5 h-5" />
+                Sign Up
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05, boxShadow: '0 0 50px rgba(99,102,241,0.4)' }}
+                whileTap={{ scale: 0.97 }}
+                onClick={handleGoogleSignIn}
+                className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-rose-600 to-orange-500 text-white font-bold text-lg shadow-2xl shadow-rose-500/30 hover:shadow-rose-500/50 transition-all"
+              >
+                <LogIn className="w-5 h-5" />
+                Sign In & Sync
+              </motion.button>
+            </>
           )}
+          <motion.a
+            href="https://github.com/JijoJames04/uni-tracker"
+            target="_blank" rel="noopener noreferrer"
+            whileHover={{ scale: 1.04, backgroundColor: 'rgba(255,255,255,0.06)' }}
+            whileTap={{ scale: 0.97 }}
+            className="flex items-center gap-3 px-8 py-4 rounded-2xl border border-white/10 bg-white/[0.03] text-slate-200 font-bold text-lg hover:border-white/20 transition-all"
+          >
+            <Github className="w-5 h-5" />
+            Download Local App
+          </motion.a>
           <motion.button
             whileHover={{ scale: 1.04, backgroundColor: 'rgba(255,255,255,0.06)' }}
             whileTap={{ scale: 0.97 }}
