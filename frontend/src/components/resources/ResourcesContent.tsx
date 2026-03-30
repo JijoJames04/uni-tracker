@@ -3,14 +3,16 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-  Shield, Calculator,
+  Shield, Calculator, Search
 } from 'lucide-react';
 import VisaApsGuide from '@/components/shared/VisaApsGuide';
 import BlockedAccountCalculator from '@/components/shared/BlockedAccountCalculator';
+import UniversityLinks from '@/components/shared/UniversityLinks';
 
 const TABS = [
   { id: 'visa-aps', label: 'Visa & APS Guide', icon: Shield, color: 'text-violet-500' },
   { id: 'blocked-account', label: 'Blocked Account', icon: Calculator, color: 'text-emerald-500' },
+  { id: 'find-university', label: 'Find Universities', icon: Search, color: 'text-blue-500' },
 ] as const;
 
 type TabId = (typeof TABS)[number]['id'];
@@ -63,6 +65,15 @@ export default function ResourcesContent() {
       >
         {activeTab === 'visa-aps' && <VisaApsGuide />}
         {activeTab === 'blocked-account' && <BlockedAccountCalculator />}
+        {activeTab === 'find-university' && (
+          <div className="bg-card border border-border/50 rounded-3xl p-6 sm:p-8 shadow-sm">
+            <h3 className="font-black text-foreground text-[18px] mb-4">University Finders</h3>
+            <p className="text-sm font-medium text-muted-foreground mb-6">
+              Use these tools to discover programs that match your profile and preferences.
+            </p>
+            <UniversityLinks universityName="" showFinderLinks={true} />
+          </div>
+        )}
       </motion.div>
     </div>
   );
