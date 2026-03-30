@@ -269,10 +269,28 @@ export function ApplicationDetail({ id }: { id: string }) {
             <div className="flex justify-between mt-3 flex-wrap">
               {STATUS_PIPELINE.map((s) => {
                 const cfg = STATUS_CONFIG[s];
-                const done = STATUS_PIPELINE.indexOf(app.status) >= STATUS_PIPELINE.indexOf(s);
+                const currentIndex = STATUS_PIPELINE.indexOf(app.status);
+                const stepIndex = STATUS_PIPELINE.indexOf(s);
+                const done = currentIndex >= stepIndex;
+                const isCurrent = currentIndex === stepIndex;
+                
+                // Extract base color name from text-{color}-700 for a dynamic glow (e.g., text-emerald-700 -> emerald)
+                const isApproved = app.status === 'APPROVED';
+                
+                // Add a dynamic glow for the current active step using safe static classes
+                // We match the active progress bar which is indigo by default, or emerald if approved.
+                const currentGlow = isCurrent 
+                  ? cn('ring-[3px] ring-offset-2 animate-pulse dark:ring-offset-background shadow-[0_0_12px_var(--tw-shadow-color)]',
+                        isApproved ? 'ring-emerald-500/50 shadow-emerald-500/60' : 'ring-indigo-500/50 shadow-indigo-500/60')
+                  : '';
+
                 return (
                   <div key={s} className="flex flex-col items-center gap-1.5 relative w-8 sm:w-auto">
-                    <div className={cn('w-3 h-3 rounded-full border-2 transition-all duration-500', done ? cn(cfg.border, cfg.bg) : 'border-border/50 bg-muted')} />
+                    <div className={cn(
+                      'w-3 h-3 rounded-full border-2 transition-all duration-500', 
+                      done ? cn(cfg.border, cfg.bg) : 'border-border/50 bg-muted',
+                      currentGlow
+                    )} />
                     <span className={cn('text-[10px] sm:text-[11px] font-bold text-center absolute top-4 hidden sm:block w-max leading-tight', done ? cfg.color : 'text-muted-foreground/50 opacity-50')}>
                       {cfg.label.split(' ').map((word, i) => <span key={i} className="block">{word}</span>)}
                     </span>
