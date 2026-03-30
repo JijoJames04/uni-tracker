@@ -278,24 +278,19 @@ export class ScraperService {
 
     let foundName = '';
 
-    // 1. Known university mapping (most reliable — return immediately)
+    // 1. Known university mapping
     for (const [domain, info] of Object.entries(KNOWN_UNIVERSITIES)) {
       if (hostname.endsWith(domain) && info.name) return info.name;
     }
 
-    // 2. JSON-LD (clean immediately)
-    if (jsonLd?.provider?.name && typeof jsonLd.provider.name === 'string') {
-      foundName = cleanUniversity(jsonLd.provider.name);
-    } else if (jsonLd?.['@type'] === 'CollegeOrUniversity' && typeof jsonLd.name === 'string') {
-      foundName = cleanUniversity(jsonLd.name);
-    }
+    // 2. JSON-LD
+    if (jsonLd?.provider?.name && typeof jsonLd.provider.name === 'string') foundName = jsonLd.provider.name;
+    else if (jsonLd?.['@type'] === 'CollegeOrUniversity' && typeof jsonLd.name === 'string') foundName = jsonLd.name;
 
-    // 3. OG site name (clean immediately — often contains "Uni Name | Dept | ...")
+    // 3. OG site name
     if (!foundName) {
       const ogSiteName = $('meta[property="og:site_name"]').attr('content')?.trim();
-      if (ogSiteName && ogSiteName.length > 3 && ogSiteName.length < 150) {
-        foundName = cleanUniversity(ogSiteName);
-      }
+      if (ogSiteName && ogSiteName.length > 3 && ogSiteName.length < 100) foundName = ogSiteName;
     }
 
     // 4. Regex patterns on text
@@ -312,7 +307,7 @@ export class ScraperService {
       for (const p of patterns) {
         const m = text.match(p);
         if (m) {
-          const name = cleanUniversity(m[0].trim());
+          const name = m[0].trim();
           if (name.length > 5 && name.length < 100) {
             foundName = name;
             break;
@@ -321,7 +316,10 @@ export class ScraperService {
       }
     }
 
-    if (foundName && foundName.length > 3) return foundName;
+    if (foundName) {
+      const cleaned = cleanUniversity(foundName);
+      if (cleaned.length > 3) return cleaned;
+    }
 
     // 5. Hostname fallback
     try {

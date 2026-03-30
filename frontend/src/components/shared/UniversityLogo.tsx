@@ -30,17 +30,14 @@ function getColor(name: string): string {
   return GRADIENT_COLORS[idx];
 }
 
-// Use Google's S2 favicon service as a reliable, CORS-free logo source
+// Use Google's favicon service as a reliable fallback for university logos
 function getGoogleFavicon(logoUrl: string): string | null {
   try {
-    const { hostname } = new URL(logoUrl);
-    if (hostname && hostname !== 'localhost') {
-      return `https://www.google.com/s2/favicons?domain=${hostname}&sz=128`;
-    }
+    const url = new URL(logoUrl);
+    return `https://www.google.com/s2/favicons?domain=${url.hostname}&sz=64`;
   } catch {
-    // not a valid URL
+    return null;
   }
-  return null;
 }
 
 export function UniversityLogo({ url, name, size = 'md', className }: UniversityLogoProps) {
@@ -49,43 +46,34 @@ export function UniversityLogo({ url, name, size = 'md', className }: University
   const cfg = SIZE_MAP[size];
   const initials = getInitials(name);
   const gradient = getColor(name);
+
   const googleFavicon = url ? getGoogleFavicon(url) : null;
 
-  const containerCls = cn(
-    cfg.container,
-    'rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center',
-    'bg-white border border-border/60 shadow-sm',
-    className,
-  );
-
-  // Tier 1: direct logo URL
+  // Try the direct logo URL
   if (url && !imgError) {
     return (
-      <div className={containerCls}>
+      <div className={cn(cfg.container, 'rounded-xl overflow-hidden flex-shrink-0 bg-white border border-border', className)}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={url}
-          alt={`${name} logo`}
-          width={cfg.img}
-          height={cfg.img}
-          className="w-full h-full object-contain p-1"
+          alt={name}
+          className="w-full h-full object-contain p-0.5"
           onError={() => setImgError(true)}
           referrerPolicy="no-referrer"
+          crossOrigin="anonymous"
         />
       </div>
     );
   }
 
-  // Tier 2: Google favicon service fallback
+  // Fallback: Google favicon service (very reliable for university domains)
   if (googleFavicon && !faviconError) {
     return (
-      <div className={containerCls}>
+      <div className={cn(cfg.container, 'rounded-xl overflow-hidden flex-shrink-0 bg-white border border-border', className)}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={googleFavicon}
-          alt={`${name} logo`}
-          width={cfg.img}
-          height={cfg.img}
+          alt={name}
           className="w-full h-full object-contain p-1"
           onError={() => setFaviconError(true)}
           referrerPolicy="no-referrer"
@@ -94,13 +82,13 @@ export function UniversityLogo({ url, name, size = 'md', className }: University
     );
   }
 
-  // Tier 3: initials gradient avatar
+  // Final fallback: initials avatar
   return (
     <div className={cn(
       cfg.container, 'rounded-xl flex-shrink-0 flex items-center justify-center',
       `bg-gradient-to-br ${gradient}`, className,
     )}>
-      <span className={cn('text-white font-bold select-none', cfg.text)}>{initials}</span>
+      <span className={cn('text-white font-bold', cfg.text)}>{initials}</span>
     </div>
   );
 }
