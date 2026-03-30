@@ -212,11 +212,16 @@ let ScraperService = ScraperService_1 = class ScraperService {
         const cleanUniversity = (name) => {
             if (!name || typeof name !== 'string')
                 return '';
-            let clean = name.split(/[|\n]| - | – | — /)[0].trim();
-            clean = clean.split(/, |\.\s/)[0].trim();
+            let clean = name.split(/[|\n\/]| - | – | — | \| /)[0].trim();
+            clean = clean.replace(/\s*[-–—]?\s*(study\s*programs?|studiengang|faculty\s*of|department\s*of|courses?|programs?|page|home|website|official|portal|degrees?|master|bachelor).*$/i, '').trim();
+            clean = clean.replace(/[,;:.]+$/, '').trim();
             clean = clean.replace(/\s+/g, ' ');
-            if (clean.length > 60)
-                return clean.substring(0, 60).trim() + '...';
+            if (clean.length > 60) {
+                const shorter = clean.split(/[,.]\s/)[0].trim();
+                if (shorter.length > 5 && shorter.length <= 80)
+                    return shorter;
+                return clean.substring(0, 60).trim();
+            }
             return clean;
         };
         let foundName = '';
@@ -272,18 +277,34 @@ let ScraperService = ScraperService_1 = class ScraperService {
         return 'Unknown University';
     }
     extractCourseName($, text, jsonLd, kv) {
+        const clean = (raw) => {
+            if (!raw)
+                return '';
+            let name = raw.replace(/\s+/g, ' ').trim();
+            name = name.split(/\s+[|–—]\s+/)[0].trim();
+            name = name.replace(/\s+(?:if|with|for|to|in|is|are|we|you|our|this|that|it|by|from|about|on|at|learn|discover|find|join|become|get|start|study|build|make|create|develop|explore|apply|lead|shape|design|be|do|let|have|take|use)\b.*/i, '').trim();
+            name = name.replace(/[,;:.!?]+$/, '').trim();
+            if (name.length > 120)
+                name = name.substring(0, 120).trim();
+            return name;
+        };
         if (jsonLd?.name) {
-            const name = jsonLd.name.trim();
-            if (name.length > 3 && name.length < 200)
+            const name = clean(jsonLd.name);
+            if (name.length > 3)
                 return name;
         }
         for (const [k, v] of kv) {
-            if (/^(programme?|course|studiengang|study\s*programme?|degree\s*programme?)$/.test(k) && v.length > 3)
-                return v;
+            if (/^(programme?|course|studiengang|study\s*programme?|degree\s*programme?)$/.test(k) && v.length > 3) {
+                const name = clean(v);
+                if (name.length > 3)
+                    return name;
+            }
         }
         const h1 = $('h1').first().text().replace(/\s+/g, ' ').trim();
-        if (h1 && h1.length > 3 && h1.length < 200) {
-            return h1;
+        if (h1 && h1.length > 3) {
+            const name = clean(h1);
+            if (name.length > 3 && name.length < 160)
+                return name;
         }
         const ogTitle = $('meta[property="og:title"]').attr('content')?.trim();
         if (ogTitle && ogTitle.length > 3) {
@@ -600,31 +621,47 @@ let ScraperService = ScraperService_1 = class ScraperService {
     }
     extractLogo($, baseUrl) {
         const logoSelectors = [
-            'img[class*="logo"]', 'img[id*="logo"]', 'img[alt*="logo"]', 'img[alt*="Logo"]',
-            '.logo img', '#logo img', '[class*="brand"] img', 'header img',
-            'a[class*="logo"] img', '.site-logo img', '.navbar-brand img',
+            'img[class*="logo"]', 'img[id*="logo"]',
+            'img[alt*="logo" i]', 'img[alt*="Logo"]', 'img[alt*="Universit"]',
+            '.logo img', '#logo img', '.site-logo img',
+            '[class*="brand"] img', '.navbar-brand img', 'a[class*="logo"] img',
+            'header img', '.header img', '#header img',
+            'img[class*="header"]', 'img[id*="header"]',
         ];
         for (const sel of logoSelectors) {
-            const src = $(sel).first().attr('src');
-            if (src && !src.includes('pixel') && !src.includes('spacer')) {
+            const el = $(sel).first();
+            const src = el.attr('src') || el.attr('data-src');
+            if (src && !src.includes('pixel') && !src.includes('spacer') && !src.includes('1x1') && !src.includes('tracking')) {
                 const resolved = this.resolveUrl(src, baseUrl);
-                const width = parseInt($(sel).first().attr('width') || '0');
-                if (width === 0 || width > 30)
-                    return resolved;
+                if (!resolved.startsWith('data:')) {
+                    const width = parseInt(el.attr('width') || '0');
+                    if (width === 0 || width > 20)
+                        return resolved;
+                }
             }
         }
+        const ogImage = $('meta[property="og:image"]').attr('content');
+        if (ogImage && !ogImage.includes('placeholder') && !ogImage.includes('default')) {
+            const resolved = this.resolveUrl(ogImage, baseUrl);
+            if (resolved.startsWith('http'))
+                return resolved;
+        }
         const faviconSelectors = [
-            'link[rel="icon"][type="image/png"]', 'link[rel="icon"][type="image/svg+xml"]',
-            'link[rel="apple-touch-icon"]', 'link[rel="apple-touch-icon-precomposed"]', 'link[rel="icon"]',
+            'link[rel="icon"][type="image/png"]',
+            'link[rel="icon"][type="image/svg+xml"]',
+            'link[rel="apple-touch-icon"]',
+            'link[rel="apple-touch-icon-precomposed"]',
+            'link[rel="icon"]',
         ];
         for (const sel of faviconSelectors) {
             const icon = $(sel).first().attr('href');
-            if (icon && !icon.endsWith('.ico'))
+            if (icon && !icon.endsWith('.ico') && icon.length > 1) {
                 return this.resolveUrl(icon, baseUrl);
+            }
         }
         for (const sel of faviconSelectors) {
             const icon = $(sel).first().attr('href');
-            if (icon)
+            if (icon && icon.length > 1)
                 return this.resolveUrl(icon, baseUrl);
         }
         return baseUrl + '/favicon.ico';

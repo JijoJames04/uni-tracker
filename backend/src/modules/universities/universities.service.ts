@@ -87,6 +87,19 @@ export class UniversitiesService {
   }
 
   async remove(id: string) {
+    // Clean up calendar events referencing any of this university's courses
+    const courses = await this.prisma.course.findMany({
+      where: { universityId: id },
+      select: { id: true },
+    });
+    const courseIds = courses.map((c) => c.id);
+    if (courseIds.length > 0) {
+      await this.prisma.calendarEvent.deleteMany({
+        where: { courseId: { in: courseIds } },
+      });
+    }
+
+    // Prisma cascade handles: courses → applications → docs/timeline/checklist
     return this.prisma.university.delete({ where: { id } });
   }
 
@@ -136,8 +149,9 @@ export class UniversitiesService {
     });
 
     if (existingCourse) {
+      // Use the stored course name (not the freshly scraped one) for a clean error message
       throw new ConflictException(
-        `Application for "${scraped.courseName}" at ${scraped.universityName} already exists`,
+        `An application for "${existingCourse.name}" at this university already exists`,
       );
     }
 
@@ -224,7 +238,7 @@ export class UniversitiesService {
 
     if (existingCourse) {
       throw new ConflictException(
-        `Application for "${dto.name}" at ${existingCourse.university.name} already exists`,
+        `An application for "${dto.name}" at ${existingCourse.university.name} already exists`,
       );
     }
 

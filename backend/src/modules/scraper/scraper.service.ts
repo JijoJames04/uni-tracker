@@ -337,25 +337,49 @@ export class ScraperService {
 
   // ─── Course Name ──────────────────────────────────────────────
   private extractCourseName($: cheerio.CheerioAPI, text: string, jsonLd: any, kv: Map<string, string>): string {
-    // 1. JSON-LD
+    /** Strip trailing prose sentences that leak into page headings.
+     *  e.g.  "Biotechnology (B.Sc.) If you have a passion for..."
+     *        → "Biotechnology (B.Sc.)"
+     */
+    const clean = (raw: string): string => {
+      if (!raw) return '';
+      let name = raw.replace(/\s+/g, ' ').trim();
+      // Cut at first pipe / en-dash / em-dash separator
+      name = name.split(/\s+[|–—]\s+/)[0].trim();
+      // Cut just before common prose intro words that follow a degree title
+      name = name.replace(
+        /\s+(?:if|with|for|to|in|is|are|we|you|our|this|that|it|by|from|about|on|at|learn|discover|find|join|become|get|start|study|build|make|create|develop|explore|apply|lead|shape|design|be|do|let|have|take|use)\b.*/i,
+        '',
+      ).trim();
+      // Remove trailing punctuation
+      name = name.replace(/[,;:.!?]+$/, '').trim();
+      // Hard cap
+      if (name.length > 120) name = name.substring(0, 120).trim();
+      return name;
+    };
+
+    // 1. JSON-LD (most reliable — structured data is intention)
     if (jsonLd?.name) {
-      const name = jsonLd.name.trim();
-      if (name.length > 3 && name.length < 200) return name;
+      const name = clean(jsonLd.name);
+      if (name.length > 3) return name;
     }
 
     // 2. KV pairs
     for (const [k, v] of kv) {
-      if (/^(programme?|course|studiengang|study\s*programme?|degree\s*programme?)$/.test(k) && v.length > 3) return v;
+      if (/^(programme?|course|studiengang|study\s*programme?|degree\s*programme?)$/.test(k) && v.length > 3) {
+        const name = clean(v);
+        if (name.length > 3) return name;
+      }
     }
 
-    // 3. H1 — but clean it up
+    // 3. H1 — aggressively cleaned because pages often append marketing copy
     const h1 = $('h1').first().text().replace(/\s+/g, ' ').trim();
-    if (h1 && h1.length > 3 && h1.length < 200) {
-      // Strip university name from h1 if it contains both
-      return h1;
+    if (h1 && h1.length > 3) {
+      const name = clean(h1);
+      if (name.length > 3 && name.length < 160) return name;
     }
 
-    // 4. og:title
+    // 4. og:title — strip everything after first pipe/dash
     const ogTitle = $('meta[property="og:title"]').attr('content')?.trim();
     if (ogTitle && ogTitle.length > 3) {
       // Clean common suffixes

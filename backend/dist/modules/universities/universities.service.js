@@ -183,6 +183,16 @@ let UniversitiesService = class UniversitiesService {
         return this.prisma.university.update({ where: { id }, data: dto });
     }
     async remove(id) {
+        const courses = await this.prisma.course.findMany({
+            where: { universityId: id },
+            select: { id: true },
+        });
+        const courseIds = courses.map((c) => c.id);
+        if (courseIds.length > 0) {
+            await this.prisma.calendarEvent.deleteMany({
+                where: { courseId: { in: courseIds } },
+            });
+        }
         return this.prisma.university.delete({ where: { id } });
     }
     async updateCourseDeadline(courseId, deadline, label) {
@@ -224,7 +234,7 @@ let UniversitiesService = class UniversitiesService {
             include: { application: true },
         });
         if (existingCourse) {
-            throw new common_1.ConflictException(`Application for "${scraped.courseName}" at ${scraped.universityName} already exists`);
+            throw new common_1.ConflictException(`An application for "${existingCourse.name}" at this university already exists`);
         }
         const course = await this.prisma.course.create({
             data: {
@@ -295,7 +305,7 @@ let UniversitiesService = class UniversitiesService {
             include: { university: true, application: true },
         });
         if (existingCourse) {
-            throw new common_1.ConflictException(`Application for "${dto.name}" at ${existingCourse.university.name} already exists`);
+            throw new common_1.ConflictException(`An application for "${dto.name}" at ${existingCourse.university.name} already exists`);
         }
         const course = await this.prisma.course.create({
             data: {

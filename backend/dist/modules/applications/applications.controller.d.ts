@@ -51,12 +51,12 @@ export declare class ApplicationsController {
             notes: string | null;
             applicationId: string;
             type: import(".prisma/client").$Enums.DocumentType;
-            uploadedAt: Date;
             originalName: string;
             filePath: string;
             fileSize: number;
             mimeType: string;
             version: number;
+            uploadedAt: Date;
         }[];
         timeline: {
             description: string | null;
@@ -136,12 +136,12 @@ export declare class ApplicationsController {
             notes: string | null;
             applicationId: string;
             type: import(".prisma/client").$Enums.DocumentType;
-            uploadedAt: Date;
             originalName: string;
             filePath: string;
             fileSize: number;
             mimeType: string;
             version: number;
+            uploadedAt: Date;
         }[];
         timeline: {
             description: string | null;
@@ -221,12 +221,12 @@ export declare class ApplicationsController {
             notes: string | null;
             applicationId: string;
             type: import(".prisma/client").$Enums.DocumentType;
-            uploadedAt: Date;
             originalName: string;
             filePath: string;
             fileSize: number;
             mimeType: string;
             version: number;
+            uploadedAt: Date;
         }[];
         timeline: {
             description: string | null;
@@ -306,12 +306,12 @@ export declare class ApplicationsController {
             notes: string | null;
             applicationId: string;
             type: import(".prisma/client").$Enums.DocumentType;
-            uploadedAt: Date;
             originalName: string;
             filePath: string;
             fileSize: number;
             mimeType: string;
             version: number;
+            uploadedAt: Date;
         }[];
         timeline: {
             description: string | null;
@@ -391,12 +391,12 @@ export declare class ApplicationsController {
             notes: string | null;
             applicationId: string;
             type: import(".prisma/client").$Enums.DocumentType;
-            uploadedAt: Date;
             originalName: string;
             filePath: string;
             fileSize: number;
             mimeType: string;
             version: number;
+            uploadedAt: Date;
         }[];
         timeline: {
             description: string | null;
@@ -454,17 +454,7 @@ export declare class ApplicationsController {
         label: string;
     }>;
     remove(id: string): Promise<{
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        intake: string | null;
-        status: import(".prisma/client").$Enums.ApplicationStatus;
-        priority: import(".prisma/client").$Enums.Priority;
-        notes: string | null;
-        appliedAt: Date | null;
-        decisionAt: Date | null;
-        submissionFee: number | null;
-        courseId: string;
+        message: string;
     }>;
     removeAll(): Promise<{
         message: string;

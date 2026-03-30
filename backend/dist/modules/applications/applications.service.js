@@ -165,9 +165,27 @@ let ApplicationsService = class ApplicationsService {
         return this.prisma.checklistItem.delete({ where: { id: itemId } });
     }
     async remove(id) {
-        return this.prisma.application.delete({ where: { id } });
+        const app = await this.prisma.application.findUnique({
+            where: { id },
+            select: { courseId: true, course: { select: { universityId: true } } },
+        });
+        if (!app)
+            throw new common_1.NotFoundException(`Application ${id} not found`);
+        const { courseId } = app;
+        const { universityId } = app.course;
+        await this.prisma.calendarEvent.deleteMany({ where: { courseId } });
+        await this.prisma.application.delete({ where: { id } });
+        await this.prisma.course.delete({ where: { id: courseId } });
+        const remainingCourses = await this.prisma.course.count({
+            where: { universityId },
+        });
+        if (remainingCourses === 0) {
+            await this.prisma.university.delete({ where: { id: universityId } });
+        }
+        return { message: 'Application and course deleted' };
     }
     async removeAll() {
+        await this.prisma.calendarEvent.deleteMany({});
         await this.prisma.timelineEntry.deleteMany({});
         await this.prisma.checklistItem.deleteMany({});
         await this.prisma.document.deleteMany({});

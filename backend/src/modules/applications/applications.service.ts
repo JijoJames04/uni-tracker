@@ -136,10 +136,38 @@ export class ApplicationsService {
   }
 
   async remove(id: string) {
-    return this.prisma.application.delete({ where: { id } });
+    // Look up the application to find the linked course & university
+    const app = await this.prisma.application.findUnique({
+      where: { id },
+      select: { courseId: true, course: { select: { universityId: true } } },
+    });
+    if (!app) throw new NotFoundException(`Application ${id} not found`);
+
+    const { courseId } = app;
+    const { universityId } = app.course;
+
+    // 1. Delete calendar events that reference this course
+    await this.prisma.calendarEvent.deleteMany({ where: { courseId } });
+
+    // 2. Delete the application (cascades → documents, timeline, checklist)
+    await this.prisma.application.delete({ where: { id } });
+
+    // 3. Delete the course itself (now orphaned, no application)
+    await this.prisma.course.delete({ where: { id: courseId } });
+
+    // 4. If the university has no remaining courses, delete it too
+    const remainingCourses = await this.prisma.course.count({
+      where: { universityId },
+    });
+    if (remainingCourses === 0) {
+      await this.prisma.university.delete({ where: { id: universityId } });
+    }
+
+    return { message: 'Application and course deleted' };
   }
 
   async removeAll() {
+    await this.prisma.calendarEvent.deleteMany({});
     await this.prisma.timelineEntry.deleteMany({});
     await this.prisma.checklistItem.deleteMany({});
     await this.prisma.document.deleteMany({});

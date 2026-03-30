@@ -15,17 +15,21 @@ datasource db {
 // ─────────────────────────────────────────────
 
 model University {
-  id          String   @id @default(cuid())
-  name        String
-  logoUrl     String?
-  address     String?
-  city        String?
-  country     String   @default("Germany")
-  website     String?
-  description String?
-  ranking     Int?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(cuid())
+  name          String
+  logoUrl       String?
+  address       String?
+  city          String?
+  country       String   @default("Germany")
+  website       String?
+  linkedinUrl   String?
+  instagramUrl  String?
+  description   String?
+  ranking       Int?
+  latitude      Float?
+  longitude     Float?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   courses Course[]
 
@@ -45,7 +49,7 @@ model Course {
   currency       String   @default("EUR")
   deadline       DateTime?
   deadlineInternational DateTime?
-  deadlineLabel  String?
+  deadlineLabel  String?  // e.g., "International Students", "EU Students"
   startDate      DateTime?
   applicationUrl String?
   sourceUrl      String?
@@ -59,6 +63,9 @@ model Course {
   university  University   @relation(fields: [universityId], references: [id], onDelete: Cascade)
   application Application?
 
+  @@index([universityId])
+  @@index([deadline])
+  @@unique([universityId, name])
   @@map("courses")
 }
 
@@ -74,7 +81,7 @@ enum ApplicationVia {
 
 model Application {
   id          String            @id @default(cuid())
-  courseId    String            @unique
+  intake      String?           // e.g., "WS 2026", "SS 2027" — allows same course at different intakes
   status      ApplicationStatus @default(DRAFT)
   priority    Priority          @default(MEDIUM)
   notes       String?
@@ -84,11 +91,13 @@ model Application {
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
 
+  courseId    String  @unique
   course     Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
   documents  Document[]
   timeline   TimelineEntry[]
   checklist  ChecklistItem[]
 
+  @@unique([courseId, intake])  // Same course + different intake = separate entries (NOT duplicate)
   @@map("applications")
 }
 
@@ -129,6 +138,8 @@ model Document {
 
   application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
+  @@index([applicationId])
+  @@index([type])
   @@map("documents")
 }
 
@@ -163,6 +174,8 @@ model TimelineEntry {
 
   application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
+  @@index([applicationId])
+  @@index([createdAt])
   @@map("timeline_entries")
 }
 
@@ -189,6 +202,7 @@ model ChecklistItem {
 
   application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
+  @@index([applicationId])
   @@map("checklist_items")
 }
 
@@ -246,6 +260,22 @@ model Profile {
   updatedAt DateTime @updatedAt
 
   @@map("profiles")
+}
+
+// ─────────────────────────────────────────────
+// User (for auth & user count)
+// ─────────────────────────────────────────────
+
+model User {
+  id            String   @id @default(cuid())
+  firebaseUid   String   @unique
+  email         String
+  displayName   String?
+  photoUrl      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("users")
 }
 
 // ─────────────────────────────────────────────
