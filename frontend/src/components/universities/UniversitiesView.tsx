@@ -10,6 +10,7 @@ import { cn, formatDeadline, formatFees } from '@/lib/utils';
 import { UniversityLogo } from '@/components/shared/UniversityLogo';
 import { StatusBadge, ViaBadge } from '@/components/shared/StatusBadge';
 import { Skeleton } from '@/components/shared/Skeleton';
+import UniversityLinks from '@/components/shared/UniversityLinks';
 
 export function UniversitiesView() {
   const [search, setSearch]   = useState('');
@@ -81,13 +82,6 @@ export function UniversitiesView() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  {uni.website && (
-                    <a href={uni.website} target="_blank" rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors">
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                  )}
                   {expanded === uni.id
                     ? <ChevronUp className="w-4 h-4 text-muted-foreground" />
                     : <ChevronDown className="w-4 h-4 text-muted-foreground" />
@@ -107,6 +101,17 @@ export function UniversitiesView() {
                     <p className="px-5 py-3 text-xs text-muted-foreground border-b bg-muted/20">
                       {uni.description}
                     </p>
+                  )}
+                  {(uni.website || uni.linkedinUrl || uni.instagramUrl) && (
+                    <div className="px-5 py-4 border-b bg-muted/10">
+                      <UniversityLinks 
+                        website={uni.website || undefined}
+                        linkedinUrl={uni.linkedinUrl || undefined}
+                        instagramUrl={uni.instagramUrl || undefined}
+                        universityName={uni.name}
+                        showFinderLinks={false}
+                      />
+                    </div>
                   )}
                   <div className="divide-y">
                     {uni.courses.map((course) => {

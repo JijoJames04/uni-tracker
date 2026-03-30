@@ -24,6 +24,7 @@ import { UniversityLogo } from '@/components/shared/UniversityLogo';
 import { Skeleton } from '@/components/shared/Skeleton';
 import { DocumentUpload } from '@/components/documents/DocumentUpload';
 import AiPlatformLinks from '@/components/shared/AiPlatformLinks';
+import UniversityLinks from '@/components/shared/UniversityLinks';
 
 const FADE = { hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0 } };
 
@@ -380,15 +381,29 @@ export function ApplicationDetail({ id }: { id: string }) {
           </div>
         )}
 
-        {/* External link */}
-        {course.applicationUrl && (
-          <div className="px-5 pb-4 sm:px-6">
-            <a href={course.applicationUrl} target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-700 font-medium">
-              <Globe className="w-3.5 h-3.5" />
-              View Application Portal
-              <ExternalLink className="w-3 h-3" />
-            </a>
+        {/* External link & social links */}
+        {(course.applicationUrl || university.website || university.linkedinUrl || university.instagramUrl) && (
+          <div className="px-5 pb-5 sm:px-6 pt-5 border-t border-border/50 mt-2">
+            {course.applicationUrl && (
+              <div className="mb-5">
+                <a href={course.applicationUrl} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-[14px] text-indigo-700 hover:text-indigo-800 font-bold bg-indigo-50/80 hover:bg-indigo-100/80 px-4 py-2.5 rounded-xl transition-colors border border-indigo-200/50 shadow-sm">
+                  <Globe className="w-4 h-4" />
+                  View Application Portal
+                  <ExternalLink className="w-3.5 h-3.5 ml-1 opacity-70" />
+                </a>
+              </div>
+            )}
+            
+            {(university.website || university.linkedinUrl || university.instagramUrl) && (
+              <UniversityLinks 
+                website={university.website || undefined}
+                linkedinUrl={university.linkedinUrl || undefined}
+                instagramUrl={university.instagramUrl || undefined}
+                universityName={university.name}
+                showFinderLinks={false}
+              />
+            )}
           </div>
         )}
       </motion.div>
