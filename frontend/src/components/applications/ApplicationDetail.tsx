@@ -288,6 +288,7 @@ export function ApplicationDetail({ id }: { id: string }) {
                   <div key={s} className="flex flex-col items-center gap-1.5 relative w-8 sm:w-auto">
                     <div className={cn(
                       'w-3 h-3 rounded-full border-2 transition-all duration-500', 
+                      isCurrent ? cn('border-transparent', isApproved ? 'bg-emerald-500' : 'bg-indigo-500') :
                       done ? cn(cfg.border, cfg.bg) : 'border-border/50 bg-muted',
                       currentGlow
                     )} />
