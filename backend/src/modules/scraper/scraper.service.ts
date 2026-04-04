@@ -33,7 +33,7 @@ export interface ScrapedCourseData {
 
 
 // ─── Known German university mappings by hostname ──────────────
-const KNOWN_UNIVERSITIES: Record<string, { name: string; city: string }> = {
+export const KNOWN_UNIVERSITIES: Record<string, { name: string; city: string }> = {
   'tum.de':           { name: 'Technical University of Munich', city: 'Munich' },
   'tu-berlin.de':     { name: 'Technische Universität Berlin', city: 'Berlin' },
   'tu-darmstadt.de':  { name: 'Technische Universität Darmstadt', city: 'Darmstadt' },
@@ -76,6 +76,55 @@ const KNOWN_UNIVERSITIES: Record<string, { name: string; city: string }> = {
   'daad.de':          { name: 'DAAD', city: '' },
   'studieren.de':     { name: '', city: '' },
 };
+
+/**
+ * Normalize a scraped university name against the KNOWN_UNIVERSITIES list.
+ * Returns the canonical name if a confident match is found, otherwise returns
+ * the input name unchanged.
+ *
+ * Matching strategies (in order of confidence):
+ *  1. Exact case-insensitive match
+ *  2. One string fully contains the other (for long names)
+ *  3. Token-set overlap: ≥70% of tokens in the shorter name appear in the longer
+ */
+export function normalizeUniversityName(name: string): string {
+  if (!name || name === 'Unknown University') return name;
+
+  const lowerInput = name.toLowerCase().trim();
+  const knownNames = Object.values(KNOWN_UNIVERSITIES)
+    .map((v) => v.name)
+    .filter(Boolean);
+
+  // 1. Exact match (case-insensitive)
+  for (const canonical of knownNames) {
+    if (canonical.toLowerCase() === lowerInput) return canonical;
+  }
+
+  // 2. Full containment — one name fully contains the other
+  for (const canonical of knownNames) {
+    const lowerCanonical = canonical.toLowerCase();
+    if (lowerInput.includes(lowerCanonical) || lowerCanonical.includes(lowerInput)) {
+      // Guard: reject if the overlap is too short to be meaningful
+      const shorter = lowerInput.length < lowerCanonical.length ? lowerInput : lowerCanonical;
+      if (shorter.length >= 8) return canonical;
+    }
+  }
+
+  // 3. Token-set overlap — split on spaces/punctuation and check coverage
+  const inputTokens = lowerInput.split(/[\s,.-]+/).filter((t) => t.length > 2);
+  for (const canonical of knownNames) {
+    const canonicalTokens = canonical.toLowerCase().split(/[\s,.-]+/).filter((t) => t.length > 2);
+    const shorter = inputTokens.length <= canonicalTokens.length ? inputTokens : canonicalTokens;
+    const longer = inputTokens.length <= canonicalTokens.length ? canonicalTokens : inputTokens;
+    if (shorter.length === 0) continue;
+    const matchCount = shorter.filter((t) => longer.some((lt) => lt.includes(t) || t.includes(lt))).length;
+    if (matchCount / shorter.length >= 0.7 && matchCount >= 2) {
+      return canonical;
+    }
+  }
+
+  return name;
+}
 
 const GERMAN_CITIES = [
   'Berlin', 'Munich', 'München', 'Hamburg', 'Frankfurt', 'Cologne', 'Köln',
@@ -276,6 +325,10 @@ export class ScraperService {
       return clean;
     };
 
+    const verifyAgainstKnown = (name: string): string => {
+      return normalizeUniversityName(name);
+    };
+
     let foundName = '';
 
     // 1. Known university mapping
@@ -318,7 +371,7 @@ export class ScraperService {
 
     if (foundName) {
       const cleaned = cleanUniversity(foundName);
-      if (cleaned.length > 3) return cleaned;
+      if (cleaned.length > 3) return verifyAgainstKnown(cleaned);
     }
 
     // 5. Hostname fallback
@@ -327,9 +380,9 @@ export class ScraperService {
       const main = parts.find(p => p.startsWith('uni-') || p.startsWith('tu-') || p.startsWith('hs-'));
       if (main) {
         const clean = main.replace(/^(uni|tu|hs)-/, '');
-        return (main.startsWith('tu-') ? 'TU ' : main.startsWith('hs-') ? 'Hochschule ' : 'Universität ') + clean.charAt(0).toUpperCase() + clean.slice(1);
+        return verifyAgainstKnown((main.startsWith('tu-') ? 'TU ' : main.startsWith('hs-') ? 'Hochschule ' : 'Universität ') + clean.charAt(0).toUpperCase() + clean.slice(1));
       }
-      return parts[parts.length - 2].charAt(0).toUpperCase() + parts[parts.length - 2].slice(1) + ' University';
+      return verifyAgainstKnown(parts[parts.length - 2].charAt(0).toUpperCase() + parts[parts.length - 2].slice(1) + ' University');
     } catch {}
     
     return 'Unknown University';

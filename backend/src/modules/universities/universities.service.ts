@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { ScraperService } from '../scraper/scraper.service';
+import { ScraperService, normalizeUniversityName } from '../scraper/scraper.service';
 import { IsString, IsOptional, IsUrl } from 'class-validator';
 
 export class CreateUniversityDto {
@@ -117,15 +117,28 @@ export class UniversitiesService {
   async addFromUrl(dto: AddFromUrlDto) {
     const scraped = await this.scraperService.scrapeUniversityCourse(dto.url);
 
-    // Find or create university
+    // ─── Verify the university name against the canonical KNOWN_UNIVERSITIES list ───
+    // This ensures names like "TU Munich", "Technical University Munich", and
+    // "Technische Universität München" all resolve to the same canonical entry.
+    const canonicalName = normalizeUniversityName(scraped.universityName);
+
+    // ─── Find or create university using canonical name ───
+    // Use OR-based search to catch existing records stored under slight variants
     let university = await this.prisma.university.findFirst({
-      where: { name: { contains: scraped.universityName, mode: 'insensitive' } },
+      where: {
+        OR: [
+          { name: { equals: canonicalName, mode: 'insensitive' } },
+          { name: { contains: canonicalName, mode: 'insensitive' } },
+          { name: { equals: scraped.universityName, mode: 'insensitive' } },
+          { name: { contains: scraped.universityName, mode: 'insensitive' } },
+        ],
+      },
     });
 
     if (!university) {
       university = await this.prisma.university.create({
         data: {
-          name: scraped.universityName,
+          name: canonicalName,
           logoUrl: scraped.logoUrl,
           address: scraped.address,
           city: scraped.city,
