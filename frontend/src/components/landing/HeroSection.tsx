@@ -2,11 +2,11 @@
 
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { GraduationCap, ArrowRight, Sparkles, CheckCircle2, Star, Github, LogIn, UserPlus } from 'lucide-react';
-import { initiateGoogleAuth } from '@/lib/googleAuth';
+import { GraduationCap, ArrowRight, Sparkles, CheckCircle2, Star, Code2 as Github, LogIn, UserPlus } from 'lucide-react';
 import { useAuthStore } from '@/store/auth.store';
-import { GoogleConfigModal } from '@/components/auth/GoogleConfigModal';
+import { SupabaseConfigModal } from '@/components/auth/SupabaseConfigModal';
 import { useState } from 'react';
+import { getSupabaseClient } from '@/lib/supabase';
 
 const TRUST_BADGES = [
   '100% Free Forever',
@@ -21,17 +21,23 @@ export default function HeroSection() {
 
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
 
-  const handleGoogleSignIn = () => {
-    const success = initiateGoogleAuth();
-    if (!success) {
+  const initiateAuth = () => {
+    const sb = getSupabaseClient();
+    if (!sb) {
       setIsConfigModalOpen(true);
+      return;
     }
+    const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : '';
+    sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: redirectUrl } });
   };
 
-  const handleSaveClientId = (clientId: string) => {
-    localStorage.setItem('CUSTOM_GOOGLE_CLIENT_ID', clientId);
+  const handleSaveConfig = (url: string, key: string) => {
+    localStorage.setItem('supabase_url', url);
+    localStorage.setItem('supabase_anon_key', key);
     setIsConfigModalOpen(false);
-    initiateGoogleAuth();
+    
+    // Refresh to reinitialize the lazy supabase client properly from localstorage 
+    window.location.reload();
   };
 
   const handleLocalMode = () => {
@@ -129,7 +135,7 @@ export default function HeroSection() {
               <motion.button
                 whileHover={{ scale: 1.05, boxShadow: '0 0 50px rgba(99,102,241,0.4)' }}
                 whileTap={{ scale: 0.97 }}
-                onClick={handleGoogleSignIn}
+                onClick={initiateAuth}
                 className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold text-lg shadow-2xl shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all"
               >
                 <UserPlus className="w-5 h-5" />
@@ -138,7 +144,7 @@ export default function HeroSection() {
               <motion.button
                 whileHover={{ scale: 1.05, boxShadow: '0 0 50px rgba(99,102,241,0.4)' }}
                 whileTap={{ scale: 0.97 }}
-                onClick={handleGoogleSignIn}
+                onClick={initiateAuth}
                 className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-rose-600 to-orange-500 text-white font-bold text-lg shadow-2xl shadow-rose-500/30 hover:shadow-rose-500/50 transition-all"
               >
                 <LogIn className="w-5 h-5" />
@@ -239,10 +245,10 @@ export default function HeroSection() {
         {/* Card glow */}
         <div className="absolute inset-0 -z-10 rounded-3xl bg-indigo-600/10 blur-3xl scale-110" />
       </motion.div>
-      <GoogleConfigModal
+      <SupabaseConfigModal
         isOpen={isConfigModalOpen}
         onClose={() => setIsConfigModalOpen(false)}
-        onSave={handleSaveClientId}
+        onSave={handleSaveConfig}
       />
     </section>
   );

@@ -26,11 +26,11 @@ let UniversitiesController = class UniversitiesController {
     create(dto) { return this.service.create(dto); }
     addFromUrl(dto) { return this.service.addFromUrl(dto); }
     createCourse(dto) { return this.service.createCourse(dto); }
-    update(id, dto) {
-        return this.service.update(id, dto);
-    }
     updateDeadline(courseId, body) {
         return this.service.updateCourseDeadline(courseId, body.deadline, body.deadlineLabel);
+    }
+    update(id, dto) {
+        return this.service.update(id, dto);
     }
     remove(id) { return this.service.remove(id); }
 };
@@ -80,14 +80,6 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], UniversitiesController.prototype, "createCourse", null);
 __decorate([
-    (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", void 0)
-], UniversitiesController.prototype, "update", null);
-__decorate([
     (0, common_1.Patch)('courses/:courseId/deadline'),
     __param(0, (0, common_1.Param)('courseId')),
     __param(1, (0, common_1.Body)()),
@@ -95,6 +87,14 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], UniversitiesController.prototype, "updateDeadline", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], UniversitiesController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, common_1.HttpCode)(common_1.HttpStatus.NO_CONTENT),

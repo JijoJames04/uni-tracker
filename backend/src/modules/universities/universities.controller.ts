@@ -37,17 +37,17 @@ export class UniversitiesController {
   @Post('courses')
   createCourse(@Body() dto: CreateCourseDto) { return this.service.createCourse(dto); }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: Partial<CreateUniversityDto>) {
-    return this.service.update(id, dto);
-  }
-
   @Patch('courses/:courseId/deadline')
   updateDeadline(
     @Param('courseId') courseId: string,
     @Body() body: { deadline: string; deadlineLabel?: string },
   ) {
     return this.service.updateCourseDeadline(courseId, body.deadline, body.deadlineLabel);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() dto: Partial<CreateUniversityDto>) {
+    return this.service.update(id, dto);
   }
 
   @Delete(':id')

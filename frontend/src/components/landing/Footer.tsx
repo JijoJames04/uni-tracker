@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { GraduationCap, Heart, Github } from 'lucide-react';
+import { GraduationCap, Heart, Code2 as Github } from 'lucide-react';
 
 const FOOTER_LINKS = {
   Platform: [

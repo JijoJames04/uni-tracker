@@ -22,13 +22,13 @@ export class ApplicationsController {
   @ApiOperation({ summary: 'Get applications grouped by status (Kanban view)' })
   getKanban() { return this.service.getKanbanView(); }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) { return this.service.findOne(id); }
-
   @Get('course/:courseId')
   findByCourse(@Param('courseId') courseId: string) {
     return this.service.findByCourse(courseId);
   }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) { return this.service.findOne(id); }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() dto: UpdateApplicationDto) {

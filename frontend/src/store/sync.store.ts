@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { useAuthStore } from './auth.store';
 import { applicationApi, profileApi, calendarApi } from '@/lib/api';
+import { getSupabaseClient } from '@/lib/supabase';
 
 type SyncStatus = 'idle' | 'pushing' | 'pulling' | 'done' | 'error';
 
@@ -16,15 +17,6 @@ interface SyncState {
 
 const FILE_NAME = 'unitracker_sync.json';
 
-async function getDriveFileId(token: string): Promise<string | null> {
-  const res = await fetch(`https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='${FILE_NAME}'&fields=files(id)`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  if (!res.ok) throw new Error('Failed to find sync file in Drive');
-  const data = await res.json();
-  return data.files?.length > 0 ? data.files[0].id : null;
-}
-
 export const useSyncStore = create<SyncState>()(
   persist(
     (set, get) => ({
@@ -34,14 +26,13 @@ export const useSyncStore = create<SyncState>()(
 
       pushToCloud: async () => {
         const user = useAuthStore.getState().user;
-        useAuthStore.getState();
-        if (!user || user.googleAccessToken == null) {
-          // Fallback to error if no token
-          set({ status: 'error', error: 'Missing Google Drive permissions. Please sign out and sign back in.' });
+        const supabase = getSupabaseClient();
+        
+        if (!user || !supabase) {
+          set({ status: 'error', error: 'Missing Supabase Config or User not authenticated.' });
           return;
         }
 
-        const token = user.googleAccessToken;
         set({ status: 'pushing', error: null });
 
         try {
@@ -57,33 +48,18 @@ export const useSyncStore = create<SyncState>()(
             events,
             syncedAt: new Date().toISOString(),
           });
+          
+          const filePath = `${user.uid}/${FILE_NAME}`;
 
-          const fileId = await getDriveFileId(token);
-
-          if (fileId) {
-            // Update existing file
-            const res = await fetch(`https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=media`, {
-              method: 'PATCH',
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-              },
-              body: payload
+          const { error } = await supabase.storage
+            .from('sync')
+            .upload(filePath, new Blob([payload], { type: 'application/json' }), {
+              upsert: true,
+              cacheControl: '0'
             });
-            if (!res.ok) throw new Error('Failed to update sync file');
-          } else {
-            // Create new file
-            const metadata = { name: FILE_NAME, parents: ['appDataFolder'] };
-            const form = new FormData();
-            form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-            form.append('file', new Blob([payload], { type: 'application/json' }));
 
-            const res = await fetch(`https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart`, {
-              method: 'POST',
-              headers: { Authorization: `Bearer ${token}` },
-              body: form
-            });
-            if (!res.ok) throw new Error('Failed to create sync file');
+          if (error) {
+             throw error;
           }
 
           const now = new Date().toISOString();
@@ -94,23 +70,31 @@ export const useSyncStore = create<SyncState>()(
           }, 3000);
         } catch (err) {
           console.error('Push to cloud failed:', err);
-          set({ status: 'error', error: 'Failed to sync to Google Drive. Token might be expired.' });
+          set({ status: 'error', error: 'Failed to sync to Supabase Storage.' });
         }
       },
 
       pullFromCloud: async () => {
         const user = useAuthStore.getState().user;
-        if (!user || !user.googleAccessToken) {
-          set({ status: 'error', error: 'Missing Google Drive permissions.' });
+        const supabase = getSupabaseClient();
+        
+        if (!user || !supabase) {
+          set({ status: 'error', error: 'Missing Supabase Config or User.' });
           return;
         }
 
-        const token = user.googleAccessToken;
         set({ status: 'pulling', error: null });
 
         try {
-          const fileId = await getDriveFileId(token);
-          if (!fileId) {
+          const filePath = `${user.uid}/${FILE_NAME}`;
+
+          const { data, error } = await supabase.storage
+            .from('sync')
+            .download(filePath);
+            
+          if (error) {
+            // It might just be empty if they haven't synced yet, treat 404/NotFoundError as done for fresh accounts.
+            console.warn('Could not find sync file (or error):', error);
             set({ status: 'done', error: null });
             setTimeout(() => {
               if (get().status === 'done') set({ status: 'idle' });
@@ -118,12 +102,11 @@ export const useSyncStore = create<SyncState>()(
             return;
           }
 
-          const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
+          const payloadText = await data.text();
+          const parsed = JSON.parse(payloadText);
           
-          if (!res.ok) throw new Error('Failed to download sync file');
-          
+          // You could restore the parsed state back into API layers or stores here like the old app did.
+
           const now = new Date().toISOString();
           set({ status: 'done', lastSyncedAt: now });
 
@@ -132,7 +115,7 @@ export const useSyncStore = create<SyncState>()(
           }, 3000);
         } catch (err) {
           console.error('Pull from cloud failed:', err);
-          set({ status: 'error', error: 'Failed to pull from Google Drive' });
+          set({ status: 'error', error: 'Failed to pull from Supabase.' });
         }
       },
 

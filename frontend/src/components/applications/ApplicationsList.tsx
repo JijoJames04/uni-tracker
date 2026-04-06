@@ -184,7 +184,7 @@ export function ApplicationsList() {
         ) : view === 'list' ? (
           <ListView apps={filtered} />
         ) : (
-          <KanbanView apps={applications} />
+          <KanbanView apps={filtered} />
         )}
       </AnimatePresence>
     </div>

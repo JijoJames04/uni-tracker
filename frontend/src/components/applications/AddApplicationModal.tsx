@@ -26,7 +26,7 @@ const schema = z.object({
   deadline:       z.string().optional(),
   applicationUrl: z.string().optional(),
   description:    z.string().optional(),
-  applicationVia: z.enum(['DIRECT', 'UNI_ASSIST', 'BOTH']).default('DIRECT'),
+  applicationVia: z.enum(['DIRECT', 'UNI_ASSIST', 'BOTH']),
   uniAssistInfo:  z.string().optional(),
   requirements:   z.string().optional(),
   ects:           z.number().optional().nullable(),
@@ -46,6 +46,9 @@ export function AddApplicationModal({ open, onClose }: { open: boolean; onClose:
 
   const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      applicationVia: 'DIRECT'
+    }
   });
 
   const scrapeMutation = useMutation({
@@ -104,7 +107,7 @@ export function AddApplicationModal({ open, onClose }: { open: boolean; onClose:
       const rawName = values.universityName.match(/^.+\((.+)\)\s*$/)?.[1]?.trim() || values.universityName.trim();
 
       // Find or create university, then course
-      const uni = await fetch('/api/v1/universities', {
+      const uniRes = await fetch('/api/v1/universities', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -114,9 +117,14 @@ export function AddApplicationModal({ open, onClose }: { open: boolean; onClose:
           address: values.address,
           website: values.applicationUrl,
         }),
-      }).then((r) => r.json());
+      });
+      if (!uniRes.ok) {
+        const err = await uniRes.json().catch(() => ({ message: 'Failed to create university' }));
+        throw new Error(err.message || 'Failed to create university');
+      }
+      const uni = await uniRes.json();
 
-      return fetch('/api/v1/universities/courses', {
+      const courseRes = await fetch('/api/v1/universities/courses', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -135,7 +143,12 @@ export function AddApplicationModal({ open, onClose }: { open: boolean; onClose:
           requirements: values.requirements,
           ects: values.ects,
         }),
-      }).then((r) => r.json());
+      });
+      if (!courseRes.ok) {
+        const err = await courseRes.json().catch(() => ({ message: 'Failed to create course' }));
+        throw new Error(err.message || 'Failed to create course');
+      }
+      return courseRes.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['applications'] });

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth.store';
-import { fetchGoogleProfile } from '@/lib/googleAuth';
+import { supabase } from '@/lib/supabase';
 import { useSyncStore } from '@/store/sync.store';
 import { Loader2, CloudDownload } from 'lucide-react';
 
@@ -15,36 +15,22 @@ export default function AuthCallbackPage() {
 
   useEffect(() => {
     const handleAuth = async () => {
-      // The implicit grant flow puts token in the hash URL
-      const hash = window.location.hash;
-      if (!hash) {
-        // also check search params in case of errors
-        const params = new URLSearchParams(window.location.search);
-        if (params.get('error')) {
-          setError(params.get('error') || 'Authentication failed');
-        } else {
-          router.push('/');
-        }
-        return;
-      }
-
-      const params = new URLSearchParams(hash.substring(1));
-      const accessToken = params.get('access_token');
-
-      if (!accessToken) {
-        setError('No access token found');
-        setTimeout(() => router.push('/'), 3000);
-        return;
-      }
-
       try {
-        const profile = await fetchGoogleProfile(accessToken);
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError || !session) {
+          setError(sessionError?.message || 'Authentication failed');
+          setTimeout(() => router.push('/'), 3000);
+          return;
+        }
+
+        const profile = session.user.user_metadata;
         setUser({
-          uid: profile.sub,
-          email: profile.email,
-          displayName: profile.name,
-          photoURL: profile.picture,
-          googleAccessToken: accessToken,
+          uid: session.user.id,
+          email: session.user.email ?? null,
+          displayName: profile.full_name || profile.name || null,
+          photoURL: profile.avatar_url || profile.picture || null,
+          providerAccessToken: session.access_token,
         });
         
         // Successfully logged in and saved token

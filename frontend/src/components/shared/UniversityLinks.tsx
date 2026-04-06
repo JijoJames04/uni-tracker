@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Globe, Linkedin, Instagram, ExternalLink, BookOpen, GraduationCap, MapPin } from 'lucide-react';
+import { Globe, Briefcase as Linkedin, Camera as Instagram, ExternalLink, BookOpen, GraduationCap, MapPin } from 'lucide-react';
 
 interface UniversityLinksProps {
   website?: string;

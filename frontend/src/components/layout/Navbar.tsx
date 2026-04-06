@@ -11,8 +11,8 @@ import { cn } from '@/lib/utils';
 import SearchCommand from '@/components/shared/SearchCommand';
 import SyncButton from '@/components/shared/SyncButton';
 import { BREADCRUMBS } from '@/lib/navigation';
-import { initiateGoogleAuth } from '@/lib/googleAuth';
-import { GoogleConfigModal } from '@/components/auth/GoogleConfigModal';
+import { SupabaseConfigModal } from '@/components/auth/SupabaseConfigModal';
+import { getSupabaseClient } from '@/lib/supabase';
 
 
 
@@ -25,24 +25,30 @@ export function Navbar() {
 
   const pageTitle = BREADCRUMBS[pathname] ?? BREADCRUMBS[`/${pathname.split('/')[1]}`] ?? 'UniTracker';
 
-  const handleSignOut = () => {
-    // In our manual OAuth flow, signing out just means clearing the local store.
-    // If we wanted to revoke the token, we could call Google's revoke endpoint, 
-    // but clearing it locally is sufficient for logging out.
+  const handleSignOut = async () => {
+    // Also sign out from Supabase if client exists
+    const sb = getSupabaseClient();
+    if (sb) {
+      await sb.auth.signOut();
+    }
     clearAuth();
   };
 
-  const handleSignIn = () => {
-    const success = initiateGoogleAuth();
-    if (!success) {
+  const initiateAuth = () => {
+    const sb = getSupabaseClient();
+    if (!sb) {
       setIsConfigModalOpen(true);
+      return;
     }
+    const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : '';
+    sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: redirectUrl } });
   };
 
-  const handleSaveClientId = (clientId: string) => {
-    localStorage.setItem('CUSTOM_GOOGLE_CLIENT_ID', clientId);
+  const handleSaveConfig = (url: string, key: string) => {
+    localStorage.setItem('supabase_url', url);
+    localStorage.setItem('supabase_anon_key', key);
     setIsConfigModalOpen(false);
-    initiateGoogleAuth();
+    window.location.reload();
   };
 
   return (
@@ -101,7 +107,7 @@ export function Navbar() {
           </div>
         ) : (
           <button
-            onClick={handleSignIn}
+            onClick={initiateAuth}
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-[13px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 transition-colors"
           >
             Sign In & Sync
@@ -126,10 +132,10 @@ export function Navbar() {
 
       <AddApplicationModal open={addOpen} onClose={() => setAddOpen(false)} />
       
-      <GoogleConfigModal
+      <SupabaseConfigModal
         isOpen={isConfigModalOpen}
         onClose={() => setIsConfigModalOpen(false)}
-        onSave={handleSaveClientId}
+        onSave={handleSaveConfig}
       />
     </>
   );

@@ -8,15 +8,7 @@ declare class RegisterDto {
 export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
-    register(dto: RegisterDto): Promise<{
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        email: string;
-        firebaseUid: string;
-        displayName: string | null;
-        photoUrl: string | null;
-    }>;
+    register(dto: RegisterDto): Promise<any>;
     getUserCount(): Promise<{
         count: number;
     }>;

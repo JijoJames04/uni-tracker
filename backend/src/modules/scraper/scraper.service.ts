@@ -437,11 +437,13 @@ const GERMAN_CITIES = [
 ];
 
 const MONTH_MAP: Record<string, number> = {
+  // English full + abbreviations
   january: 0, february: 1, march: 2, april: 3, may: 4, june: 5,
   july: 6, august: 7, september: 8, october: 9, november: 10, december: 11,
   jan: 0, feb: 1, mar: 2, apr: 3, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11,
-  januar: 0, februar: 1, märz: 2, april_de: 3, mai: 4, juni: 5,
-  juli: 6, august_de: 7, september_de: 8, oktober: 9, november_de: 10, dezember: 11,
+  // German full names
+  januar: 0, februar: 1, märz: 2, mai: 4, juni: 5,
+  juli: 6, oktober: 9, dezember: 11,
 };
 
 @Injectable()

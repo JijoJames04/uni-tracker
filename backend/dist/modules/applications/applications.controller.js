@@ -22,10 +22,10 @@ let ApplicationsController = class ApplicationsController {
     }
     findAll() { return this.service.findAll(); }
     getKanban() { return this.service.getKanbanView(); }
-    findOne(id) { return this.service.findOne(id); }
     findByCourse(courseId) {
         return this.service.findByCourse(courseId);
     }
+    findOne(id) { return this.service.findOne(id); }
     update(id, dto) {
         return this.service.update(id, dto);
     }
@@ -57,19 +57,19 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ApplicationsController.prototype, "getKanban", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], ApplicationsController.prototype, "findOne", null);
-__decorate([
     (0, common_1.Get)('course/:courseId'),
     __param(0, (0, common_1.Param)('courseId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], ApplicationsController.prototype, "findByCourse", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ApplicationsController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),

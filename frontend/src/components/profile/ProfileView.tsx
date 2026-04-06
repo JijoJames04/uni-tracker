@@ -60,7 +60,7 @@ export function ProfileView() {
   });
 
   const { register, handleSubmit, reset, formState: { isDirty } } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema) as any,
   });
 
   useEffect(() => {
