@@ -48,10 +48,11 @@ services:
     environment:
       NODE_ENV:               development
       NEXT_PUBLIC_API_URL:    http://backend:4000
+      NEXT_TELEMETRY_DISABLED: 1             # no telemetry
     volumes:
       - ./frontend/src:/app/src:delegated
       - ./frontend/public:/app/public:delegated
-      - next_cache:/app/.next
+      - next_cache:/app/.next                 # full .next dir (includes Turbopack cache)
     ports:
       - "3000:3000"
     depends_on:
@@ -62,7 +63,7 @@ services:
 volumes:
   postgres_dev_data:
   uploads_dev:
-  next_cache:
+  next_cache:          # persists .next (webpack/Turbopack cache) across restarts
 
 networks:
   dev-network:

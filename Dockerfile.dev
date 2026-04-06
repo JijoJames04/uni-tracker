@@ -1,4 +1,4 @@
-# Development Dockerfile — hot reload enabled
+# Development Dockerfile — hot reload with Turbopack
 FROM node:22-bookworm
 WORKDIR /app
 
@@ -13,4 +13,5 @@ ENV NODE_ENV=development
 ENV NEXT_TELEMETRY_DISABLED=1
 
 EXPOSE 3000
-CMD ["npm", "run", "dev"]
+# --turbopack gives significantly faster cold starts and HMR in dev
+CMD ["npx", "next", "dev", "--turbopack"]
