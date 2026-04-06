@@ -52,8 +52,11 @@ export function AddApplicationModal({ open, onClose }: { open: boolean; onClose:
     mutationFn: scraperApi.scrape,
     onSuccess: (data) => {
       setScraped(data);
-      // Populate form
-      setValue('universityName', data.universityName);
+      // Populate form — show abbreviation in the field for user clarity
+      const displayName = data.universityShortName
+        ? `${data.universityShortName} (${data.universityName})`
+        : data.universityName;
+      setValue('universityName', displayName);
       setValue('courseName',     data.courseName);
       setValue('degree',         data.degree);
       setValue('language',       data.language);
@@ -96,12 +99,16 @@ export function AddApplicationModal({ open, onClose }: { open: boolean; onClose:
 
   const manualMutation = useMutation({
     mutationFn: async (values: FormValues) => {
+      // If the universityName field contains a display string like "FAU (Friedrich-Alexander-Universität...)"
+      // extract only the canonical name inside the parentheses, or use it as-is if no parens.
+      const rawName = values.universityName.match(/^.+\((.+)\)\s*$/)?.[1]?.trim() || values.universityName.trim();
+
       // Find or create university, then course
       const uni = await fetch('/api/v1/universities', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: values.universityName,
+          name: rawName,
           logoUrl: values.logoUrl,
           city: values.city,
           address: values.address,
@@ -230,7 +237,20 @@ export function AddApplicationModal({ open, onClose }: { open: boolean; onClose:
                       <span className="text-sm font-semibold text-emerald-800">Data extracted successfully</span>
                     </div>
                     <div className="p-4 grid grid-cols-2 gap-3 text-sm">
-                      <PreviewRow icon={<Building2 className="w-3.5 h-3.5" />} label="University" value={scraped.universityName} />
+                      <div className="flex items-start gap-2 col-span-2">
+                        <span className="text-emerald-600 mt-0.5 flex-shrink-0"><Building2 className="w-3.5 h-3.5" /></span>
+                        <div className="min-w-0">
+                          <p className="text-[10px] text-emerald-600 font-medium uppercase tracking-wide">University</p>
+                          {scraped.universityShortName ? (
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-bold text-emerald-900">{scraped.universityShortName}</span>
+                              <span className="text-[10px] text-emerald-700/70 font-medium">({scraped.universityName})</span>
+                            </div>
+                          ) : (
+                            <p className="text-xs text-emerald-900 font-medium truncate">{scraped.universityName}</p>
+                          )}
+                        </div>
+                      </div>
                       <PreviewRow icon={<BookOpen className="w-3.5 h-3.5" />} label="Course" value={scraped.courseName} />
                       <PreviewRow icon={<Clock className="w-3.5 h-3.5" />} label="Duration" value={scraped.duration || '—'} />
                       <PreviewRow icon={<DollarSign className="w-3.5 h-3.5" />} label="Fees" value={formatFees(scraped.fees)} />
@@ -264,8 +284,8 @@ export function AddApplicationModal({ open, onClose }: { open: boolean; onClose:
               })} className="space-y-4">
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <FormField label="University Name *" error={errors.universityName?.message}>
-                    <input {...register('universityName')} placeholder="Technical University of Munich" className={inputCls} />
+                  <FormField label="University Name *" error={errors.universityName?.message} hint="e.g. FAU, TUM, or full name — abbreviations are recognised automatically">
+                    <input {...register('universityName')} placeholder="e.g. FAU or Technical University of Munich" className={inputCls} />
                   </FormField>
                   <FormField label="Course / Program Name *" error={errors.courseName?.message}>
                     <input {...register('courseName')} placeholder="M.Sc. Computer Science" className={inputCls} />
@@ -383,11 +403,12 @@ export function AddApplicationModal({ open, onClose }: { open: boolean; onClose:
 
 const inputCls = 'w-full px-3 py-2 rounded-lg border bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all';
 
-function FormField({ label, children, error }: { label: string; children: React.ReactNode; error?: string }) {
+function FormField({ label, children, error, hint }: { label: string; children: React.ReactNode; error?: string; hint?: string }) {
   return (
     <div className="space-y-1">
       <label className="text-xs font-medium text-muted-foreground">{label}</label>
       {children}
+      {hint && !error && <p className="text-[10px] text-muted-foreground/70 italic">{hint}</p>}
       {error && <p className="text-[11px] text-rose-500">{error}</p>}
     </div>
   );

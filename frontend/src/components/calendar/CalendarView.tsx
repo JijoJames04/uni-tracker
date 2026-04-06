@@ -11,7 +11,7 @@ import { calendarApi, applicationApi } from '@/lib/api';
 
 type EventType = 'DEADLINE' | 'INTERVIEW' | 'PAYMENT' | 'REMINDER' | 'MILESTONE';
 import { ChevronLeft, ChevronRight, Plus, X, Calendar, Loader2 } from 'lucide-react';
-import { cn, formatDeadline } from '@/lib/utils';
+import { cn, formatDeadline, formatUniversityName } from '@/lib/utils';
 import { toast } from 'sonner';
 
 const EVENT_COLORS: Record<string, string> = {
@@ -192,7 +192,7 @@ export function CalendarView() {
                     )} />
                     <div className="min-w-0">
                       <p className="text-xs font-semibold text-foreground truncate">{app.course.name}</p>
-                      <p className="text-[11px] text-muted-foreground truncate">{app.course.university.name}</p>
+                      <p className="text-[11px] text-muted-foreground truncate">{formatUniversityName(app.course.university.name, app.course.university.shortName)}</p>
                       <p className={cn(
                         'text-[11px] font-medium',
                         (app.dl.daysLeft ?? 0) <= 14 ? 'text-rose-600' :

@@ -3,6 +3,7 @@ import * as cheerio from 'cheerio';
 
 export interface ScrapedCourseData {
   universityName: string;
+  universityShortName: string | null;
   courseName: string;
   description: string;
   degree: string;
@@ -33,49 +34,62 @@ export interface ScrapedCourseData {
 
 
 // ─── Known German university mappings by hostname ──────────────
-export const KNOWN_UNIVERSITIES: Record<string, { name: string; city: string }> = {
-  'tum.de':           { name: 'Technical University of Munich', city: 'Munich' },
-  'tu-berlin.de':     { name: 'Technische Universität Berlin', city: 'Berlin' },
-  'tu-darmstadt.de':  { name: 'Technische Universität Darmstadt', city: 'Darmstadt' },
-  'tu-dresden.de':    { name: 'Technische Universität Dresden', city: 'Dresden' },
-  'tu-braunschweig.de': { name: 'Technische Universität Braunschweig', city: 'Braunschweig' },
-  'lmu.de':           { name: 'Ludwig-Maximilians-Universität München', city: 'Munich' },
-  'fu-berlin.de':     { name: 'Freie Universität Berlin', city: 'Berlin' },
-  'hu-berlin.de':     { name: 'Humboldt-Universität zu Berlin', city: 'Berlin' },
-  'uni-heidelberg.de':{ name: 'Universität Heidelberg', city: 'Heidelberg' },
-  'uni-freiburg.de':  { name: 'Universität Freiburg', city: 'Freiburg' },
-  'uni-muenchen.de':  { name: 'Ludwig-Maximilians-Universität München', city: 'Munich' },
-  'uni-bonn.de':      { name: 'Universität Bonn', city: 'Bonn' },
-  'uni-koeln.de':     { name: 'Universität zu Köln', city: 'Cologne' },
-  'uni-hamburg.de':   { name: 'Universität Hamburg', city: 'Hamburg' },
-  'uni-goettingen.de':{ name: 'Georg-August-Universität Göttingen', city: 'Göttingen' },
-  'uni-tuebingen.de': { name: 'Universität Tübingen', city: 'Tübingen' },
-  'uni-mannheim.de':  { name: 'Universität Mannheim', city: 'Mannheim' },
-  'uni-muenster.de':  { name: 'Universität Münster', city: 'Münster' },
-  'uni-stuttgart.de': { name: 'Universität Stuttgart', city: 'Stuttgart' },
-  'uni-erlangen.de':  { name: 'Friedrich-Alexander-Universität Erlangen-Nürnberg', city: 'Erlangen' },
-  'fau.de':           { name: 'Friedrich-Alexander-Universität Erlangen-Nürnberg', city: 'Erlangen' },
-  'kit.edu':          { name: 'Karlsruhe Institute of Technology', city: 'Karlsruhe' },
-  'rwth-aachen.de':   { name: 'RWTH Aachen University', city: 'Aachen' },
-  'uni-frankfurt.de': { name: 'Goethe-Universität Frankfurt', city: 'Frankfurt' },
-  'uni-jena.de':      { name: 'Friedrich-Schiller-Universität Jena', city: 'Jena' },
-  'uni-wuerzburg.de': { name: 'Julius-Maximilians-Universität Würzburg', city: 'Würzburg' },
-  'uni-potsdam.de':   { name: 'Universität Potsdam', city: 'Potsdam' },
-  'uni-augsburg.de':  { name: 'Universität Augsburg', city: 'Augsburg' },
-  'uni-bayreuth.de':  { name: 'Universität Bayreuth', city: 'Bayreuth' },
-  'uni-leipzig.de':   { name: 'Universität Leipzig', city: 'Leipzig' },
-  'uni-konstanz.de':  { name: 'Universität Konstanz', city: 'Constance' },
-  'uni-saarland.de':  { name: 'Universität des Saarlandes', city: 'Saarbrücken' },
-  'uni-hannover.de':  { name: 'Leibniz Universität Hannover', city: 'Hannover' },
-  'tu-clausthal.de':  { name: 'TU Clausthal', city: 'Clausthal-Zellerfeld' },
-  'tu-chemnitz.de':   { name: 'Technische Universität Chemnitz', city: 'Chemnitz' },
-  'tu-ilmenau.de':    { name: 'Technische Universität Ilmenau', city: 'Ilmenau' },
-  'tu-kaiserslautern.de': { name: 'TU Kaiserslautern', city: 'Kaiserslautern' },
-  'rptu.de':          { name: 'RPTU Kaiserslautern-Landau', city: 'Kaiserslautern' },
-  'hs-mannheim.de':   { name: 'Hochschule Mannheim', city: 'Mannheim' },
-  'daad.de':          { name: 'DAAD', city: '' },
-  'studieren.de':     { name: '', city: '' },
+export const KNOWN_UNIVERSITIES: Record<string, { name: string; city: string; shortName?: string }> = {
+  'tum.de':           { name: 'Technical University of Munich',                   city: 'Munich',              shortName: 'TUM'   },
+  'tu-berlin.de':     { name: 'Technische Universität Berlin',                    city: 'Berlin',              shortName: 'TU Berlin' },
+  'tu-darmstadt.de':  { name: 'Technische Universität Darmstadt',                city: 'Darmstadt',           shortName: 'TU Darmstadt' },
+  'tu-dresden.de':    { name: 'Technische Universität Dresden',                  city: 'Dresden',             shortName: 'TU Dresden' },
+  'tu-braunschweig.de': { name: 'Technische Universität Braunschweig',          city: 'Braunschweig',        shortName: 'TU Braunschweig' },
+  'lmu.de':           { name: 'Ludwig-Maximilians-Universität München',          city: 'Munich',              shortName: 'LMU'   },
+  'fu-berlin.de':     { name: 'Freie Universität Berlin',                        city: 'Berlin',              shortName: 'FU Berlin' },
+  'hu-berlin.de':     { name: 'Humboldt-Universität zu Berlin',                  city: 'Berlin',              shortName: 'HU Berlin' },
+  'uni-heidelberg.de':{ name: 'Universität Heidelberg',                          city: 'Heidelberg',          shortName: 'Uni Heidelberg' },
+  'uni-freiburg.de':  { name: 'Universität Freiburg',                            city: 'Freiburg'             },
+  'uni-muenchen.de':  { name: 'Ludwig-Maximilians-Universität München',          city: 'Munich',              shortName: 'LMU'   },
+  'uni-bonn.de':      { name: 'Universität Bonn',                                city: 'Bonn'                 },
+  'uni-koeln.de':     { name: 'Universität zu Köln',                             city: 'Cologne'              },
+  'uni-hamburg.de':   { name: 'Universität Hamburg',                             city: 'Hamburg'              },
+  'uni-goettingen.de':{ name: 'Georg-August-Universität Göttingen',              city: 'Göttingen'            },
+  'uni-tuebingen.de': { name: 'Universität Tübingen',                            city: 'Tübingen'             },
+  'uni-mannheim.de':  { name: 'Universität Mannheim',                            city: 'Mannheim'             },
+  'uni-muenster.de':  { name: 'Universität Münster',                             city: 'Münster'              },
+  'uni-stuttgart.de': { name: 'Universität Stuttgart',                           city: 'Stuttgart'            },
+  'uni-erlangen.de':  { name: 'Friedrich-Alexander-Universität Erlangen-Nürnberg', city: 'Erlangen',          shortName: 'FAU'   },
+  'fau.de':           { name: 'Friedrich-Alexander-Universität Erlangen-Nürnberg', city: 'Erlangen',          shortName: 'FAU'   },
+  'kit.edu':          { name: 'Karlsruhe Institute of Technology',                city: 'Karlsruhe',           shortName: 'KIT'   },
+  'rwth-aachen.de':   { name: 'RWTH Aachen University',                          city: 'Aachen',              shortName: 'RWTH'  },
+  'uni-frankfurt.de': { name: 'Goethe-Universität Frankfurt',                    city: 'Frankfurt',           shortName: 'Goethe Uni' },
+  'uni-jena.de':      { name: 'Friedrich-Schiller-Universität Jena',             city: 'Jena',                shortName: 'FSU Jena' },
+  'uni-wuerzburg.de': { name: 'Julius-Maximilians-Universität Würzburg',         city: 'Würzburg',           shortName: 'JMU'   },
+  'uni-potsdam.de':   { name: 'Universität Potsdam',                             city: 'Potsdam'              },
+  'uni-augsburg.de':  { name: 'Universität Augsburg',                            city: 'Augsburg'             },
+  'uni-bayreuth.de':  { name: 'Universität Bayreuth',                            city: 'Bayreuth'             },
+  'uni-leipzig.de':   { name: 'Universität Leipzig',                             city: 'Leipzig'              },
+  'uni-konstanz.de':  { name: 'Universität Konstanz',                            city: 'Constance'            },
+  'uni-saarland.de':  { name: 'Universität des Saarlandes',                      city: 'Saarbrücken',         shortName: 'UdS'   },
+  'uni-hannover.de':  { name: 'Leibniz Universität Hannover',                    city: 'Hannover',            shortName: 'LUH'   },
+  'tu-clausthal.de':  { name: 'TU Clausthal',                                    city: 'Clausthal-Zellerfeld' },
+  'tu-chemnitz.de':   { name: 'Technische Universität Chemnitz',                 city: 'Chemnitz',            shortName: 'TU Chemnitz' },
+  'tu-ilmenau.de':    { name: 'Technische Universität Ilmenau',                  city: 'Ilmenau',             shortName: 'TU Ilmenau' },
+  'tu-kaiserslautern.de': { name: 'TU Kaiserslautern',                          city: 'Kaiserslautern'       },
+  'rptu.de':          { name: 'RPTU Kaiserslautern-Landau',                      city: 'Kaiserslautern',      shortName: 'RPTU'  },
+  'hs-mannheim.de':   { name: 'Hochschule Mannheim',                             city: 'Mannheim'             },
+  'daad.de':          { name: 'DAAD',                                            city: ''                     },
+  'studieren.de':     { name: '',                                                city: ''                     },
 };
+
+/**
+ * Look up the short name / abbreviation for a canonical university name.
+ * Returns the abbreviation string if one exists, or null if none is defined.
+ */
+export function getUniversityShortName(canonicalName: string): string | null {
+  for (const info of Object.values(KNOWN_UNIVERSITIES)) {
+    if (info.name && info.shortName && info.name.toLowerCase() === canonicalName.toLowerCase()) {
+      return info.shortName;
+    }
+  }
+  return null;
+}
 
 /**
  * Normalize a scraped university name against the KNOWN_UNIVERSITIES list.
@@ -209,8 +223,11 @@ export class ScraperService {
 
     const city = this.extractCity(cleanText, url, hostname, kvPairs);
 
+    const universityName = this.extractUniversityName($, cleanText, url, hostname, jsonLd);
+
     return {
-      universityName: this.extractUniversityName($, cleanText, url, hostname, jsonLd),
+      universityName,
+      universityShortName: getUniversityShortName(universityName),
       courseName: this.extractCourseName($, cleanText, jsonLd, kvPairs),
       description: this.extractDescription($, jsonLd),
       degree: this.extractDegree(cleanText, kvPairs, jsonLd),

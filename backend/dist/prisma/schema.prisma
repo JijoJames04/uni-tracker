@@ -17,6 +17,7 @@ datasource db {
 model University {
   id            String   @id @default(cuid())
   name          String
+  shortName     String?
   logoUrl       String?
   address       String?
   city          String?

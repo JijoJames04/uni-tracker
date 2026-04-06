@@ -177,7 +177,25 @@ let UniversitiesService = class UniversitiesService {
         return university;
     }
     async create(dto) {
-        return this.prisma.university.create({ data: dto });
+        const canonicalName = (0, scraper_service_1.normalizeUniversityName)(dto.name);
+        const shortName = (0, scraper_service_1.getUniversityShortName)(canonicalName);
+        const existing = await this.prisma.university.findFirst({
+            where: {
+                OR: [
+                    { name: { equals: canonicalName, mode: 'insensitive' } },
+                    { name: { equals: dto.name, mode: 'insensitive' } },
+                ],
+            },
+        });
+        if (existing)
+            return existing;
+        return this.prisma.university.create({
+            data: {
+                ...dto,
+                name: canonicalName,
+                shortName: shortName ?? undefined,
+            },
+        });
     }
     async update(id, dto) {
         return this.prisma.university.update({ where: { id }, data: dto });
@@ -207,13 +225,22 @@ let UniversitiesService = class UniversitiesService {
     }
     async addFromUrl(dto) {
         const scraped = await this.scraperService.scrapeUniversityCourse(dto.url);
+        const canonicalName = (0, scraper_service_1.normalizeUniversityName)(scraped.universityName);
         let university = await this.prisma.university.findFirst({
-            where: { name: { contains: scraped.universityName, mode: 'insensitive' } },
+            where: {
+                OR: [
+                    { name: { equals: canonicalName, mode: 'insensitive' } },
+                    { name: { contains: canonicalName, mode: 'insensitive' } },
+                    { name: { equals: scraped.universityName, mode: 'insensitive' } },
+                    { name: { contains: scraped.universityName, mode: 'insensitive' } },
+                ],
+            },
         });
         if (!university) {
             university = await this.prisma.university.create({
                 data: {
-                    name: scraped.universityName,
+                    name: canonicalName,
+                    shortName: (0, scraper_service_1.getUniversityShortName)(canonicalName),
                     logoUrl: scraped.logoUrl,
                     address: scraped.address,
                     city: scraped.city,

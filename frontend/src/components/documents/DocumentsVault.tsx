@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { applicationApi, documentApi } from '@/lib/api';
 import { FileText, Upload, ExternalLink, FolderOpen, Filter } from 'lucide-react';
-import { cn, DOC_TYPE_LABELS, formatFileSize, formatRelativeTime } from '@/lib/utils';
+import { cn, DOC_TYPE_LABELS, formatFileSize, formatRelativeTime, formatUniversityName } from '@/lib/utils';
 import { UniversityLogo } from '@/components/shared/UniversityLogo';
 import { DocumentUpload } from './DocumentUpload';
 import { Skeleton } from '@/components/shared/Skeleton';
@@ -138,7 +138,7 @@ export function DocumentsVault() {
                 <div className={cn("p-1 rounded-lg bg-background shadow-sm", selectedApp === app.id ? "bg-white border-none" : "border border-border/50")}>
                   <UniversityLogo url={app.course.university.logoUrl} name={app.course.university.name} size="xs" className="flex-shrink-0" />
                 </div>
-                <span className="flex-1 truncate text-sm tracking-tight">{app.course.university.name}</span>
+                <span className="flex-1 truncate text-sm tracking-tight">{formatUniversityName(app.course.university.name, app.course.university.shortName)}</span>
                 <span className={cn('text-xs font-bold rounded-full px-2 py-0.5 shadow-sm flex-shrink-0', selectedApp === app.id ? 'bg-white/20 text-white' : 'bg-background border border-border/50 text-foreground')}>
                   {app.documents.length}
                 </span>
@@ -254,7 +254,7 @@ export function DocumentsVault() {
                       </div>
                       {!selectedApp && (
                         <p className="text-[10px] text-indigo-600 mt-1 truncate">
-                          {doc.application.course.university.name}
+                          {formatUniversityName(doc.application.course.university.name, doc.application.course.university.shortName)}
                         </p>
                       )}
                     </div>

@@ -33,6 +33,7 @@ export type DocumentType =
 export interface University {
   id: string;
   name: string;
+  shortName?: string;
   logoUrl?: string;
   address?: string;
   city?: string;
@@ -193,6 +194,7 @@ export interface CalendarEvent {
 
 export interface ScrapedData {
   universityName: string;
+  universityShortName: string | null;
   courseName: string;
   description: string;
   degree: string;

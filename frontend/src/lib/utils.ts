@@ -133,3 +133,13 @@ export function getDeadlineUrgencyClass(daysLeft: number | null): string {
   if (daysLeft <= 45) return 'deadline-soon';
   return 'deadline-ok';
 }
+
+/**
+ * Format a university display name: uses shortName (abbreviation) when
+ * available, with full name in parentheses for clarity.
+ * e.g. "FAU (Friedrich-Alexander-Universität Erlangen-Nürnberg)"
+ */
+export function formatUniversityName(name: string, shortName?: string | null): string {
+  if (shortName) return `${shortName} (${name})`;
+  return name;
+}

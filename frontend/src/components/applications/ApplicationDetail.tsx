@@ -185,7 +185,11 @@ export function ApplicationDetail({ id }: { id: string }) {
                   <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight leading-tight mb-2">{course.name}</h1>
                   <div className="flex items-center gap-2.5 flex-wrap">
                     <Building2 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                    <span className="text-[14px] font-bold text-muted-foreground">{university.name}</span>
+                    <span className="text-[14px] font-bold text-muted-foreground">
+                      {university.shortName ? (
+                        <>{university.shortName} <span className="font-medium text-xs ml-1">({university.name})</span></>
+                      ) : university.name}
+                    </span>
                     {university.city && (
                       <>
                         <span className="text-border mx-1">|</span>
@@ -516,7 +520,7 @@ export function ApplicationDetail({ id }: { id: string }) {
                 <h3 className="font-black text-foreground text-[18px] mb-5">Course Details</h3>
                 <div className="space-y-3.5">
                   {[
-                    { label: 'University',  value: university.name },
+                    { label: 'University',  value: university.shortName ? `${university.shortName} (${university.name})` : university.name },
                     { label: 'Degree',      value: course.degree },
                     { label: 'Language',    value: course.language },
                     { label: 'Duration',    value: course.duration },

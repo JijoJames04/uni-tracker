@@ -13,6 +13,7 @@ export declare class ApplicationsController {
                 website: string | null;
                 description: string | null;
                 id: string;
+                shortName: string | null;
                 linkedinUrl: string | null;
                 instagramUrl: string | null;
                 ranking: number | null;
@@ -51,12 +52,12 @@ export declare class ApplicationsController {
             notes: string | null;
             applicationId: string;
             type: import(".prisma/client").$Enums.DocumentType;
+            uploadedAt: Date;
             originalName: string;
             filePath: string;
             fileSize: number;
             mimeType: string;
             version: number;
-            uploadedAt: Date;
         }[];
         timeline: {
             description: string | null;
@@ -98,6 +99,7 @@ export declare class ApplicationsController {
                 website: string | null;
                 description: string | null;
                 id: string;
+                shortName: string | null;
                 linkedinUrl: string | null;
                 instagramUrl: string | null;
                 ranking: number | null;
@@ -136,12 +138,12 @@ export declare class ApplicationsController {
             notes: string | null;
             applicationId: string;
             type: import(".prisma/client").$Enums.DocumentType;
+            uploadedAt: Date;
             originalName: string;
             filePath: string;
             fileSize: number;
             mimeType: string;
             version: number;
-            uploadedAt: Date;
         }[];
         timeline: {
             description: string | null;
@@ -183,6 +185,7 @@ export declare class ApplicationsController {
                 website: string | null;
                 description: string | null;
                 id: string;
+                shortName: string | null;
                 linkedinUrl: string | null;
                 instagramUrl: string | null;
                 ranking: number | null;
@@ -221,12 +224,12 @@ export declare class ApplicationsController {
             notes: string | null;
             applicationId: string;
             type: import(".prisma/client").$Enums.DocumentType;
+            uploadedAt: Date;
             originalName: string;
             filePath: string;
             fileSize: number;
             mimeType: string;
             version: number;
-            uploadedAt: Date;
         }[];
         timeline: {
             description: string | null;
@@ -268,6 +271,7 @@ export declare class ApplicationsController {
                 website: string | null;
                 description: string | null;
                 id: string;
+                shortName: string | null;
                 linkedinUrl: string | null;
                 instagramUrl: string | null;
                 ranking: number | null;
@@ -306,12 +310,12 @@ export declare class ApplicationsController {
             notes: string | null;
             applicationId: string;
             type: import(".prisma/client").$Enums.DocumentType;
+            uploadedAt: Date;
             originalName: string;
             filePath: string;
             fileSize: number;
             mimeType: string;
             version: number;
-            uploadedAt: Date;
         }[];
         timeline: {
             description: string | null;
@@ -353,6 +357,7 @@ export declare class ApplicationsController {
                 website: string | null;
                 description: string | null;
                 id: string;
+                shortName: string | null;
                 linkedinUrl: string | null;
                 instagramUrl: string | null;
                 ranking: number | null;
@@ -391,12 +396,12 @@ export declare class ApplicationsController {
             notes: string | null;
             applicationId: string;
             type: import(".prisma/client").$Enums.DocumentType;
+            uploadedAt: Date;
             originalName: string;
             filePath: string;
             fileSize: number;
             mimeType: string;
             version: number;
-            uploadedAt: Date;
         }[];
         timeline: {
             description: string | null;

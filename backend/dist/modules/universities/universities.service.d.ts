@@ -67,6 +67,7 @@ export declare class UniversitiesService {
     } & {
         id: string;
         name: string;
+        shortName: string | null;
         logoUrl: string | null;
         address: string | null;
         city: string | null;
@@ -145,6 +146,7 @@ export declare class UniversitiesService {
     } & {
         id: string;
         name: string;
+        shortName: string | null;
         logoUrl: string | null;
         address: string | null;
         city: string | null;
@@ -162,6 +164,7 @@ export declare class UniversitiesService {
     create(dto: CreateUniversityDto): Promise<{
         id: string;
         name: string;
+        shortName: string | null;
         logoUrl: string | null;
         address: string | null;
         city: string | null;
@@ -179,6 +182,7 @@ export declare class UniversitiesService {
     update(id: string, dto: Partial<CreateUniversityDto>): Promise<{
         id: string;
         name: string;
+        shortName: string | null;
         logoUrl: string | null;
         address: string | null;
         city: string | null;
@@ -196,6 +200,7 @@ export declare class UniversitiesService {
     remove(id: string): Promise<{
         id: string;
         name: string;
+        shortName: string | null;
         logoUrl: string | null;
         address: string | null;
         city: string | null;
@@ -214,6 +219,7 @@ export declare class UniversitiesService {
         university: {
             id: string;
             name: string;
+            shortName: string | null;
             logoUrl: string | null;
             address: string | null;
             city: string | null;
@@ -256,6 +262,7 @@ export declare class UniversitiesService {
         university: {
             id: string;
             name: string;
+            shortName: string | null;
             logoUrl: string | null;
             address: string | null;
             city: string | null;
@@ -314,6 +321,7 @@ export declare class UniversitiesService {
             university: {
                 id: string;
                 name: string;
+                shortName: string | null;
                 logoUrl: string | null;
                 address: string | null;
                 city: string | null;
@@ -383,6 +391,7 @@ export declare class UniversitiesService {
             university: {
                 id: string;
                 name: string;
+                shortName: string | null;
                 logoUrl: string | null;
                 address: string | null;
                 city: string | null;

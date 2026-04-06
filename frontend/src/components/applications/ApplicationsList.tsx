@@ -11,7 +11,7 @@ import {
   LayoutGrid, List, Search, Calendar,
   ArrowRight, Euro, Trash2,
 } from 'lucide-react';
-import { cn, STATUS_CONFIG, formatDeadline, formatFees, isActionNeeded, getStatusProgress } from '@/lib/utils';
+import { cn, STATUS_CONFIG, formatDeadline, formatFees, isActionNeeded, getStatusProgress, formatUniversityName } from '@/lib/utils';
 import { StatusBadge, ViaBadge } from '@/components/shared/StatusBadge';
 import { UniversityLogo } from '@/components/shared/UniversityLogo';
 import { Skeleton } from '@/components/shared/Skeleton';
@@ -56,7 +56,8 @@ export function ApplicationsList() {
       const q = search.toLowerCase();
       apps = apps.filter((a) =>
         a.course.name.toLowerCase().includes(q) ||
-        a.course.university.name.toLowerCase().includes(q),
+        a.course.university.name.toLowerCase().includes(q) ||
+        (a.course.university.shortName?.toLowerCase().includes(q)),
       );
     }
 
@@ -227,7 +228,7 @@ function AppCard({ app, index }: { app: Application; index: number }) {
                     </p>
                   </div>
                   <p className="text-[13px] font-medium text-muted-foreground truncate mt-1">
-                    {app.course.university.name}
+                    {formatUniversityName(app.course.university.name, app.course.university.shortName)}
                     {app.course.university.city && ` · ${app.course.university.city}`}
                     {app.course.degree && ` · ${app.course.degree}`}
                   </p>
@@ -321,7 +322,7 @@ function KanbanView({ apps }: { apps: Application[] }) {
                         <p className="text-[14px] font-bold text-foreground truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                           {app.course.name}
                         </p>
-                        <p className="text-[11px] font-medium text-muted-foreground truncate">{app.course.university.name}</p>
+                        <p className="text-[11px] font-medium text-muted-foreground truncate">{formatUniversityName(app.course.university.name, app.course.university.shortName)}</p>
                       </div>
                     </div>
                     {app.course.deadline && (

@@ -1,5 +1,6 @@
 export interface ScrapedCourseData {
     universityName: string;
+    universityShortName: string | null;
     courseName: string;
     description: string;
     degree: string;
@@ -27,6 +28,13 @@ export interface ScrapedCourseData {
     latitude: number | null;
     longitude: number | null;
 }
+export declare const KNOWN_UNIVERSITIES: Record<string, {
+    name: string;
+    city: string;
+    shortName?: string;
+}>;
+export declare function getUniversityShortName(canonicalName: string): string | null;
+export declare function normalizeUniversityName(name: string): string;
 export declare class ScraperService {
     private readonly logger;
     scrapeUniversityCourse(url: string): Promise<ScrapedCourseData>;

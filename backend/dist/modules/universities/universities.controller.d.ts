@@ -34,6 +34,7 @@ export declare class UniversitiesController {
     } & {
         id: string;
         name: string;
+        shortName: string | null;
         logoUrl: string | null;
         address: string | null;
         city: string | null;
@@ -65,6 +66,7 @@ export declare class UniversitiesController {
             university: {
                 id: string;
                 name: string;
+                shortName: string | null;
                 logoUrl: string | null;
                 address: string | null;
                 city: string | null;
@@ -181,6 +183,7 @@ export declare class UniversitiesController {
     } & {
         id: string;
         name: string;
+        shortName: string | null;
         logoUrl: string | null;
         address: string | null;
         city: string | null;
@@ -198,6 +201,7 @@ export declare class UniversitiesController {
     create(dto: CreateUniversityDto): Promise<{
         id: string;
         name: string;
+        shortName: string | null;
         logoUrl: string | null;
         address: string | null;
         city: string | null;
@@ -216,6 +220,7 @@ export declare class UniversitiesController {
         university: {
             id: string;
             name: string;
+            shortName: string | null;
             logoUrl: string | null;
             address: string | null;
             city: string | null;
@@ -273,6 +278,7 @@ export declare class UniversitiesController {
             university: {
                 id: string;
                 name: string;
+                shortName: string | null;
                 logoUrl: string | null;
                 address: string | null;
                 city: string | null;
@@ -328,6 +334,7 @@ export declare class UniversitiesController {
     update(id: string, dto: Partial<CreateUniversityDto>): Promise<{
         id: string;
         name: string;
+        shortName: string | null;
         logoUrl: string | null;
         address: string | null;
         city: string | null;
@@ -349,6 +356,7 @@ export declare class UniversitiesController {
         university: {
             id: string;
             name: string;
+            shortName: string | null;
             logoUrl: string | null;
             address: string | null;
             city: string | null;
@@ -390,6 +398,7 @@ export declare class UniversitiesController {
     remove(id: string): Promise<{
         id: string;
         name: string;
+        shortName: string | null;
         logoUrl: string | null;
         address: string | null;
         city: string | null;

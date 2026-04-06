@@ -9,12 +9,12 @@ export declare class DocumentsService {
         notes: string | null;
         applicationId: string;
         type: import(".prisma/client").$Enums.DocumentType;
+        uploadedAt: Date;
         originalName: string;
         filePath: string;
         fileSize: number;
         mimeType: string;
         version: number;
-        uploadedAt: Date;
     }>;
     findByApplication(applicationId: string): Promise<{
         name: string;
@@ -22,12 +22,12 @@ export declare class DocumentsService {
         notes: string | null;
         applicationId: string;
         type: import(".prisma/client").$Enums.DocumentType;
+        uploadedAt: Date;
         originalName: string;
         filePath: string;
         fileSize: number;
         mimeType: string;
         version: number;
-        uploadedAt: Date;
     }[]>;
     findOne(id: string): Promise<{
         name: string;
@@ -35,12 +35,12 @@ export declare class DocumentsService {
         notes: string | null;
         applicationId: string;
         type: import(".prisma/client").$Enums.DocumentType;
+        uploadedAt: Date;
         originalName: string;
         filePath: string;
         fileSize: number;
         mimeType: string;
         version: number;
-        uploadedAt: Date;
     }>;
     getFilePath(id: string): Promise<{
         filePath: string;
@@ -53,12 +53,12 @@ export declare class DocumentsService {
         notes: string | null;
         applicationId: string;
         type: import(".prisma/client").$Enums.DocumentType;
+        uploadedAt: Date;
         originalName: string;
         filePath: string;
         fileSize: number;
         mimeType: string;
         version: number;
-        uploadedAt: Date;
     }>;
     getDocumentStats(applicationId: string): Promise<{
         total: number;

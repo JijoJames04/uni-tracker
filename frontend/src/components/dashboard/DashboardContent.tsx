@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { universityApi, applicationApi } from '@/lib/api';
 import type { Application } from '@/lib/api';
-import { formatFees, formatDeadline, STATUS_CONFIG, cn } from '@/lib/utils';
+import { formatFees, formatDeadline, STATUS_CONFIG, cn, formatUniversityName } from '@/lib/utils';
 import {
   TrendingUp, CheckCircle2, Clock, AlertCircle,
   Euro, GraduationCap, ArrowRight, Calendar, Download,
@@ -31,7 +31,7 @@ function getGreeting(hour: number): string {
 function exportToCSV(applications: Application[]) {
   const headers = ['University', 'Course', 'Degree', 'Status', 'Priority', 'Deadline', 'Fees', 'Language', 'Applied At', 'Notes'];
   const rows = applications.map((app) => [
-    app.course.university.name,
+    formatUniversityName(app.course.university.name, app.course.university.shortName),
     app.course.name,
     app.course.degree ?? '',
     app.status,
@@ -296,7 +296,7 @@ export function DashboardContent() {
                                   {app.course.name}
                                 </p>
                                 <p className="text-[13px] font-medium text-muted-foreground truncate">
-                                  {app.course.university.name}
+                                  {formatUniversityName(app.course.university.name, app.course.university.shortName)}
                                 </p>
                               </div>
                             </div>
@@ -514,7 +514,7 @@ export function DashboardContent() {
                           {app.course.name}
                         </p>
                         <p className="text-[13px] font-medium text-muted-foreground truncate mb-3">
-                          {app.course.university.name} <span className="text-border mx-1">|</span> {app.course.degree ?? 'Masters'}
+                          {formatUniversityName(app.course.university.name, app.course.university.shortName)} <span className="text-border mx-1">|</span> {app.course.degree ?? 'Masters'}
                         </p>
                         <div className="flex items-center gap-2.5 flex-wrap">
                           <StatusBadge status={app.status} size="sm" />

@@ -8,7 +8,7 @@ import { Search, X, Building2 } from 'lucide-react';
 import { NAV_ITEMS } from '@/lib/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { applicationApi, universityApi } from '@/lib/api';
-import { cn } from '@/lib/utils';
+import { cn, formatUniversityName } from '@/lib/utils';
 import { UniversityLogo } from '@/components/shared/UniversityLogo';
 
 
@@ -119,7 +119,7 @@ export default function SearchCommand() {
                       {applications.map((app) => (
                         <Command.Item
                           key={app.id}
-                          value={`${app.course.university.name} ${app.course.name}`}
+                          value={`${app.course.university.shortName || ''} ${app.course.university.name} ${app.course.name}`}
                           onSelect={() => navigate(`/applications/${app.id}`)}
                           className={cn(
                             "flex items-center gap-3 px-3 py-2.5 mb-1.5 rounded-xl text-sm transition-all cursor-pointer border border-transparent",
@@ -135,7 +135,7 @@ export default function SearchCommand() {
                             )}
                           </div>
                           <div className="flex flex-col min-w-0">
-                            <span className="font-bold text-foreground truncate">{app.course.university.name}</span>
+                            <span className="font-bold text-foreground truncate">{formatUniversityName(app.course.university.name, app.course.university.shortName)}</span>
                             <span className="text-[12px] font-medium text-muted-foreground truncate">{app.course.name}</span>
                           </div>
                         </Command.Item>
@@ -148,7 +148,7 @@ export default function SearchCommand() {
                       {universities.map((uni) => (
                         <Command.Item
                           key={uni.id}
-                          value={`Uni ${uni.name} ${uni.city || ''}`}
+                          value={`Uni ${uni.shortName || ''} ${uni.name} ${uni.city || ''}`}
                           onSelect={() => navigate(`/universities/${uni.id}`)}
                           className={cn(
                             "flex items-center gap-3 px-3 py-2.5 mb-1.5 rounded-xl text-sm transition-all cursor-pointer border border-transparent",
@@ -164,7 +164,7 @@ export default function SearchCommand() {
                             )}
                           </div>
                           <div className="flex flex-col min-w-0">
-                            <span className="font-bold text-foreground truncate">{uni.name}</span>
+                            <span className="font-bold text-foreground truncate">{formatUniversityName(uni.name, uni.shortName)}</span>
                             {uni.city && <span className="text-[12px] font-medium text-muted-foreground truncate">{uni.city}</span>}
                           </div>
                         </Command.Item>

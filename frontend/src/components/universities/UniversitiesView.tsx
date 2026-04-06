@@ -69,7 +69,11 @@ export function UniversitiesView() {
               >
                 <UniversityLogo url={uni.logoUrl} name={uni.name} size="md" />
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-foreground text-sm leading-snug">{uni.name}</h3>
+                  <h3 className="font-bold text-foreground text-sm leading-snug">
+                    {uni.shortName ? (
+                      <>{uni.shortName} <span className="text-muted-foreground font-medium text-xs ml-1">({uni.name})</span></>
+                    ) : uni.name}
+                  </h3>
                   <div className="flex items-center gap-3 mt-1 flex-wrap">
                     {uni.city && (
                       <span className="flex items-center gap-1 text-xs text-muted-foreground">

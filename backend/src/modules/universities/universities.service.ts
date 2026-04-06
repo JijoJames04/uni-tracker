@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { ScraperService, normalizeUniversityName } from '../scraper/scraper.service';
+import { ScraperService, normalizeUniversityName, getUniversityShortName } from '../scraper/scraper.service';
 import { IsString, IsOptional, IsUrl } from 'class-validator';
 
 export class CreateUniversityDto {
@@ -79,7 +79,28 @@ export class UniversitiesService {
   }
 
   async create(dto: CreateUniversityDto) {
-    return this.prisma.university.create({ data: dto });
+    // Normalize the university name against the canonical KNOWN_UNIVERSITIES list
+    const canonicalName = normalizeUniversityName(dto.name);
+    const shortName = getUniversityShortName(canonicalName);
+
+    // Check if university already exists (by canonical or original name)
+    const existing = await this.prisma.university.findFirst({
+      where: {
+        OR: [
+          { name: { equals: canonicalName, mode: 'insensitive' } },
+          { name: { equals: dto.name, mode: 'insensitive' } },
+        ],
+      },
+    });
+    if (existing) return existing;
+
+    return this.prisma.university.create({
+      data: {
+        ...dto,
+        name: canonicalName,
+        shortName: shortName ?? undefined,
+      },
+    });
   }
 
   async update(id: string, dto: Partial<CreateUniversityDto>) {
@@ -139,6 +160,7 @@ export class UniversitiesService {
       university = await this.prisma.university.create({
         data: {
           name: canonicalName,
+          shortName: getUniversityShortName(canonicalName),
           logoUrl: scraped.logoUrl,
           address: scraped.address,
           city: scraped.city,

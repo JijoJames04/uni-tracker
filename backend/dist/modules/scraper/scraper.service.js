@@ -7,21 +7,23 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 var ScraperService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ScraperService = void 0;
+exports.ScraperService = exports.KNOWN_UNIVERSITIES = void 0;
+exports.getUniversityShortName = getUniversityShortName;
+exports.normalizeUniversityName = normalizeUniversityName;
 const common_1 = require("@nestjs/common");
 const cheerio = require("cheerio");
-const KNOWN_UNIVERSITIES = {
-    'tum.de': { name: 'Technical University of Munich', city: 'Munich' },
-    'tu-berlin.de': { name: 'Technische Universität Berlin', city: 'Berlin' },
-    'tu-darmstadt.de': { name: 'Technische Universität Darmstadt', city: 'Darmstadt' },
-    'tu-dresden.de': { name: 'Technische Universität Dresden', city: 'Dresden' },
-    'tu-braunschweig.de': { name: 'Technische Universität Braunschweig', city: 'Braunschweig' },
-    'lmu.de': { name: 'Ludwig-Maximilians-Universität München', city: 'Munich' },
-    'fu-berlin.de': { name: 'Freie Universität Berlin', city: 'Berlin' },
-    'hu-berlin.de': { name: 'Humboldt-Universität zu Berlin', city: 'Berlin' },
-    'uni-heidelberg.de': { name: 'Universität Heidelberg', city: 'Heidelberg' },
+exports.KNOWN_UNIVERSITIES = {
+    'tum.de': { name: 'Technical University of Munich', city: 'Munich', shortName: 'TUM' },
+    'tu-berlin.de': { name: 'Technische Universität Berlin', city: 'Berlin', shortName: 'TU Berlin' },
+    'tu-darmstadt.de': { name: 'Technische Universität Darmstadt', city: 'Darmstadt', shortName: 'TU Darmstadt' },
+    'tu-dresden.de': { name: 'Technische Universität Dresden', city: 'Dresden', shortName: 'TU Dresden' },
+    'tu-braunschweig.de': { name: 'Technische Universität Braunschweig', city: 'Braunschweig', shortName: 'TU Braunschweig' },
+    'lmu.de': { name: 'Ludwig-Maximilians-Universität München', city: 'Munich', shortName: 'LMU' },
+    'fu-berlin.de': { name: 'Freie Universität Berlin', city: 'Berlin', shortName: 'FU Berlin' },
+    'hu-berlin.de': { name: 'Humboldt-Universität zu Berlin', city: 'Berlin', shortName: 'HU Berlin' },
+    'uni-heidelberg.de': { name: 'Universität Heidelberg', city: 'Heidelberg', shortName: 'Uni Heidelberg' },
     'uni-freiburg.de': { name: 'Universität Freiburg', city: 'Freiburg' },
-    'uni-muenchen.de': { name: 'Ludwig-Maximilians-Universität München', city: 'Munich' },
+    'uni-muenchen.de': { name: 'Ludwig-Maximilians-Universität München', city: 'Munich', shortName: 'LMU' },
     'uni-bonn.de': { name: 'Universität Bonn', city: 'Bonn' },
     'uni-koeln.de': { name: 'Universität zu Köln', city: 'Cologne' },
     'uni-hamburg.de': { name: 'Universität Hamburg', city: 'Hamburg' },
@@ -30,29 +32,70 @@ const KNOWN_UNIVERSITIES = {
     'uni-mannheim.de': { name: 'Universität Mannheim', city: 'Mannheim' },
     'uni-muenster.de': { name: 'Universität Münster', city: 'Münster' },
     'uni-stuttgart.de': { name: 'Universität Stuttgart', city: 'Stuttgart' },
-    'uni-erlangen.de': { name: 'Friedrich-Alexander-Universität Erlangen-Nürnberg', city: 'Erlangen' },
-    'fau.de': { name: 'Friedrich-Alexander-Universität Erlangen-Nürnberg', city: 'Erlangen' },
-    'kit.edu': { name: 'Karlsruhe Institute of Technology', city: 'Karlsruhe' },
-    'rwth-aachen.de': { name: 'RWTH Aachen University', city: 'Aachen' },
-    'uni-frankfurt.de': { name: 'Goethe-Universität Frankfurt', city: 'Frankfurt' },
-    'uni-jena.de': { name: 'Friedrich-Schiller-Universität Jena', city: 'Jena' },
-    'uni-wuerzburg.de': { name: 'Julius-Maximilians-Universität Würzburg', city: 'Würzburg' },
+    'uni-erlangen.de': { name: 'Friedrich-Alexander-Universität Erlangen-Nürnberg', city: 'Erlangen', shortName: 'FAU' },
+    'fau.de': { name: 'Friedrich-Alexander-Universität Erlangen-Nürnberg', city: 'Erlangen', shortName: 'FAU' },
+    'kit.edu': { name: 'Karlsruhe Institute of Technology', city: 'Karlsruhe', shortName: 'KIT' },
+    'rwth-aachen.de': { name: 'RWTH Aachen University', city: 'Aachen', shortName: 'RWTH' },
+    'uni-frankfurt.de': { name: 'Goethe-Universität Frankfurt', city: 'Frankfurt', shortName: 'Goethe Uni' },
+    'uni-jena.de': { name: 'Friedrich-Schiller-Universität Jena', city: 'Jena', shortName: 'FSU Jena' },
+    'uni-wuerzburg.de': { name: 'Julius-Maximilians-Universität Würzburg', city: 'Würzburg', shortName: 'JMU' },
     'uni-potsdam.de': { name: 'Universität Potsdam', city: 'Potsdam' },
     'uni-augsburg.de': { name: 'Universität Augsburg', city: 'Augsburg' },
     'uni-bayreuth.de': { name: 'Universität Bayreuth', city: 'Bayreuth' },
     'uni-leipzig.de': { name: 'Universität Leipzig', city: 'Leipzig' },
     'uni-konstanz.de': { name: 'Universität Konstanz', city: 'Constance' },
-    'uni-saarland.de': { name: 'Universität des Saarlandes', city: 'Saarbrücken' },
-    'uni-hannover.de': { name: 'Leibniz Universität Hannover', city: 'Hannover' },
+    'uni-saarland.de': { name: 'Universität des Saarlandes', city: 'Saarbrücken', shortName: 'UdS' },
+    'uni-hannover.de': { name: 'Leibniz Universität Hannover', city: 'Hannover', shortName: 'LUH' },
     'tu-clausthal.de': { name: 'TU Clausthal', city: 'Clausthal-Zellerfeld' },
-    'tu-chemnitz.de': { name: 'Technische Universität Chemnitz', city: 'Chemnitz' },
-    'tu-ilmenau.de': { name: 'Technische Universität Ilmenau', city: 'Ilmenau' },
+    'tu-chemnitz.de': { name: 'Technische Universität Chemnitz', city: 'Chemnitz', shortName: 'TU Chemnitz' },
+    'tu-ilmenau.de': { name: 'Technische Universität Ilmenau', city: 'Ilmenau', shortName: 'TU Ilmenau' },
     'tu-kaiserslautern.de': { name: 'TU Kaiserslautern', city: 'Kaiserslautern' },
-    'rptu.de': { name: 'RPTU Kaiserslautern-Landau', city: 'Kaiserslautern' },
+    'rptu.de': { name: 'RPTU Kaiserslautern-Landau', city: 'Kaiserslautern', shortName: 'RPTU' },
     'hs-mannheim.de': { name: 'Hochschule Mannheim', city: 'Mannheim' },
     'daad.de': { name: 'DAAD', city: '' },
     'studieren.de': { name: '', city: '' },
 };
+function getUniversityShortName(canonicalName) {
+    for (const info of Object.values(exports.KNOWN_UNIVERSITIES)) {
+        if (info.name && info.shortName && info.name.toLowerCase() === canonicalName.toLowerCase()) {
+            return info.shortName;
+        }
+    }
+    return null;
+}
+function normalizeUniversityName(name) {
+    if (!name || name === 'Unknown University')
+        return name;
+    const lowerInput = name.toLowerCase().trim();
+    const knownNames = Object.values(exports.KNOWN_UNIVERSITIES)
+        .map((v) => v.name)
+        .filter(Boolean);
+    for (const canonical of knownNames) {
+        if (canonical.toLowerCase() === lowerInput)
+            return canonical;
+    }
+    for (const canonical of knownNames) {
+        const lowerCanonical = canonical.toLowerCase();
+        if (lowerInput.includes(lowerCanonical) || lowerCanonical.includes(lowerInput)) {
+            const shorter = lowerInput.length < lowerCanonical.length ? lowerInput : lowerCanonical;
+            if (shorter.length >= 8)
+                return canonical;
+        }
+    }
+    const inputTokens = lowerInput.split(/[\s,.-]+/).filter((t) => t.length > 2);
+    for (const canonical of knownNames) {
+        const canonicalTokens = canonical.toLowerCase().split(/[\s,.-]+/).filter((t) => t.length > 2);
+        const shorter = inputTokens.length <= canonicalTokens.length ? inputTokens : canonicalTokens;
+        const longer = inputTokens.length <= canonicalTokens.length ? canonicalTokens : inputTokens;
+        if (shorter.length === 0)
+            continue;
+        const matchCount = shorter.filter((t) => longer.some((lt) => lt.includes(t) || t.includes(lt))).length;
+        if (matchCount / shorter.length >= 0.7 && matchCount >= 2) {
+            return canonical;
+        }
+    }
+    return name;
+}
 const GERMAN_CITIES = [
     'Berlin', 'Munich', 'München', 'Hamburg', 'Frankfurt', 'Cologne', 'Köln',
     'Stuttgart', 'Düsseldorf', 'Leipzig', 'Dresden', 'Heidelberg', 'Freiburg',
@@ -123,8 +166,10 @@ let ScraperService = ScraperService_1 = class ScraperService {
         const jsonLd = this.extractJsonLd($);
         const kvPairs = this.extractKeyValuePairs($);
         const city = this.extractCity(cleanText, url, hostname, kvPairs);
+        const universityName = this.extractUniversityName($, cleanText, url, hostname, jsonLd);
         return {
-            universityName: this.extractUniversityName($, cleanText, url, hostname, jsonLd),
+            universityName,
+            universityShortName: getUniversityShortName(universityName),
             courseName: this.extractCourseName($, cleanText, jsonLd, kvPairs),
             description: this.extractDescription($, jsonLd),
             degree: this.extractDegree(cleanText, kvPairs, jsonLd),
@@ -224,8 +269,11 @@ let ScraperService = ScraperService_1 = class ScraperService {
             }
             return clean;
         };
+        const verifyAgainstKnown = (name) => {
+            return normalizeUniversityName(name);
+        };
         let foundName = '';
-        for (const [domain, info] of Object.entries(KNOWN_UNIVERSITIES)) {
+        for (const [domain, info] of Object.entries(exports.KNOWN_UNIVERSITIES)) {
             if (hostname.endsWith(domain) && info.name)
                 return info.name;
         }
@@ -262,16 +310,16 @@ let ScraperService = ScraperService_1 = class ScraperService {
         if (foundName) {
             const cleaned = cleanUniversity(foundName);
             if (cleaned.length > 3)
-                return cleaned;
+                return verifyAgainstKnown(cleaned);
         }
         try {
             const parts = hostname.split('.');
             const main = parts.find(p => p.startsWith('uni-') || p.startsWith('tu-') || p.startsWith('hs-'));
             if (main) {
                 const clean = main.replace(/^(uni|tu|hs)-/, '');
-                return (main.startsWith('tu-') ? 'TU ' : main.startsWith('hs-') ? 'Hochschule ' : 'Universität ') + clean.charAt(0).toUpperCase() + clean.slice(1);
+                return verifyAgainstKnown((main.startsWith('tu-') ? 'TU ' : main.startsWith('hs-') ? 'Hochschule ' : 'Universität ') + clean.charAt(0).toUpperCase() + clean.slice(1));
             }
-            return parts[parts.length - 2].charAt(0).toUpperCase() + parts[parts.length - 2].slice(1) + ' University';
+            return verifyAgainstKnown(parts[parts.length - 2].charAt(0).toUpperCase() + parts[parts.length - 2].slice(1) + ' University');
         }
         catch { }
         return 'Unknown University';
@@ -762,7 +810,7 @@ let ScraperService = ScraperService_1 = class ScraperService {
         return '';
     }
     extractCity(text, url, hostname, kv) {
-        for (const [domain, info] of Object.entries(KNOWN_UNIVERSITIES)) {
+        for (const [domain, info] of Object.entries(exports.KNOWN_UNIVERSITIES)) {
             if (hostname.endsWith(domain) && info.city)
                 return info.city;
         }

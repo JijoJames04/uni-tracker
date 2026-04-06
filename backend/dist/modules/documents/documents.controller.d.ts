@@ -10,12 +10,12 @@ export declare class DocumentsController {
         notes: string | null;
         applicationId: string;
         type: import(".prisma/client").$Enums.DocumentType;
+        uploadedAt: Date;
         originalName: string;
         filePath: string;
         fileSize: number;
         mimeType: string;
         version: number;
-        uploadedAt: Date;
     }[]>;
     getStats(applicationId: string): Promise<{
         total: number;
@@ -30,12 +30,12 @@ export declare class DocumentsController {
         notes: string | null;
         applicationId: string;
         type: import(".prisma/client").$Enums.DocumentType;
+        uploadedAt: Date;
         originalName: string;
         filePath: string;
         fileSize: number;
         mimeType: string;
         version: number;
-        uploadedAt: Date;
     }>;
     download(id: string, res: Response): Promise<StreamableFile>;
     remove(id: string): Promise<{
@@ -44,11 +44,11 @@ export declare class DocumentsController {
         notes: string | null;
         applicationId: string;
         type: import(".prisma/client").$Enums.DocumentType;
+        uploadedAt: Date;
         originalName: string;
         filePath: string;
         fileSize: number;
         mimeType: string;
         version: number;
-        uploadedAt: Date;
     }>;
 }
