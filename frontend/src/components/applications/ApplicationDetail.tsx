@@ -392,18 +392,11 @@ export function ApplicationDetail({ id }: { id: string }) {
             <div className="flex flex-wrap gap-2 mb-4">
               {course.sourceUrl && (
                 <a href={course.sourceUrl} target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-[13px] text-indigo-700 hover:text-indigo-800 font-bold bg-indigo-50/80 hover:bg-indigo-100/80 px-3.5 py-2 rounded-xl transition-colors border border-indigo-200/50 shadow-sm"
+                  className="inline-flex items-center gap-2 text-[13px] text-indigo-700 hover:text-indigo-800 font-bold bg-indigo-50/80 hover:bg-indigo-100/80 px-4 py-2.5 rounded-xl transition-colors border border-indigo-200/50 shadow-sm"
                   title="The course page used to parse this application">
-                  <Globe className="w-3.5 h-3.5" />
-                  View Course Page
-                  <ExternalLink className="w-3 h-3 ml-0.5 opacity-70" />
-                </a>
-              )}
-              {course.applicationUrl && course.applicationUrl !== course.sourceUrl && (
-                <a href={course.applicationUrl} target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-[13px] text-emerald-700 hover:text-emerald-800 font-bold bg-emerald-50/80 hover:bg-emerald-100/80 px-3.5 py-2 rounded-xl transition-colors border border-emerald-200/50 shadow-sm">
-                  <ExternalLink className="w-3.5 h-3.5" />
-                  Apply Now
+                  <Globe className="w-4 h-4" />
+                  View Application Portal
+                  <ExternalLink className="w-3.5 h-3.5 ml-0.5 opacity-70" />
                 </a>
               )}
             </div>
