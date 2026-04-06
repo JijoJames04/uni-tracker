@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Globe, Linkedin, Instagram, ExternalLink, BookOpen, GraduationCap } from 'lucide-react';
+import { Globe, Linkedin, Instagram, ExternalLink, BookOpen, GraduationCap, MapPin } from 'lucide-react';
 
 interface UniversityLinksProps {
   website?: string;
@@ -10,6 +10,9 @@ interface UniversityLinksProps {
   universityName: string;
   className?: string;
   showFinderLinks?: boolean;
+  latitude?: number;
+  longitude?: number;
+  address?: string;
 }
 
 const UNIVERSITY_FINDER_LINKS = [
@@ -38,11 +41,21 @@ export default function UniversityLinks({
   universityName,
   className = '',
   showFinderLinks = false,
+  latitude,
+  longitude,
+  address,
 }: UniversityLinksProps) {
+  const mapsUrl = latitude && longitude
+    ? `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`
+    : address
+      ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
+      : null;
+
   const socialLinks = [
-    { url: website, label: 'Official Website', icon: <Globe className="w-4 h-4" />, color: 'text-blue-600 dark:text-blue-400' },
-    { url: linkedinUrl, label: 'LinkedIn', icon: <Linkedin className="w-4 h-4" />, color: 'text-sky-600 dark:text-sky-400' },
-    { url: instagramUrl, label: 'Instagram', icon: <Instagram className="w-4 h-4" />, color: 'text-pink-600 dark:text-pink-400' },
+    { url: website,     label: 'Official Website', icon: <Globe className="w-4 h-4" />,    color: 'text-blue-600 dark:text-blue-400'  },
+    { url: linkedinUrl, label: 'LinkedIn',          icon: <Linkedin className="w-4 h-4" />, color: 'text-sky-600 dark:text-sky-400'    },
+    { url: instagramUrl,label: 'Instagram',         icon: <Instagram className="w-4 h-4" />,color: 'text-pink-600 dark:text-pink-400'  },
+    { url: mapsUrl,     label: 'Location',          icon: <MapPin className="w-4 h-4" />,   color: 'text-rose-600 dark:text-rose-400'  },
   ].filter(l => l.url);
 
   return (
@@ -73,6 +86,7 @@ export default function UniversityLinks({
           </div>
         </div>
       )}
+
 
       {/* University Finder Links (F07) */}
       {showFinderLinks && (

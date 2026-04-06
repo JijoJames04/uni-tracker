@@ -28,11 +28,18 @@ export interface ScrapedCourseData {
     latitude: number | null;
     longitude: number | null;
 }
-export declare const KNOWN_UNIVERSITIES: Record<string, {
+export interface KnownUniversityInfo {
     name: string;
     city: string;
     shortName?: string;
-}>;
+    website?: string;
+    linkedinUrl?: string;
+    instagramUrl?: string;
+    address?: string;
+    latitude?: number;
+    longitude?: number;
+}
+export declare const KNOWN_UNIVERSITIES: Record<string, KnownUniversityInfo>;
 export declare function getUniversityShortName(canonicalName: string): string | null;
 export declare function normalizeUniversityName(name: string): string;
 export declare class ScraperService {

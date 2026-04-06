@@ -237,21 +237,62 @@ let UniversitiesService = class UniversitiesService {
             },
         });
         if (!university) {
+            const hostname = (() => { try {
+                return new URL(dto.url).hostname.replace(/^www\./, '');
+            }
+            catch {
+                return '';
+            } })();
+            let knownInfo;
+            for (const [domain, info] of Object.entries(scraper_service_1.KNOWN_UNIVERSITIES)) {
+                if (hostname.endsWith(domain) && info.name) {
+                    knownInfo = info;
+                    break;
+                }
+            }
             university = await this.prisma.university.create({
                 data: {
                     name: canonicalName,
                     shortName: (0, scraper_service_1.getUniversityShortName)(canonicalName),
                     logoUrl: scraped.logoUrl,
-                    address: scraped.address,
-                    city: scraped.city,
-                    website: scraped.websiteUrl || scraped.applicationUrl,
-                    linkedinUrl: scraped.linkedinUrl,
-                    instagramUrl: scraped.instagramUrl,
-                    latitude: scraped.latitude,
-                    longitude: scraped.longitude,
+                    address: knownInfo?.address || scraped.address,
+                    city: knownInfo?.city || scraped.city,
+                    website: knownInfo?.website || scraped.websiteUrl || scraped.applicationUrl,
+                    linkedinUrl: knownInfo?.linkedinUrl || scraped.linkedinUrl,
+                    instagramUrl: knownInfo?.instagramUrl || scraped.instagramUrl,
+                    latitude: knownInfo?.latitude ?? scraped.latitude,
+                    longitude: knownInfo?.longitude ?? scraped.longitude,
                     country: 'Germany',
                 },
             });
+        }
+        else {
+            const hostname = (() => { try {
+                return new URL(dto.url).hostname.replace(/^www\./, '');
+            }
+            catch {
+                return '';
+            } })();
+            let knownInfo;
+            for (const [domain, info] of Object.entries(scraper_service_1.KNOWN_UNIVERSITIES)) {
+                if (hostname.endsWith(domain) && info.name) {
+                    knownInfo = info;
+                    break;
+                }
+            }
+            if (knownInfo) {
+                university = await this.prisma.university.update({
+                    where: { id: university.id },
+                    data: {
+                        website: knownInfo.website || university.website,
+                        linkedinUrl: knownInfo.linkedinUrl || university.linkedinUrl,
+                        instagramUrl: knownInfo.instagramUrl || university.instagramUrl,
+                        address: knownInfo.address || university.address,
+                        latitude: knownInfo.latitude ?? university.latitude,
+                        longitude: knownInfo.longitude ?? university.longitude,
+                    },
+                });
+            }
         }
         const existingCourse = await this.prisma.course.findFirst({
             where: {

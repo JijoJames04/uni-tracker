@@ -386,31 +386,44 @@ export function ApplicationDetail({ id }: { id: string }) {
         )}
 
         {/* External link & social links */}
-        {(course.applicationUrl || university.website || university.linkedinUrl || university.instagramUrl) && (
+        {(course.sourceUrl || course.applicationUrl || university.website || university.linkedinUrl || university.instagramUrl) && (
           <div className="px-5 pb-5 sm:px-6 pt-5 border-t border-border/50 mt-2">
-            {course.applicationUrl && (
-              <div className="mb-5">
-                <a href={course.applicationUrl} target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-[14px] text-indigo-700 hover:text-indigo-800 font-bold bg-indigo-50/80 hover:bg-indigo-100/80 px-4 py-2.5 rounded-xl transition-colors border border-indigo-200/50 shadow-sm">
-                  <Globe className="w-4 h-4" />
-                  View Application Portal
-                  <ExternalLink className="w-3.5 h-3.5 ml-1 opacity-70" />
+            {/* Course / Parsing links */}
+            <div className="flex flex-wrap gap-2 mb-4">
+              {course.sourceUrl && (
+                <a href={course.sourceUrl} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-[13px] text-indigo-700 hover:text-indigo-800 font-bold bg-indigo-50/80 hover:bg-indigo-100/80 px-3.5 py-2 rounded-xl transition-colors border border-indigo-200/50 shadow-sm"
+                  title="The course page used to parse this application">
+                  <Globe className="w-3.5 h-3.5" />
+                  View Course Page
+                  <ExternalLink className="w-3 h-3 ml-0.5 opacity-70" />
                 </a>
-              </div>
-            )}
+              )}
+              {course.applicationUrl && course.applicationUrl !== course.sourceUrl && (
+                <a href={course.applicationUrl} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-[13px] text-emerald-700 hover:text-emerald-800 font-bold bg-emerald-50/80 hover:bg-emerald-100/80 px-3.5 py-2 rounded-xl transition-colors border border-emerald-200/50 shadow-sm">
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  Apply Now
+                </a>
+              )}
+            </div>
             
-            {(university.website || university.linkedinUrl || university.instagramUrl) && (
+            {(university.website || university.linkedinUrl || university.instagramUrl || (university.latitude && university.longitude)) && (
               <UniversityLinks 
                 website={university.website || undefined}
                 linkedinUrl={university.linkedinUrl || undefined}
                 instagramUrl={university.instagramUrl || undefined}
-                universityName={university.name}
+                universityName={university.shortName || university.name}
+                latitude={university.latitude ?? undefined}
+                longitude={university.longitude ?? undefined}
+                address={university.address || undefined}
                 showFinderLinks={false}
               />
             )}
           </div>
         )}
       </motion.div>
+
 
       {/* Tabs */}
       <div className="flex gap-1.5 bg-card rounded-2xl p-1.5 border border-border/50 shadow-sm overflow-x-auto no-scrollbar">

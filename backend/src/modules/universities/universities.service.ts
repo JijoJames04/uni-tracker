@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { ScraperService, normalizeUniversityName, getUniversityShortName } from '../scraper/scraper.service';
+import { ScraperService, normalizeUniversityName, getUniversityShortName, KNOWN_UNIVERSITIES, KnownUniversityInfo } from '../scraper/scraper.service';
 import { IsString, IsOptional, IsUrl } from 'class-validator';
+
 
 export class CreateUniversityDto {
   @IsString() name: string;
@@ -157,21 +158,48 @@ export class UniversitiesService {
     });
 
     if (!university) {
+      // Prefer static KNOWN_UNIVERSITIES data over scraped values for accuracy
+      const hostname = (() => { try { return new URL(dto.url).hostname.replace(/^www\./, ''); } catch { return ''; } })();
+      let knownInfo: KnownUniversityInfo | undefined;
+      for (const [domain, info] of Object.entries(KNOWN_UNIVERSITIES)) {
+        if (hostname.endsWith(domain) && info.name) { knownInfo = info; break; }
+      }
+
       university = await this.prisma.university.create({
         data: {
           name: canonicalName,
           shortName: getUniversityShortName(canonicalName),
           logoUrl: scraped.logoUrl,
-          address: scraped.address,
-          city: scraped.city,
-          website: scraped.websiteUrl || scraped.applicationUrl,
-          linkedinUrl: scraped.linkedinUrl,
-          instagramUrl: scraped.instagramUrl,
-          latitude: scraped.latitude,
-          longitude: scraped.longitude,
+          address: knownInfo?.address || scraped.address,
+          city: knownInfo?.city || scraped.city,
+          website: knownInfo?.website || scraped.websiteUrl || scraped.applicationUrl,
+          linkedinUrl: knownInfo?.linkedinUrl || scraped.linkedinUrl,
+          instagramUrl: knownInfo?.instagramUrl || scraped.instagramUrl,
+          latitude: knownInfo?.latitude ?? scraped.latitude,
+          longitude: knownInfo?.longitude ?? scraped.longitude,
           country: 'Germany',
         },
       });
+    } else {
+      // Update existing university with known static data if we now have it
+      const hostname = (() => { try { return new URL(dto.url).hostname.replace(/^www\./, ''); } catch { return ''; } })();
+      let knownInfo: KnownUniversityInfo | undefined;
+      for (const [domain, info] of Object.entries(KNOWN_UNIVERSITIES)) {
+        if (hostname.endsWith(domain) && info.name) { knownInfo = info; break; }
+      }
+      if (knownInfo) {
+        university = await this.prisma.university.update({
+          where: { id: university.id },
+          data: {
+            website: knownInfo.website || university.website,
+            linkedinUrl: knownInfo.linkedinUrl || university.linkedinUrl,
+            instagramUrl: knownInfo.instagramUrl || university.instagramUrl,
+            address: knownInfo.address || university.address,
+            latitude: knownInfo.latitude ?? university.latitude,
+            longitude: knownInfo.longitude ?? university.longitude,
+          },
+        });
+      }
     }
 
     // Check for duplicate: same course name at same university
