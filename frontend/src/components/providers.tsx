@@ -2,7 +2,7 @@
 
 import { QueryClient, QueryClientProvider, MutationCache } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary';
 import { useAuthStore } from '@/store/auth.store';
 import { useSyncStore } from '@/store/sync.store';

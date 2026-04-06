@@ -10,7 +10,6 @@ import { Loader2, CloudDownload } from 'lucide-react';
 export default function AuthCallbackPage() {
   const router = useRouter();
   const { setUser } = useAuthStore();
-  const { pullFromCloud } = useSyncStore();
   const [error, setError] = useState<string | null>(null);
   const [syncPhase, setSyncPhase] = useState<'auth' | 'sync'>('auth');
 

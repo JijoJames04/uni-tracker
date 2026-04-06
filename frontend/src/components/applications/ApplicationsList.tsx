@@ -203,9 +203,6 @@ function ListView({ apps }: { apps: Application[] }) {
 
 function AppCard({ app, index }: { app: Application; index: number }) {
   const deadline = formatDeadline(app.course.deadline);
-  const checklistProgress = app.checklist.length > 0
-    ? Math.round((app.checklist.filter((c) => c.completed).length / app.checklist.length) * 100)
-    : 0;
   const statusProgress = getStatusProgress(app.status);
 
   return (
